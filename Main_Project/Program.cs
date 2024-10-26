@@ -1,4 +1,5 @@
 using System.Globalization;
+using Main_Project;
 using Main_Project.Models;
 using Main_Project.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -93,6 +94,7 @@ app.UseRouting();
 
 // Enable session middleware
 app.UseSession();
+app.UseSubscription_Middleware();
 app.UseAuthentication(); // Enable authentication middleware
 app.UseAuthorization();
 
