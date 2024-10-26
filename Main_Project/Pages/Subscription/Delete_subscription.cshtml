@@ -1,0 +1,53 @@
+﻿@page
+@model Main_Project.Pages.Subscription.Delete_subscriptionModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Delete Subscription Plan";
+}
+
+
+<div>
+    <h4>Delete Subscription Plane</h4>
+    <hr />
+
+
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+
+                        <tbody class="data">
+                        <thead>
+                            
+                            <tr>
+                                <th>Price</th>
+                                <td>@Model.subscription.price</td>
+                            </tr>
+                            <tr>
+                                <th>Plane Duration</th>
+                                <td>@Model.subscription.planeduration</td>
+                            </tr>
+                            <tr>
+                                <th>Plane Details</th>
+                                <td>@Model.subscription.planedetail</td>
+                            </tr>
+                        </thead>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div>
+    <a asp-page="./View_subscription">Back to List</a>
+</div>
+
+<form method="post">
+    <input type="hidden" name="id" value="@Model.subscription.id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+</form>

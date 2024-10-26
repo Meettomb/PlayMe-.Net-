@@ -1,0 +1,69 @@
+﻿@page
+@model Feedback_pageModel
+@{
+    Layout = "_Setting";
+
+}
+
+
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert popup_message" id="tempMessage">
+        @TempData["SuccessMessage"]
+    </div>
+
+
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger popup_message" id="tempMessage">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div id="message" class="alert alert-danger popup_message" style="display:none;">
+    Your subscription has expired. Please renew your subscription to continue watching.
+</div>
+
+<div class="feedback_container">
+    <form method="post">
+        <input type="hidden" id="userid" name="userid" value="@Model.id" />
+        <div class="colum_1">
+            <div class="input-group">
+                <p>User name</p><br />
+                <input type="text" name="username" value="@Model.UserName" id="username" />
+            </div>
+
+            <div class="input-group">
+                <p>Email</p><br />
+                <input type="email" name="email" value="@Model.Email" id="email" />
+            </div>
+        </div>
+
+        <div class="textarea_div">
+            <p>Massage</p><br />
+            <textarea cols="30" rows="9" name="feedback"></textarea>
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<script>
+    // Use JavaScript to hide the message after 3 seconds
+    setTimeout(function () {
+        var messageDiv = document.getElementById("tempMessage");
+        if (messageDiv) {
+            messageDiv.style.display = 'none'; // Hide the message
+        }
+    }, 5000); // 2000 milliseconds = 2 seconds
+
+    setTimeout(function () {
+        var messageDiv = document.getElementById("message");
+        if (messageDiv) {
+            messageDiv.style.display = 'none'; // Hide the message
+        }
+    }, 5000); // 2000 milliseconds = 2 seconds
+</script>

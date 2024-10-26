@@ -1,0 +1,126 @@
+﻿@page
+@model Main_Project.Pages.Movies.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>MoviesTable</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movieposter)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movieposter)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movie)
+        </dt>
+        <dd class="col-sm-10">
+           @Html.DisplayFor(model => model.MoviesTable.Movie)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movieposter2)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movieposter2)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Discription)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Discription)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Moviename)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Moviename)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Category)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Category)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Moviecast)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Moviecast)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movietype)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movietype)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Moviereleaseyear)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Moviereleaseyear)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movielike)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movielike)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Moviedirector)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Moviedirector)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movierating)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movierating)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movielanguage)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movielanguage)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movieagerestrictions)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movieagerestrictions)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Content_advisory)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Content_advisory)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="MoviesTable.Movieid" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

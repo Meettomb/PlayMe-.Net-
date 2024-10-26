@@ -1,0 +1,84 @@
+﻿@page
+@model Main_Project.Pages.Terms_of_useModel
+@{
+    Layout = "_Setting";
+}
+
+
+    <div class="Term_header">
+        <h1 class="h1">Terms of Use</h1>
+    </div>
+    <div class="main_of_term">
+        <div>
+            <h2 class="h2">Effective Date: [<span id="currentDate"></span>]</h2>
+            <p class="p">Welcome to PLAYME! By accessing or using our streaming service, you agree to comply with and be bound by the following terms and conditions ("Terms of Use"). Please read these Terms of Use carefully before using our service.</p>
+
+            <h3 class="h3">1. Acceptance of Terms</h3>
+            <p class="p">By creating an account or using PLAYME, you agree to these Terms of Use and our Privacy Policy. If you do not agree with these terms, do not use our service.</p>
+
+            <h3 class="h3">2. Changes to Terms</h3>
+            <p class="p">We may update these Terms of Use from time to time. We will notify you of any significant changes by posting the new terms on our website. Your continued use of the service after such changes constitutes your acceptance of the new terms.</p>
+
+            <h3 class="h3">3. Service Description</h3>
+            <p class="p">PLAYME provides a subscription-based streaming service that allows you to watch a wide variety of TV shows, movies, and other content over the internet. The content available on PLAYME may vary by region.</p>
+
+            <h3 class="h3">4. Account Responsibilities</h3>
+            <p class="p">You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. Notify us immediately if you suspect any unauthorized use of your account.</p>
+
+            <h3 class="h3">5. Subscription and Payment</h3>
+            <ul class="ul">
+                <li class="li"><strong>Subscription Plans:</strong> PLAYME offers various subscription plans with different features and pricing. Details of each plan are available on our website.</li>
+                <li class="li"><strong>Billing:</strong> You agree to pay all fees associated with your subscription plan. Charges will be made to the payment method you provide at the time of subscription.</li>
+                <li class="li"><strong>Cancellation:</strong> You may cancel your subscription at any time. Upon cancellation, you will have access to the service until the end of your current billing period.</li>
+            </ul>
+
+            <h3 class="h3">6. Usage Restrictions</h3>
+            <p class="p">You agree not to:</p>
+            <ul class="ul">
+                <li class="li">Use the service for any unlawful purpose or in violation of any applicable laws or regulations.</li>
+                <li class="li">Share your account credentials or allow others to access your account.</li>
+                <li class="li">Reproduce, distribute, or exploit any content from PLAYME without authorization.</li>
+                <li class="li">Circumvent any geographic restrictions or access content from regions where you do not have a subscription.</li>
+            </ul>
+
+            <h3 class="h3">7. Content</h3>
+            <p class="p">The content provided on PLAYME is for personal, non-commercial use. The availability of content may vary and is subject to change. PLAYME does not guarantee the availability of any specific content.</p>
+
+            <h3 class="h3">8. Intellectual Property</h3>
+            <p class="p">All content, trademarks, and other intellectual property rights associated with PLAYME are owned by PLAYME or its licensors. You do not acquire any rights to the content other than the limited right to access and view it as part of your subscription.</p>
+
+            <h3 class="h3">9. Termination</h3>
+            <p class="p">We may terminate or suspend your account and access to the service if you breach these Terms of Use or if we determine, in our sole discretion, that your use of the service is inappropriate or illegal.</p>
+
+            <h3 class="h3">10. Limitation of Liability</h3>
+            <p class="p">PLAYME is not liable for any indirect, incidental, special, or consequential damages arising out of your use of the service. Our liability for direct damages is limited to the amount you paid for the service during the month in which the claim arose.</p>
+
+            <h3 class="h3">11. Dispute Resolution</h3>
+            <p class="p">Any disputes arising under these Terms of Use will be resolved through binding arbitration in accordance with the rules of the American Arbitration Association. The arbitration will be conducted in [Your State/Country].</p>
+
+            <h3 class="h3">12. Contact Information</h3>
+            <p class="p">If you have any questions about these Terms of Use or the PLAYME service, please contact us at:</p>
+            <address>
+                PLAYME<br>
+                [Your Company Address]<br>
+                [Your Email Address]<br>
+                [Your Phone Number]
+            </address>
+
+            <h3 class="h3">13. Governing Law</h3>
+            <p class="p">These Terms of Use are governed by and construed in accordance with the laws of PLAYME, without regard to its conflict of laws principles.</p>
+        </div>
+    </div>
+    <div class="term_footer">
+        <p class="p">&copy; <span id="currentYear"></span> PLAYME. All rights reserved.</p>
+    </div>
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Set current date in "Effective Date" heading
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString(undefined, options);
+    </script>
+

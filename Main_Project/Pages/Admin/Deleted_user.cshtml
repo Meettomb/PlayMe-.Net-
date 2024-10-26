@@ -1,0 +1,72 @@
+﻿@page
+@model Main_Project.Pages.Admin.Deleted_userModel
+@{
+    Layout = "_AdminLayout";
+
+    ViewData["Title"] = "User Login Data";
+}
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">User Login Data Table</h4>
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="data">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th onclick="sortdata()">
+                                User Name
+                                <span id="sort-icon" class="mdi mdi-arrow-up-bold"></span>
+                            </th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th onclick="SortDataByDate()">
+                                Date
+                                <span id="sort-icon2" class="mdi mdi-arrow-down-bold"></span>
+                            </th>
+                            <th>IsActive</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="data">
+                        @foreach (var data in Model.userlist)
+
+                        {
+                        <tr class="data">
+                            <td>@data.userid</td>
+                            <td>@data.fullname</td>
+                            <td>@data.email</td>
+                            <td>@data.phone</td>
+                            <td>@data.datetime3</td>
+                                @if (data.isactive)
+
+                                {
+                                <td><p class="text-success">Active</p></td>
+                                }
+
+                                else
+
+                                {
+                                <td><p class="text-danger">Inactive</p></td>
+                                }
+
+
+                            <td>@data.role</td>
+                            <td>
+                                <a href="/Admin/Edit_Users?userid=@data.userid" class=""><i style="color: green; font-size: 20px;" " class="mdi mdi-delete-restore"></i></a> |
+
+                                <a href="/Admin/Details?userid=@data.userid" class=""><i style="color: deepskyblue; font-size: 20px;" " class="mdi mdi-account-details"></i></a>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,354 @@
+﻿@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var username = HttpContextAccessor.HttpContext.Session.GetString("Username");
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewData["Title"] - PLAYME</title>
+
+    <!-- CSS -->
+    <link href="/css/home.css" rel="stylesheet" />
+
+    <!-- Tab icon -->
+    <link rel="shortcut icon" href="/image/web_logo-HD.png" />
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body>
+
+
+
+    <div>
+        <div class="main" id="header">
+            <header>
+                <div class="header_leftside">
+                    <span class="menu-bar" onclick="sideNav()"><i class="mdi mdi-menu"></i></span>
+                    <div class="sidenavbar" id="sidenavbar">
+                        <div class="content_content">
+                            <div class="profile_pic">
+                                <input type="hidden" name="name" value="@Model.email" />
+                                <img src="/profile_pic/@Model.profilepic" alt="" loading="lazy">
+                                <span style="text-transform:capitalize;">@Model.UserName</span>
+                            </div>
+                            <div class="sidenav_links">
+                                @if (!string.IsNullOrEmpty(username))
+                                {
+                                    <a href="/Watchlist"><p><i class="mdi mdi-playlist-plus"></i>My Watch List</p></a>
+                                }
+                                else
+                                {
+                                    // Add else case if needed
+                                }
+
+                                @foreach (var category in Model.MovieCategories)
+                                {
+                                    <a href="/Movies/Movie_Category?category=@category.moviecategory">
+                                        <p>@category.moviecategory</p>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="xnavdiv" id="Xnavdiv" onclick="closeNavbar()"></div>
+                    <div class="logo">
+                        @if (!string.IsNullOrEmpty(username))
+                        {
+                            <img src="/image/web_logo.png" alt="" onclick="redirectTohomepage()">
+                        }
+                        else
+                        {
+                            <img src="/image/web_logo.png" alt="" onclick="redirectTosignin()">
+                        }
+                    </div>
+                </div>
+                <div class="header_rightside">
+                    <form method="get" action="/Search_data">
+                        <div class="searchBox">
+                            <input class="searchInput" id="myInput" list="programmingLanguages" type="text" autocomplete="off" name="searchKeyword" placeholder="Search your favorite movie here">
+
+                            <img src="/image/search_icon.png" alt="Search Icon" id="searchIcon" />
+                            <datalist id="programmingLanguages">
+                                @foreach (var historyItem in Model.SearchHistory)
+                                {
+                                    <option value="@historyItem.searchtext">@historyItem.searchtext</option>
+                                    <li>@historyItem.searchtext - @historyItem.searchDateTime</li> <!-- Correct reference -->
+                                }
+                            </datalist>
+                        </div>
+                    </form>
+
+                    <div class="dots_vertical">
+                        <i class="mdi mdi-dots-vertical"></i>
+                        <div class="dropdown-menu">
+                            @if (!string.IsNullOrEmpty(username))
+                            {
+                                <a href="#" id="settingsLink"><span class="mdi mdi-cogs"></span> Settings</a>
+                            }
+                            else
+                            {
+                                <a href="Sign_in" id=""><span class="mdi mdi-cogs"></span> Settings</a>
+
+                            }
+                            @if (!string.IsNullOrEmpty(username))
+                            {
+                                <a href="/Logout?handler=Logout">
+                                    <span class="mdi mdi-logout"></span> Logout
+                                </a>
+
+
+                            }
+                            else
+                            {
+
+                                <a href="/Sign_in"><span class="mdi mdi-logout"></span> Login</a>
+                            }
+                            @if (Model.UserRole == "admin")
+                            {
+                                <a href="/Deshbord"><span class="mdi mdi-speedometer"></span> Deshbord</a>
+                            }
+                        </div>
+                    </div>
+
+                    <div id="popupOverlay" class="popup-overlay">
+                        <div id="popupBox" class="popup-box">
+                            <h1>Settings</h1>
+                            @if (!string.IsNullOrEmpty(username))
+                            {
+                                <ul class="popup_ul">
+                                    <a href="/Manage_profile?email=@Model.email">
+                                        <span class="mdi mdi-account-edit"></span>
+                                    <li>Manage Profile</li>
+                                    </a>
+
+
+                                    <a href="/Change_password_page">
+                                        <span class="mdi mdi-lock-reset"></span>
+                                    <li>Change Password</li>
+                                    </a>
+
+                                    <a href="/Terms_of_use">
+                                        <span class="mdi mdi-notebook"></span>
+                                    <li>terms of use</li>
+                                    </a>
+
+                                    <a href="/Privacy">
+                                        <span class="mdi mdi-security"></span>
+                                    <li>privacy & policy </li>
+                                    </a>
+
+                                    <a href="/Feedbacks/Feedback_page">
+                                        <span class="mdi mdi-comment"></span>
+                                    <li>Give Feedback</li>
+                                    </a>
+
+                                    <a href="/Renew_Subscription/Select_subscription">
+                                        <span class="mdi mdi-currency-rupee">₹</span>
+                                    <li>Renew your Subscription</li>
+                                    </a>
+
+                                    <a href="/" class="delete_user" style="color: red;">
+                                        <span style="color: red;" class="mdi mdi-delete"></span>
+                                    <li>Delete your account permament</li>
+                                    </a>
+
+                                    <div class="delete_user_popup">
+                                        <div class="user_data_id">
+                                            <form method="post">
+                                                <input type="hidden" name="name" value="@Model.id" />
+                                                <p></p>
+                                                <div>
+                                                    <button type="submit" name="submit">Delete</button>
+                                                    <button name="submit">Cancel</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </ul>
+                            }
+                            else
+                            {
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </header>
+        </div>
+
+        <div class="render_body">
+
+            @RenderBody()
+        </div>
+
+
+    </div>
+    <div class="footer_container">
+
+        <footer class="home_footer">
+            <div class="footer_section">
+
+                <div class="footer_logo">
+                    <img src="/image/web_logo.png" alt="Logo" />
+                </div>
+
+                <ul>
+                    <li><a href="">Terms of Use</a></li>
+                    <li><a href="">Privacy & Policy</a></li>
+                    <li><a href="">Send us feedback</a></li>
+                    <li><a href="">Help</a></li>
+                    <li>&copy; <span id="currentYear"></span> PLAYME. All rights reserved.</li>
+                </ul>
+            </div>
+        </footer>
+
+    </div>
+    <!--Footer End-->
+
+
+    <script></script>
+
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+
+    <script>
+        function redirectTohomepage() {
+            window.location.href = "/Home";
+        }
+    </script>
+    <script src="/js/script.js"></script>
+
+
+
+
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script src="~/lib/jquery/jquery-3.6.0.min.js"></script>
+
+    <script src="/js/jQuery.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            // Filter logic for the search input
+            $("#myInput").on("keyup", function () {
+                filterMovies($(this).val().toLowerCase());
+            });
+
+            // Function to handle filtering and resetting
+            function filterMovies(value) {
+                if (value.length > 0) {
+                    $(".singlepage_main_div, .cetegory_page_main_div, .main1, .main3, .footer_container, .wtachhidtory, .suggestionh2, .section1, .detail, #moviePlayer, .big_poster, .small_poster,.next, .prev").hide();
+                    $(".main2").show();
+                } else {
+                    $(".singlepage_main_div, .cetegory_page_main_div, .main1, .main3, .footer_container, .wtachhidtory, .suggestionh2, .section1, .detail, #moviePlayer, .small_poster, .big_poster, .next, .prev").show();
+                    $(".main2").hide();
+                    $("#noMoviesMessage").hide();
+                }
+
+                var hasVisibleMovies = false;
+                $(".data").filter(function () {
+                    var isVisible = $(this).text().toLowerCase().indexOf(value) > -1;
+                    $(this).toggle(isVisible);
+                    if (isVisible) {
+                        hasVisibleMovies = true;
+                    }
+                });
+
+                if (!hasVisibleMovies && value.length > 0) {
+                    $("#noMoviesMessage").show();
+                } else {
+                    $("#noMoviesMessage").hide();
+                }
+            }
+
+            // Initially hide elements as specified
+            $(".main2").hide();
+            $("#noMoviesMessage").hide();
+
+            // Search icon click handler
+            document.getElementById('searchIcon').addEventListener('click', function () {
+                var searchInput = document.getElementById('myInput');
+                searchInput.classList.toggle('expanded');
+                searchInput.focus();
+            });
+
+            // Close search input, clear text, and reset filter when clicking outside
+            document.addEventListener('click', function (event) {
+                var searchInput = document.getElementById('myInput');
+                var searchIcon = document.getElementById('searchIcon');
+
+                if (!searchInput.contains(event.target) && !searchIcon.contains(event.target)) {
+                    searchInput.classList.remove('expanded');
+                    searchInput.value = '';  // Clear input text
+                    filterMovies('');        // Reset filter results
+                }
+            });
+        });
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $(".dots_vertical").on("click", function () {
+                // Toggle the visibility of the dropdown menu
+                $(this).find(".dropdown-menu").toggle();
+            });
+
+            // Hide the dropdown if the user clicks outside of it
+            $(document).on("click", function (e) {
+                if (!$(e.target).closest(".dots_vertical").length) {
+                    $(".dropdown-menu").hide();
+                }
+            });
+        });
+    </script>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            setInterval(checkSubscriptionStatus, 30000); // Check every 30 seconds
+
+            function checkSubscriptionStatus() {
+                $.ajax({
+                    url: '/api/subscription', // Route to check status
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.status === 'expired') {
+                            alert("Your subscription has expired. Please renew your subscription.");
+                            // Optional: Redirect to a subscription renewal page
+                            // window.location.href = '/RenewSubscription';
+                        }
+                    },
+                    error: function (error) {
+                        console.error("Error checking subscription status:", error);
+                    }
+                });
+            }
+        });
+    </script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,211 @@
+﻿@import "/css/variable.css";
+
+.main3 {
+    margin: 50px 0 0 0;
+    width: 100%;
+}
+
+.slider-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center-aligns images from the left side */
+    transition: transform 0.5s ease;
+    width: 100%;
+    gap: 10px; /* Space between images */
+}
+
+.movie_poster1 {
+    width: calc(2% - 8px); /* 5 items per row with gap adjustment */
+    height: auto;
+    z-index: 1;
+}
+
+    .movie_poster1 a {
+        width: 100%;
+        height: auto;
+    }
+
+    .movie_poster1 img {
+        width: 100%;
+        height: 150px;
+        border-image: fill 0 linear-gradient(#0003, #000);
+    }
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .movie_poster1 {
+        width: calc(15% - 8px); /* 4 items per row */
+    }
+}
+
+@media (max-width: 992px) {
+    .movie_poster1 {
+        width: calc(33.33% - 8px); /* 3 items per row */
+    }
+}
+
+@media (max-width: 768px) {
+    .movie_poster1 {
+        width: calc(50% - 8px); /* 2 items per row */
+    }
+}
+
+@media (max-width: 576px) {
+    .movie_poster1 {
+        width: 100%; /* 1 item per row */
+    }
+
+        .movie_poster1 img {
+            height: 200px; /* Adjust image height for smaller screens if needed */
+        }
+}
+
+
+
+
+h1{
+    width: 100%;
+    margin: 90px 0 0 0;
+    text-align: center;
+    text-transform:capitalize;
+}
+h1 span{
+    font-size: 25px; 
+    margin-left: 10px;
+    width: 100%;
+}
+.watchlist_container{
+    margin: 90px 0 0 0;
+}
+
+
+ .mdi-close {
+    position: relative;
+    top: -165px;
+    margin: 10px 0 0 0;
+    border: none;
+    background-color: rgba(255, 0, 0, 0.46);
+    color: white;
+    padding: 10px;
+    font-weight: 999;
+    font-size: 18px;
+    z-index: 1000;
+    cursor: pointer;
+    display: none; /* Hidden by default */
+}
+
+/* When the user hovers over the .close element, display the .mdi-close */
+.close:hover .mdi-close {
+    display: block;
+}
+
+.empty_watchlist_div{
+    width: 100%;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.empty_watchlist_div a{
+    font-size: 50px;
+    padding: 18px 20px 12px 20px;
+    border: 5px gray solid;
+    border-radius: 50%;
+    color: gray;
+    text-decoration: none;
+}
+    .empty_watchlist_div span {
+        margin-top: 30px;
+        color: white;
+        font-size: 17px;
+    }
+    .empty_watchlist_div p {
+        margin-top: 30px;
+        color: gray;
+        font-size: 17px;
+    }
+
+.alert {
+    width: 100%;
+    padding: 15px 15px;
+    text-align: left;
+    background-color: grey;
+    color: white;
+    position: absolute;
+    top: 0%;
+    z-index: 1000;
+}
+
+.popup_message {
+    width: 40%;
+    z-index: 500;
+    text-align: left;
+    position: absolute;
+    right: 1%;
+    top: 90%;
+    background-color: black;
+    padding: 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+    position: fixed;
+}
+
+    .popup_message span {
+        color: greenyellow;
+        font-size: 30px;
+    }
+
+
+
+.main2 {
+    margin: 50px;
+}
+
+.movie_poster img {
+    width: 100%;
+    height: 100px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .main2 {
+        margin: 40px;
+    }
+
+    .movie_poster img {
+        height: 100px;
+    }
+}
+
+@media (max-width: 992px) {
+    .main2 {
+        margin: 30px;
+    }
+
+    .movie_poster img {
+        height: 100px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main2 {
+        margin: 20px;
+    }
+
+    .movie_poster img {
+        height: 100px;
+    }
+}
+
+@media (max-width: 576px) {
+    .main2 {
+        margin: 10px;
+    }
+
+    .movie_poster img {
+        height: 100px;
+    }
+}

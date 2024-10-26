@@ -1,0 +1,14 @@
+﻿@page
+@model Main_Project.Pages.ApproveModel
+@{
+}
+<h1>Approval</h1>
+
+@if (Model.IsApproved)
+{
+    <p>Your login is approved. You can now proceed to the <a href="/Home">Home</a> page.</p>
+}
+else
+{
+    <p>Invalid approval link.</p>
+}

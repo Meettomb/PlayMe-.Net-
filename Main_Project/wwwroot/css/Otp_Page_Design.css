@@ -1,0 +1,72 @@
+﻿@import "/css/variable.css";
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5; /* Light background for contrast */
+}
+
+.container {
+    width: 90%;
+    max-width: 400px; /* Limit the width for better readability */
+    background-color: var(--main-color); /* Use your defined variable */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.logo {
+    width: 50%;
+    height: auto; /* Maintain aspect ratio */
+}
+
+h1 {
+    font-size: 1.5rem; /* Adjust font size for the heading */
+    color: white; /* Darker color for better readability */
+}
+
+p {
+    font-size: 1rem; /* Standard font size for text */
+    color: #666; /* Slightly lighter color for secondary text */
+}
+
+.message {
+    text-align: center; /* Center align the message */
+}
+
+.main_message {
+    font-size: 1.2rem; /* Larger font for emphasis */
+    margin-bottom: 10px; /* Space below the message */
+    color: darkred;
+    margin: 20px 0;
+}
+
+.otp {
+    font-size: 4rem; /* Make OTP stand out */
+    font-weight: bold; /* Bold text for emphasis */
+    color: #007bff; /* Highlight color for the OTP */
+    margin: 30px 0;
+}
+
+.resend-btn {
+    margin-top: 20px; /* Space above the button */
+    padding: 10px 20px; /* Padding inside the button */
+    border-radius: 5px; /* Rounded corners for button */
+    border: none; /* Remove default border */
+    background-color: #28a745; /* Green background for the button */
+    color: white; /* White text color */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+    .resend-btn:hover {
+        background-color: #218838; /* Darker green on hover */
+    }

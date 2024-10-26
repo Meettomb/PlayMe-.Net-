@@ -1,0 +1,25 @@
+﻿*{
+    margin: 0;
+    padding: 0;
+}
+
+.popup_message {
+    width: 40%;
+    z-index: 500;
+    text-align: left;
+    position: absolute;
+    right: 1%;
+    top: 90%;
+    background-color: black;
+    padding: 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+    position: fixed;
+}
+
+    .popup_message span {
+        color: greenyellow;
+        font-size: 30px;
+    }

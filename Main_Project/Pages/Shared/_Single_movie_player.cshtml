@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
+
+    <!-- CSS -->
+    <link href="/css/home.css" rel="stylesheet" />
+
+    <script type="module"
+            src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <div>
+        <div class="main" id="header">
+            <header>
+                <div class="header_leftside">
+                    <span class="mdi mdi-arrow-left" onclick="history.back()"></span>
+                </div>            
+            </header>
+        </div>
+        @RenderBody()
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>

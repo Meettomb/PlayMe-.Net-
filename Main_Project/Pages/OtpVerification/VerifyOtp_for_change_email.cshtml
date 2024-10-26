@@ -1,0 +1,45 @@
+﻿@page
+@model Main_Project.Pages.OtpVerification.VerifyOtp_for_change_emailModel
+@{
+    ViewData["Title"] = "Verify your OTP";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="/css/Resate_password.css" rel="stylesheet" />
+</head>
+<body>
+
+    <header>
+        <img src="/image/web_logo.png" alt="Alternate Text" onclick="redirectTodeshbord()" />
+    </header>
+
+    <div class="send_otp_div">
+        <h2>Verify OTP</h2>
+        <form method="post" asp-page-handler="VerifyOtp">
+            <div class="form-group">
+                <label for="otp">Enter OTP</label>
+                <input class="verifyotp" maxlength="6" type="text" name="otp" id="otp" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Verify OTP</button>
+        </form>
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                @Model.ErrorMessage
+            </div>
+        }
+    </div>
+
+
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script.js"></script>
+
+</body>
+</html>
+

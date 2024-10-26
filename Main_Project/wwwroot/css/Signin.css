@@ -1,0 +1,475 @@
+﻿@import "/css/variable.css";
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Mukta", sans-serif;
+}
+
+:root {
+    --main-color: black;
+    --secondary-color: #252525;
+    --main-font-color: white;
+    --secondary-font-color: rgb(0, 0, 0);
+}
+
+body {
+    background-color: var(--secondary-color) !important;
+    width: 100%;
+    height: auto;
+}
+
+main .backimage {
+    width: 100%;
+    height: 100%;
+    z-index: -999;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(0.9);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+main .logo {
+    padding: 40px;
+}
+
+    main .logo img {
+        width: 160px;
+    }
+
+.form_section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: -50px;
+
+}
+
+form {
+    min-width: 25%;
+    background-color: #000000be;
+    height: 640px;
+    color: white;
+    border-radius: 15px;
+    padding: 0px 50px 0 50px;
+    margin: 10px 0 0 0;
+}
+
+    form h1 {
+        padding: 50px 0px 30px 0px;
+        font-size: 30px;
+    }
+
+.input-wrapper {
+    --padding: 16px;
+    --focus-color: rgb(255, 255, 255);
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: 30px;
+}
+
+input {
+    padding: var(--padding);
+    border: 1px solid gray;
+    outline: none;
+    padding-top: 30px;
+    padding-bottom: 10px;
+    border-radius: 6px;
+    background-color: rgba(77, 183, 249, 0.144);
+    color: white;
+    width: 100%;
+    font-size: 16px;
+}
+
+.placeholder {
+    width: 100%;
+    position: absolute;
+    color: white;
+    left: var(--padding);
+    padding: 0 4px;
+    transition: all 0.2s ease-in;
+    font: 15px;
+}
+
+input:is(:focus, :valid) {
+    border: 2px solid var(--focus-color);
+}
+
+    input:is(:focus, :valid) + .placeholder {
+        transform: translatey(calc(-1 * var(--padding) - 0px));
+        font-size: 13px;
+        color: var(--focus-color);
+    }
+
+.signin_btn {
+    margin-top: 50px;
+    border-radius: 10px;
+    padding-bottom: 50px;
+}
+
+    .signin_btn button {
+        background-color: var(--button-color);
+        padding: 15px 15px;
+        width: 100%;
+        color: white;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        font-size: 20px;
+        cursor: pointer;
+        &:hover
+
+{
+    background-color: var(--button-hover-color);
+}
+
+}
+
+
+.forgot {
+    text-align: center;
+    color: white;
+    margin-top: 30px;
+}
+
+    .forgot a {
+        color: white;
+        text-decoration: none;
+    }
+
+.new_user {
+    margin-top: 30px;
+    color: rgb(114, 114, 114);
+    font-weight: 700;
+}
+
+    .new_user a {
+        color: white;
+        text-decoration: none;
+    }
+
+.privacy {
+    margin-top: 30px;
+    font-size: 13px;
+    color: rgb(168, 168, 168);
+}
+
+
+
+.planes {
+    position: absolute;
+    margin-top: 120px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    cursor: pointer;
+    width: 100%;
+    left: 0;
+}
+
+    .planes .monthly {
+        background-image: linear-gradient(to left bottom,black,black,#252525,#252525,black,black);
+        border-radius: 10px;
+        padding: 15px;
+        width: 20%;
+        border: 1px white solid;
+        cursor: pointer;
+    
+        flex-wrap: wrap;
+        &:hover
+
+        {
+            border: 1px gold solid;
+        }
+
+}
+
+.monthly .price1 {
+    font-size: 40px;
+    height: 8px;
+    padding-top: 20px;
+}
+
+.rs {
+    font-size: 25px;
+}
+
+.monthly input {
+    background-color: transparent;
+    font-size: 20px;
+    color: white;
+    font-weight: 600;
+    border: none;
+}
+
+
+.plane_details p {
+    margin-top: 20px;
+    color: gray;
+    font-weight: 0;
+}
+
+    .plane_details p i {
+        color: white;
+        font-size: 18px;
+    }
+
+
+
+.planes .year {
+    background-image: linear-gradient(to left top,black,black,#252525,#252525,black,black);
+    border-radius: 10px;
+    padding: 15px;
+    border: 1px gold solid;
+    width: 300px;
+}
+
+.year #form2 #price2 {
+    font-size: 40px;
+    height: 8px;
+    padding-top: 20px;
+}
+
+input[type=radio] {
+    margin-top: 50px;
+    position: relative;
+}
+
+    input[type=radio]::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100px;
+        height: 50px;
+    }
+
+.year #form2 input {
+    background-color: transparent;
+    font-size: 20px;
+    color: white;
+    font-weight: 600;
+    border: none;
+}
+
+.planes .year label {
+    font-size: 18px;
+    font-weight: 900;
+    margin-top: 30px;
+}
+
+#form3 {
+    margin-top: 140%;
+}
+
+    #form3 input {
+        padding: 15px 0px 15px 0px;
+        margin: 10px 0 0 0;
+    }
+
+
+
+
+
+
+
+
+.donate-now {
+    list-style-type: none;
+    padding: 0;
+    margin-left: -16px;
+}
+
+    .donate-now li {
+        float: left;
+        position: relative;
+        border: none;
+    }
+
+    .donate-now label,
+    .donate-now input {
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 15px;
+        cursor: pointer;
+    }
+
+        .donate-now input[type="radio"] {
+            opacity: 0.01;
+            width: 330px;
+            height: 260px;
+            z-index: 100;
+            top: -280px;
+        }
+
+    .donate-now label {
+        padding: 5px;
+        z-index: 90;
+    }
+
+.paymentMethod {
+    width: 100%;
+    height: 45px;
+    font-size: 20px;
+    background-color: rgba(77, 183, 249, 0.144);
+    color: white;
+}
+
+    .paymentMethod option {
+        background-color: #252525;
+        color: white;
+        margin-top: 20px;
+        padding: 10px 0;
+    }
+
+
+.success_page_container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+}
+
+    .success_page_container .chield {
+        background-color: whitesmoke;
+        background-color: whitesmoke;
+        text-align: center;
+        padding: 15px 18px;
+        height: 320px;
+    }
+
+    .success_page_container span {
+        font-size: 100px;
+        color: green;
+    }
+
+.success_page_text {
+    margin-top: 20px;
+}
+
+.success_page_container h5 {
+    margin: 20px 0 40px 0;
+    font-size: 16px;
+}
+
+.success_page_container a {
+    background-color: red;
+    color: white;
+    padding: 15px 40px;
+    text-decoration: none;
+    margin-top: 30px;
+}
+
+.mdi-eye {
+    position: absolute;
+    right: 5%;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.mdi-eye-closed {
+    cursor: pointer;
+    position: absolute;
+    right: 5%;
+    font-size: 18px;
+    display: none;
+}
+
+.popup_message {
+    width: 40%;
+    z-index: 500;
+    text-align: left;
+    position: absolute;
+    right: 1%;
+    top: 90%;
+    background-color: black;
+    padding: 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+    position: fixed;
+}
+
+    .popup_message span {
+        color: greenyellow;
+        font-size: 30px;
+    }
+
+.remember_me {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: -30px 0 0 0;
+}
+
+    .remember_me input {
+        display: flex;
+        align-self: flex-start;
+        justify-self: left;
+        margin: 0 0 0 -150px;
+    }
+
+    .remember_me span {
+        width: 100%;
+        margin: 0 0 0 -140px;
+    }
+
+
+
+
+@media (min-width: 1001px) and (max-width :1270px) {
+    .planes .monthly{
+
+    }
+    #form3{
+        margin-top: 180%;
+    }
+}
+
+
+@media (min-width: 777px) and (max-width :1001px) {
+    .planes .monthly {
+        width: 28%;
+    }
+    #form3 {
+        margin-top: 200%;
+    }
+}
+
+@media (min-width: 464px) and (max-width :777px) {
+    .planes .monthly {
+        width: 40%;
+        margin: 20px 100px;
+    }
+    #form3 {
+        margin-top: 450%;
+    }
+}
+
+
+@media (min-width: 200px) and (max-width :464px) {
+    .planes .monthly {
+        width: 70%;
+        margin: 20px 10px;
+    }
+    #form3 {
+        margin-top: 480%;
+    }
+}
+@media (min-width: 200px) and (max-width :322px) {
+   
+    #form3 {
+        margin-top: 500%;
+    }
+}
+

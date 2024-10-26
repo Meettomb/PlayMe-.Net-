@@ -1,0 +1,62 @@
+﻿@page
+@model Main_Project.Pages.Movies.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Movies</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+
+
+<div>
+
+    @foreach (var item in Model.MoviesTable)
+    {
+        <table class="table table-dark" style="margin:10px 0 10px 0;">
+            <tbody class="data">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.MoviesTable[0].Movieposter)</th>
+                    <td><img src="/poster/@item.Movieposter" width="100%" height="100%" loading="lazy" /></td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.MoviesTable[0].Movie)</th>
+                    <td>@Html.DisplayFor(modelItem => item.Movie)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.MoviesTable[0].Movieposter2)</th>
+                    <td> <img src="/poster/@item.Movieposter2" width="100%" height="100%" loading="lazy" /></td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.MoviesTable[0].Moviename)</th>
+                    <td>@Html.DisplayFor(modelItem => item.Moviename)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.MoviesTable[0].Movietype)</th>
+                    <td>@Html.DisplayFor(modelItem => item.Movietype)</td>
+                </tr>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.MoviesTable[0].Moviereleaseyear)</th>
+                    <td>@Html.DisplayFor(modelItem => item.Moviereleaseyear)</td>
+                </tr>
+               
+               
+
+                <tr>
+                    <th>Action</th>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@item.Movieid"><i style="color: green; font-size:25px;" class="mdi mdi-square-edit-outline"></i></a> |
+                        <a asp-page="./Details" asp-route-id="@item.Movieid"><i style="color: deepskyblue; font-size: 25px;" class="mdi mdi-account-details"></i></a> |
+                        <a asp-page="./Delete" asp-route-id="@item.Movieid"><i style="color: red; font-size: 25px;" class="mdi mdi-delete"></i></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+
+</div>
+

@@ -1,0 +1,136 @@
+﻿@page
+@model Main_Project.Pages.Manage_profileModel
+@{
+    Layout = "_Setting";
+}
+
+@if (TempData["Message"] != null)
+
+{
+    <div class="alert popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["Message"]
+    </div>
+
+
+}
+@if (TempData["ErrorMessage"] != null)
+
+{
+    <div class="alert alert-danger popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="manage_profile_main_div">
+    <div class="manage_profile">
+        <div class="manage_profile_pic">
+            <img src="/profile_pic/@Model.ProfilePic" alt="Profile Picture" />
+            <p id="edit-profile-pic">Edit profile picture</p>
+        </div>
+
+        <!-- Popup box for profile picture update -->
+        <div class="popup-overlay" id="popup-overlay">
+            <div class="popup-box my_costom_box">
+                <span class="close-btn" id="close-btn">&times;</span>
+                <form method="post" enctype="multipart/form-data" asp-page-handler="UpdateProfilePic">
+                    <div class="">
+                        <input type="file" name="profilepic" id="profilepic" accept="image/*" onchange="previewImage(event)">
+                    </div>
+                    <img id="preview-img" src="#" alt="Selected Image" style="display: none;" />
+                    <button type="submit" class="submitbtn">Submit</button>
+                </form>
+            </div>
+        </div>
+
+        <form class="update_email" method="post" asp-page-handler="UpdateEmail">
+            <input type="email" name="email" id="email" value="@Model.Email" /><br /><button>Update email</button>
+        </form>
+
+        <div class="manage_personel_details">
+            <form class="detail_form" method="post" asp-page-handler="UpdateOtherDetail">
+                <input type="hidden" name="email" value="@Model.Email" />
+
+                <div class="input-wrapper">
+                    <p class="placeholder">Username</p><br />
+                    <input type="text" id="fullname" name="fullname" value="@Model.UserName" autocomplete="off" placeholder="Username" />
+                </div>
+
+                <div class="input-wrapper">
+                    <p class="placeholder">Date of Birth</p><br />
+                    <input type="date" id="dob" name="dob" value="@Model.Dob" autocomplete="off" />
+                </div>
+
+                <div class="input-wrapper">
+                    <p for="gender" class="placeholder">Gender</p><br />
+                    <select name="gender" id="gender">
+                        @if (Model.Gender == "Female")
+                        {
+                            <option value="Female" selected>Female</option>
+                            <option value="Male">Male</option>
+                        }
+                        else
+                        {
+                            <option value="Male" selected>Male</option>
+                            <option value="Female">Female</option>
+                        }
+                    </select>
+                </div>
+
+                <button type="submit">Save</button>
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var editButton = document.getElementById('edit-profile-pic');
+    var popupOverlay = document.getElementById('popup-overlay');
+    var closeButton = document.getElementById('close-btn');
+
+    editButton.addEventListener('click', function () {
+        popupOverlay.style.display = 'block';
+    });
+
+    closeButton.addEventListener('click', function () {
+        popupOverlay.style.display = 'none';
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target == popupOverlay) {
+            popupOverlay.style.display = 'none';
+        }
+    });
+
+    function previewImage(event) {
+        var input = event.target;
+        var reader = new FileReader();
+
+        reader.onload = function () {
+            var imgElement = document.getElementById('preview-img');
+            imgElement.src = reader.result;
+            imgElement.style.display = 'block';
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+</script>
+
+
+<script>
+    // Use JavaScript to hide the message after 3 seconds
+    setTimeout(function () {
+        var messageDiv = document.getElementById("tempMessage");
+        if (messageDiv) {
+            messageDiv.style.display = 'none'; // Hide the message
+        }
+    }, 4000); // 2000 milliseconds = 2 seconds
+
+    setTimeout(function () {
+        var messageDiv = document.getElementById("message");
+        if (messageDiv) {
+            messageDiv.style.display = 'none'; // Hide the message
+        }
+    }, 4000); // 2000 milliseconds = 2 seconds
+</script>

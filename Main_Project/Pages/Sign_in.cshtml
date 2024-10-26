@@ -1,0 +1,98 @@
+﻿@page
+@model Netflix.Pages.Sign_inModel
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in</title>
+
+    <link rel="shortcut icon" href="/image/web_logo-HD.png" />
+    <!-- Css -->
+    <link rel="stylesheet" href="/css/Signin.css">
+    <!-- Icon -->
+    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.min.css" integrity="sha512-/k658G6UsCvbkGRB3vPXpsPHgWeduJwiWGPCGS14IQw3xpr63AEMdA8nMYG2gmYkXitQxDTn6iiK/2fD4T87qA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+</head>
+@if (TempData["Message"] != null)
+
+
+
+{
+    <div class="alert popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["Message"]
+    </div>
+
+
+}
+@if (TempData["ErrorMessage"] != null)
+
+
+
+{
+    <div class="alert alert-danger popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["ErrorMessage"]
+    </div>
+}
+<body>
+    <main>
+        <img class="backimage" src="/image/netflixback2.png" alt="">
+        <header class="first_page_header">
+            <section class="logo">
+                <img src="/image/web_logo.png" alt="Netflix Logo" onclick="redirectTofirstpage()">
+            </section>
+
+        </header>
+            <section class="form_section">
+                <form method="post">
+                    <h1>Sign in</h1>
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="input-wrapper">
+                        <input type="email" id="email" asp-for="User.email" required />
+                        <label for="email" class="placeholder">Enter your email</label>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <input type="password" id="password" asp-for="User.password" required />
+                        <label for="password" class="placeholder">Password</label>
+                        <span onclick="show()" id="mdi-eye" class="mdi mdi-eye"></span>
+                        <span onclick="show()" id="eye-closed" class="mdi mdi-eye-closed"></span>
+                    </div>
+
+
+
+                    <div class="signin_btn">
+                        <button type="submit">Sign in</button>
+                    </div>
+                    @* <div class="remember_me">
+                        <input type="checkbox"  name="RememberMe" id="rememberMe" /> <span>Remember Me</span>
+
+                    </div> *@
+
+                    <div class="forgot">
+                        <a href="/SendOtp">Forgot Password?</a>
+                    </div>
+
+                    <div class="new_user">
+                        <p>New to Netflix? <a href="~/Sign_up">Sign up now.</a></p>
+                    </div>
+
+                    <div class="privacy">
+                        This page is protected by Google reCAPTCHA to ensure you're not a bot.
+                    </div>
+                </form>
+
+            </section>
+    </main>
+
+    <script src="/js/script.js"></script>
+
+</body>
+</html>
