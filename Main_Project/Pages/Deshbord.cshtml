@@ -1,0 +1,682 @@
+﻿@page
+@using Newtonsoft.Json
+@model Main_Project.Pages.DeshbordModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Deshbord";
+}
+
+
+
+<div class="row">
+    <div class="col-md-5 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Transaction History</h4>
+                <canvas id="transaction-history"></canvas>
+
+                <div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+                    <div class="text-md-center text-xl-left">
+                        <h6 class="mb-1">Total revenue from Card</h6>
+                    </div>
+                    <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+                        <h6 class="font-weight-bold mb-0">₹@Model.TotalcardPayment</h6>
+                    </div>
+                </div>
+
+                <div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+                    <div class="text-md-center text-xl-left">
+                        <h6 class="mb-1">Total revenue from UPI</h6>
+                    </div>
+                    <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+                        <h6 class="font-weight-bold mb-0">₹@Model.TotalUPIPayment</h6>
+                    </div>
+                </div>
+
+                <div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+                    <div class="text-md-center text-xl-left">
+                        <h6 class="mb-1">Total revenue from UPI and Card</h6>
+                    </div>
+                    <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+                        <h6 class="font-weight-bold mb-0">₹@Model.TotalUPICardPayment</h6>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-md-7 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Payment Comparison</h4>
+                <div style="height: 400px; width: 100%;">
+                    <canvas id="paymentChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="row">
+    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">₹@Model.CurrentMonthUPIPayment</h3>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="icon icon-box-success ">
+                            <span class="mdi mdi-arrow-top-right icon-item"></span>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Current Month UPI Payment</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">₹@Model.PreviousMonthUPIPayment</h3>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="icon icon-box-success">
+                            <span class="mdi mdi-arrow-top-right icon-item"></span>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Previous Month UPI Payment</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">₹@Model.CurrentMonthCardPayment</h3>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="icon icon-box-success">
+                            <span class="mdi mdi-arrow-top-right icon-item"></span>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Current Month Card Payment</h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">₹@Model.PreviousMonthCardPayment</h3>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="icon icon-box-success ">
+                            <span class="mdi mdi-arrow-top-right icon-item"></span>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">Previous Month Card Payment</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <h4 class="card-title">Revenue History</h4>
+                <canvas id="profitChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex flex-row justify-content-between">
+                    <h4 class="card-title">Messages</h4>
+                    <p class="text-muted mb-1 small"> <a href="/Feedbacks/Show_all_feedback"> View all </a> </p>
+                </div>
+                <div class="preview-list">
+
+                    @foreach (var feedback in Model.feedbacklist)
+                    {
+                        <div class="preview-item border-bottom">
+                            <div class="preview-thumbnail">
+                                <img src="/profile_pic/@feedback.profilepic" alt="image" class="rounded-circle" />
+                            </div>
+                            <div class="preview-item-content d-flex flex-grow">
+                                <div class="flex-grow">
+                                    <div class="d-flex d-md-block d-xl-flex justify-content-between">
+                                        <h6 class="preview-subject">@feedback.UserName</h6>
+                                    </div>
+                                    <p class="text-muted">@feedback.feedback</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <h4 class="card-title">User Growth</h4>
+                <canvas id="userGrowthChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="row" id="user-growth-container">
+    <!-- Growth from 2022 -->
+    <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0" id="growth-2022">%</h3>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="icon icon-box-success">
+                            <span class="mdi mdi-arrow-top-right icon-item"></span>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">User Growth in 2022</h6>
+            </div>
+        </div>
+    </div>
+
+    <!-- Growth from 2023 -->
+    <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0" id="growth-2023">%</h3>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="icon icon-box-success">
+                            <span class="mdi mdi-arrow-top-right icon-item"></span>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">User Growth in 2023</h6>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Users in 2024 -->
+    <div class="col-xl-4 col-sm-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0" id="growth-2024">%</h3>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="icon icon-box-success">
+                            <span class="mdi mdi-arrow-top-right icon-item"></span>
+                        </div>
+                    </div>
+                </div>
+                <h6 class="text-muted font-weight-normal">User Growth in 2024</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get user counts from the server-rendered page
+    const users2022 = @Model.Users2022;
+    const users2023 = @Model.Users2023;
+    const users2024 = @Model.Users2024;
+    const TotalUser = @Model.TotalUser;
+
+    // Calculate growth percentages
+    const growth2022 = (users2022 / TotalUser) * 100;
+    const growth2023 = (users2023 / TotalUser) * 100;
+    const growth2024 = (users2024 / TotalUser) * 100;
+
+    // Update HTML with calculated values
+    document.getElementById('growth-2022').textContent = growth2022.toFixed(2) + '%';
+    document.getElementById('growth-2023').textContent = growth2023.toFixed(2) + '%';
+    document.getElementById('growth-2024').textContent = growth2024.toFixed(2) + '%';
+</script>
+
+
+
+
+
+
+
+<div class="row ">
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Recently Registered user</h4>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+
+                                <th> Client Name </th>
+                                <th> Email </th>
+                                <th> Phone number </th>
+                                <th> Payment Mode </th>
+                                <th> Start Date </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.userlist)
+                            {
+                                <tr>
+                                    <td>
+                                        <img src="/profile_pic/@user.profilepic" alt="image" />
+                                        <span class="pl-2">@user.fullname</span>
+                                    </td>
+                                    <td>@user.email</td>
+                                    <td>@user.phone</td>
+                                    <td>@user.paymentmethod</td> <!-- Replace with actual field if available -->
+                                    <td>
+                                        @if (DateTime.TryParse(user.datetime3, out DateTime parsedDate))
+                                        {
+                                            @parsedDate.ToString("dd MMM yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span>Invalid date</span>
+                                        }
+                                    </td> <!-- Replace with actual field if available -->
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@* transation Chart *@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the totals from the server-side model
+        var totalCardPayment = @Model.TotalcardPayment;
+        var totalUPIPayment = @Model.TotalUPIPayment;
+
+        // Data for the chart
+        var areaData = {
+            labels: ["Card", "UPI"],
+            datasets: [{
+                data: [totalCardPayment, totalUPIPayment],
+                backgroundColor: [
+                    "#00d25b", "#ffab00"
+                ]
+            }]
+        };
+
+        var areaOptions = {
+            responsive: true,
+            maintainAspectRatio: true,
+            segmentShowStroke: false,
+            cutoutPercentage: 70,
+            elements: {
+                arc: {
+                    borderWidth: 0
+                }
+            },
+            legend: {
+                display: false
+            },
+            tooltips: {
+                enabled: true
+            }
+        };
+
+        var transactionhistoryChartPlugins = {
+            beforeDraw: function (chart) {
+                var width = chart.chart.width,
+                    height = chart.chart.height,
+                    ctx = chart.chart.ctx;
+
+                ctx.restore();
+                var fontSize = 1;
+                ctx.font = fontSize + "rem sans-serif";
+                ctx.textAlign = 'left';
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#ffffff";
+
+                var text = "₹" + (totalCardPayment + totalUPIPayment).toFixed(2),
+                    textX = Math.round((width - ctx.measureText(text).width) / 2),
+                    textY = height / 2.4;
+
+                ctx.fillText(text, textX, textY);
+
+                ctx.restore();
+                var fontSize = 0.75;
+                ctx.font = fontSize + "rem sans-serif";
+                ctx.textAlign = 'left';
+                ctx.textBaseline = "middle";
+                ctx.fillStyle = "#6c7293";
+
+                var texts = "Total",
+                    textsX = Math.round((width - ctx.measureText(texts).width) / 1.93),
+                    textsY = height / 1.7;
+
+                ctx.fillText(texts, textsX, textsY);
+                ctx.save();
+            }
+        };
+
+        var transactionhistoryChartCanvas = document.getElementById("transaction-history").getContext("2d");
+        var transactionhistoryChart = new Chart(transactionhistoryChartCanvas, {
+            type: 'doughnut',
+            data: areaData,
+            options: areaOptions,
+            plugins: transactionhistoryChartPlugins
+        });
+    });
+
+</script>
+
+
+<!-- Script for the Bar Chart -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Data for the bar chart
+        var ctx = document.getElementById('paymentChart').getContext('2d');
+        var paymentChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Current Month UPI',
+                    'Previous Month UPI',
+                    'Current Month Card',
+                    'Previous Month Card'
+                ],
+                datasets: [{
+                    label: 'Payments',
+                    data: [
+    @Model.CurrentMonthUPIPayment,
+    @Model.PreviousMonthUPIPayment,
+    @Model.CurrentMonthCardPayment,
+    @Model.PreviousMonthCardPayment
+                                            ],
+                    backgroundColor: [
+                        '#4caf50', // UPI Payment - Current Month
+                        '#8bc34a', // UPI Payment - Previous Month
+                        '#f44336', // Card Payment - Current Month
+                        '#e57373'  // Card Payment - Previous Month
+                    ],
+                    borderColor: [
+                        '#388e3c', // UPI Payment - Current Month
+                        '#7cb342', // UPI Payment - Previous Month
+                        '#c62828', // Card Payment - Current Month
+                        '#d32f2f'  // Card Payment - Previous Month
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    });
+</script>
+
+<!-- Revanue Chart -->
+<script>
+    var monthlyProfits = @Html.Raw(JsonConvert.SerializeObject(Model.MonthlyProfits));
+    console.log('Monthly Profits Data:', monthlyProfits);
+
+    // Initialize data for the chart
+    var labels = [];
+    var data = {};
+    var currentYear = new Date().getFullYear();
+    var years = [currentYear - 2, currentYear - 1, currentYear];
+
+    // Initialize data for each year
+    years.forEach(year => {
+        data[year] = Array(12).fill(0); // Initialize data with 0 for all 12 months
+    });
+
+    // Populate labels and data
+    for (var month = 1; month <= 12; month++) {
+        labels[month - 1] = new Date(0, month - 1).toLocaleString('en-US', { month: 'short' });
+    }
+
+    monthlyProfits.forEach(item => {
+        var year = item.Year;
+        var month = item.Month;
+        var totalPayment = item.TotalPayment;
+
+        // Update the data for the month
+        if (years.includes(year)) {
+            data[year][month - 1] = totalPayment;
+        }
+    });
+
+    console.log('Labels:', labels);
+    console.log('Data:', data);
+
+    var ctx = document.getElementById('profitChart').getContext('2d');
+    var profitChart = new Chart(ctx, {
+        type: 'line', // Line chart
+        data: {
+            labels: labels,
+            datasets: years.map((year, index) => ({
+                label: year.toString(),
+                data: data[year],
+                borderColor: ['#1F77B4', '#FF7F0E', '#2CA02C'][index], // Dark colors
+                backgroundColor: 'rgba(31, 119, 180, 0.1)', // Light background for line
+                fill: true, // Fill area under the line
+                borderWidth: 2
+            }))
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Month'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.2)' // Lighter grid line color
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Total Payment (₹)'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.2)' // Lighter grid line color
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#fff' // White legend text
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#333', // Dark tooltip background
+                    titleColor: '#fff', // White title text
+                    bodyColor: '#fff' // White body text
+                }
+            }
+        }
+    });
+</script>
+
+
+<!-- User Growth chart -->
+
+<script>
+    const userGrowthData = @Html.Raw(Model.UserGrowthJson);
+
+    // Print fetched data to the console
+    console.log("Fetched User Growth Data:", userGrowthData);
+
+    const userGrowthLabels = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]; // Month names for x-axis
+
+    // Prepare data for each year
+    const dataByYear = {
+        2022: Array(12).fill(0), // Initialize for year 2022
+        2023: Array(12).fill(0), // Initialize for year 2023
+        2024: Array(12).fill(0), // Initialize for year 2024
+    };
+
+    // Populate data arrays by month
+    userGrowthData.forEach(data => {
+        const monthIndex = data.Month - 1; // Month is 1-based in the data
+        const year = data.Year;
+
+        if (dataByYear[year]) {
+            dataByYear[year][monthIndex] += data.UserCount;
+        }
+    });
+
+    // Define specific colors for each year with background shades
+    const yearColors = {
+        2022: {
+            borderColor: 'rgba(75, 192, 192, 1)', // teal
+            backgroundColor: 'rgba(75, 192, 192, 0.2)' // light teal with transparency
+        },
+        2023: {
+            borderColor: 'rgba(255, 99, 132, 1)', // red
+            backgroundColor: 'rgba(255, 99, 132, 0.2)' // light red with transparency
+        },
+        2024: {
+            borderColor: 'rgba(54, 162, 235, 1)', // blue
+            backgroundColor: 'rgba(54, 162, 235, 0.2)' // light blue with transparency
+        }
+    };
+
+    // Create datasets for chart
+    const datasets = [];
+    for (const year in dataByYear) {
+        datasets.push({
+            label: `User Growth ${year}`,
+            data: dataByYear[year],
+            borderColor: yearColors[year].borderColor, // Use defined border color
+            backgroundColor: yearColors[year].backgroundColor, // Use defined background color
+            borderWidth: 2,
+            fill: true, // Enable background fill for each line
+            pointRadius: 5,
+        });
+    }
+
+    // Create chart
+    const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+    const userGrowthChart = new Chart(userGrowthCtx, {
+        type: 'line',
+        data: {
+            labels: userGrowthLabels,
+            datasets: datasets,
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Months', // Label for x-axis
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Users', // Label for y-axis
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return `Users: ${tooltipItem.raw}`; // Display number of users in tooltip
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+

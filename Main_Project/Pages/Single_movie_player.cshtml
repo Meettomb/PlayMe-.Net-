@@ -1,0 +1,447 @@
+﻿@page
+@model Main_Project.Pages.Single_movie_playerModel
+@{
+    Layout = "_Single_movie_player";
+    ViewData["Title"] = "Movie Player";
+}
+
+
+<head>
+    <link href="/css/Single_movie_player.css" rel="stylesheet" />
+
+</head>
+
+@if (TempData["Message"] != null)
+
+{
+        <div class="alert popup_message" id="tempMessage">
+            <span class="mdi mdi-check-circle"></span> @TempData["Message"]
+        </div>
+
+
+}
+@if (TempData["ErrorMessage"] != null)
+
+{
+        <div class="alert alert-danger popup_message" id="tempMessage">
+            <span class="mdi mdi-check-circle"></span> @TempData["ErrorMessage"]
+        </div>
+}
+
+<div id="message" class="alert alert-danger popup_message" style="display:none;">
+    Your subscription has expired. Please renew your subscription to continue watching.
+</div>
+
+
+
+<!-- Message Container (Initially hidden) -->
+<div class="alert popup_message d-none" id="tempMessage"></div>
+
+
+<div class="alert popup_message d-none" id="tempMessage"></div>
+
+<div id="message" class="alert alert-danger popup_message" style="display:none;">
+    Your subscription has expired. Please renew your subscription to continue watching.
+</div>
+@if (Model.Movie != null)
+{
+    <div class="movie_player data">
+        <!-- Embed your movie player here -->
+        <input type="hidden" id="userid_hidden" name="userid" value="@Model.id" />
+        <input type="hidden" id="movieid_hidden" name="movieid" value="@Model.Movie.Movieid" />
+
+
+        <input type="hidden" id="movieFiles" value="@string.Join(",", Model.MovieFiles)" />
+
+
+        <div class="video-container data">
+            <video id="moviePlayer" disableRemotePlayback autoplay>
+                <source id="videoSourceMP4" src="/video/@Model.MovieFiles.First()" />
+            </video>
+
+            <span class="custom-loader"></span>
+            <div class="player-state">
+                <span class="state-btn state-backward">
+                    <ion-icon name="play-back-outline"></ion-icon>
+                    <span class="backward-duration">5</span>
+                </span>
+                <span class="main-state state-btn">
+                    <ion-icon name="play-outline"></ion-icon>
+                </span>
+                <span class="state-btn state-forward">
+                    <span class="forward-duration">5</span>
+                    <ion-icon name="play-forward-outline"></ion-icon>
+                </span>
+            </div>
+            <div class="controls">
+                <div class="duration">
+                    <div class="current-time"></div>
+                    <div class="hover-time">
+                        <span class="hover-duration"></span>
+                    </div>
+                    <div class="buffer"></div>
+                </div>
+                <div class="btn-controls">
+                    <div class="btn-con">
+                        <span class="play-pause control-btn">
+                            <ion-icon name="play-outline"></ion-icon>
+                        </span>
+                        <span class="volume">
+                            <span class="mute-unmute control-btn">
+                                <ion-icon name="volume-high-outline"></ion-icon>
+                            </span>
+                            <div class="max-vol">
+                                <div class="current-vol"></div>
+                            </div>
+                        </span>
+                        <span class="time-container">
+                            <span class="current-duration">0:00</span>
+                            <span>/</span>
+                            <span class="total-duration">0:00</span>
+                        </span>
+                    </div>
+                    <div class="right-controls">
+                        <span class="backward control-btn" title="5 backward">
+                            <ion-icon name="play-back-outline"></ion-icon>
+                        </span>
+                        <span class="forward control-btn" title="5 forward">
+                            <ion-icon name="play-forward-outline"></ion-icon>
+                        </span>
+
+                        <span class="mini-player control-btn" onclick="toggleEpisodes()">
+                            <ion-icon name="albums-outline"></ion-icon>
+                        </span>
+
+                        <span class="settings control-btn">
+                            <span class="setting-btn">
+                                <ion-icon name="options-outline"></ion-icon>
+                            </span>
+                            <ul class="setting-menu">
+                                <li data-value="0.25">0.25x</li>
+                                <li data-value="0.5">0.5x</li>
+                                <li data-value="0.75">0.75x</li>
+                                <li data-value="1" class="speed-active">1x</li>
+                                <li data-value="1.25">1.25x</li>
+                                <li data-value="1.5">1.5x</li>
+                                <li data-value="1.75">1.75x</li>
+                                <li data-value="2">2x</li>
+                            </ul>
+                        </span>
+                        <span class="theater-btn control-btn">
+                            <span class="theater-default">
+                                <ion-icon name="tablet-landscape-outline"></ion-icon>
+                            </span>
+                            <span class="theater-active">
+                                <ion-icon name="tv-outline"></ion-icon>
+                            </span>
+                        </span>
+                        @if (Model.MovieFiles.Count() > 1) // Check if there are more than one video files
+                        {
+                            <span class="control-btn" onclick="toggleEpisodes()" title="Other Episode">
+                                <i class="mdi mdi-playlist-play"></i>
+                            </span>
+                        }
+                        <span class="fullscreen-btn control-btn" title="fullscreen">
+                            <span class="full">
+                                <ion-icon name="scan-outline"></ion-icon>
+                            </span>
+                            <span class="contract">
+                                <ion-icon name="contract-outline"></ion-icon>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <form id="watchTimeForm" method="post">
+            <input type="hidden" id="userid" name="userid" readonly>
+            <input type="hidden" id="movieid" name="movieid" readonly>
+            <input type="hidden" id="watchtime" name="watchtime" readonly><br><br>
+            <input type="hidden" id="toteltime" name="toteltime" readonly><br><br>
+            <input type="hidden" id="moviecomplet" name="moviecomplet"> <!-- Hidden field for movie completion status -->
+            <button type="submit">Save Watch History</button>
+        </form>
+
+
+
+        @if (Model.MovieFiles.Count() > 1) // Check if there are more than one video files
+        {
+            <p id="currentFileName" class="data">@Model.MovieFiles.First().Replace("_", "").Replace(".", "").Replace("-", "").Replace("mp4", "").Replace("MP4", "")</p>
+        }
+
+
+        <div class="detail">
+            <p class="movie_name">@Model.Movie.Moviename</p>
+            <div class="movie_ty_ry">
+                <li>@Model.Movie.Movietype</li>
+                <li>@Model.Movie.Moviereleaseyear</li>
+                <li class="movie_rating">@Model.Movie.Movierating</li>
+                <li class="movieagerestrictions">U/A @Model.Movie.Movieagerestrictions +</li>
+            </div>
+
+
+            <div class="serise_div">
+                <div class="series_a">
+                    @if (Model.MovieFiles.Count() > 1) // Check if there are more than one video files
+                    {
+                        @* <p class="show_all_episode_text" onclick="toggleEpisodes()">Show all Episodes</p> *@
+
+                        <div id="thumbnailContainer" style="display: none;">
+                            <!-- Initially hidden -->
+                            <!-- Thumbnails for each video file -->
+                            @foreach (var file in Model.MovieFiles)
+                            {
+                                <div class="episode_div">
+                                    <div class="thumbnail" style="position: relative; margin: 5px; cursor: pointer;" onclick="playVideo('@file')">
+                                        <video width="120" height="90" preload="metadata"
+                                               onloadedmetadata="setRandomThumbnailTime(this, ['480', '900', '960']);">
+                                            <source src="/video/@file" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                        <p>@file.Replace("_", "").Replace(".", "").Replace("-", "").Replace("mp4", "").Replace("MP4", "")</p>
+
+                                        <!-- Play icon for the current playing video -->
+                                        <div class="mdi mdi-play-circle-outline play-icon" id="playIcon-@file"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    }
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <b>Discription: </b> <p class="discriptrion"> @Model.Movie.Discription </p> <span>+</span>
+            </div>
+
+            <div class="extra_details">
+                <p><b>Cast: </b> @Model.Movie.Moviecast</p>
+                <p><b>Director: </b> @Model.Movie.Moviedirector</p>
+                <p><b>Language: </b> @Model.Movie.Movielanguage</p>
+                <p><b>Content advisory: </b> @Model.Movie.Content_advisory</p>
+            </div>
+        </div>
+
+       
+    </div>
+}
+else
+{
+    <p>Movie details not found.</p>
+}
+
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const watchTime = urlParams.get('watchtime');
+    
+    // Get video element
+    const videoPlayer = document.getElementById('moviePlayer');
+
+    // If watchTime is available, set the video currentTime
+    if (watchTime) {
+        videoPlayer.currentTime = parseFloat(watchTime);
+    }
+</script>
+
+<script>
+    // Function to get query parameters from the URL (case-insensitive for movieId)
+function getQueryParam(param) {
+    var urlParams = new URLSearchParams(window.location.search);
+    
+    // Check for 'movieId' or 'Movieid'
+    if (param === 'movieId') {
+        return urlParams.get('movieId') || urlParams.get('Movieid');
+    }
+    
+    // Return other parameters normally
+    return urlParams.get(param);
+}
+
+// Function to get video time details and populate the form
+function populateFormWithVideoTimeDetails() {
+    var video = document.getElementById('moviePlayer');
+    if (video) {
+        var watchtime = video.currentTime; // Current playback time in seconds
+        var toteltime = video.duration;   // Total video time in seconds
+
+        // Get movieId from the query string and userid from your model/session
+        var movieid = getQueryParam('movieId');  // Extract movieId from URL
+        var userid = '@Model.id';  // Replace with actual user id from your model/session
+
+        // Populate the form fields with video details
+        document.getElementById('userid').value = userid;
+        document.getElementById('movieid').value = movieid;
+        document.getElementById('watchtime').value = watchtime.toFixed(2);
+        document.getElementById('toteltime').value = toteltime.toFixed(2);
+
+        // Change moviecomplet value based on current playback time
+        if (watchtime >= toteltime - 60) {
+            document.getElementById('moviecomplet').value = '1'; // Set to '1' (true) when near the end
+        } else {
+            document.getElementById('moviecomplet').value = '0'; // Set to '0' (false) otherwise
+        }
+
+        // Log data to the console for debugging
+        console.log('Data prepared for submission:', {
+            userid: userid,
+            movieid: movieid,
+            watchtime: watchtime.toFixed(2),
+            toteltime: toteltime.toFixed(2),
+            moviecomplet: watchtime >= toteltime - 60 ? '1' : '0'
+        });
+
+        // Automatically submit the form every 10 seconds
+        submitForm();
+    } else {
+        console.error('Video player not found');
+    }
+}
+
+// Function to handle form submission via AJAX
+function submitForm() {
+    var form = document.getElementById('watchTimeForm');
+
+    // Prepare form data
+    var formData = new FormData(form);
+
+    // Send the data via AJAX
+    fetch('@Url.Page("/Single_movie_player", "Save")', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Watch history saved successfully!");
+            } else {
+                console.error("Failed to save watch history.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Call the function every 10 seconds to keep the form updated and submitted
+setInterval(populateFormWithVideoTimeDetails, 10000); // 10 seconds = 10000 milliseconds
+
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-json/2.6.0/jquery.json.min.js"></script>
+
+<!--Togel Other episode-->
+<script>
+    function toggleEpisodes() {
+        var container = document.getElementById('thumbnailContainer');
+        if (container.style.display === "none") {
+            container.style.display = "block"; // Show the container
+        } else {
+            container.style.display = "none";  // Hide the container
+        }
+    }
+</script>
+
+
+<!--Messge hide show-->
+<script>
+    // Use JavaScript to hide the message after 3 seconds
+    setTimeout(function () {
+        var messageDiv = document.getElementById("tempMessage");
+        if (messageDiv) {
+            messageDiv.style.display = 'none'; // Hide the message
+        }
+    }, 4000); // 2000 milliseconds = 2 seconds
+
+    setTimeout(function () {
+        var messageDiv = document.getElementById("message");
+        if (messageDiv) {
+            messageDiv.style.display = 'none'; // Hide the message
+        }
+    }, 4000); // 2000 milliseconds = 2 seconds
+</script>
+
+
+<!--Toggel Movie other details-->
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
+
+
+
+<!--Fech Episode Tumbnail-->
+<script>
+    // Function to set a random time for the thumbnail
+    function setRandomThumbnailTime(videoElement, timePoints) {
+        // Choose a random time from the provided list of times
+        const randomIndex = Math.floor(Math.random() * timePoints.length);
+        const chosenTime = parseFloat(timePoints[randomIndex]);
+
+        // Set the current time to the chosen time if the duration is greater than the chosen time
+        if (videoElement.duration > chosenTime) {
+            videoElement.currentTime = chosenTime;
+        } else {
+            // If the video is shorter, set it to the middle
+            videoElement.currentTime = videoElement.duration / 2;
+        }
+        videoElement.pause();
+    }
+
+    // Get the video player, source elements, and current file name display element
+    var moviePlayer = document.getElementById('moviePlayer');
+    var videoSourceMP4 = document.getElementById('videoSourceMP4');
+    var movieFiles = document.getElementById('movieFiles').value.split(',');
+    var currentFileNameDisplay = document.getElementById('currentFileName');
+
+    // Keep track of the current movie index
+    var currentMovieIndex = 0;
+
+    // Event listener for when the video ends
+    moviePlayer.addEventListener('ended', function () {
+        currentMovieIndex++;
+        if (currentMovieIndex < movieFiles.length) {
+            // Load the next movie in the list
+            videoSourceMP4.src = '/video/' + movieFiles[currentMovieIndex];
+            moviePlayer.load(); // Load the new video
+            moviePlayer.play(); // Start playing
+
+            // Update the currently playing file name
+            updateCurrentFileName(movieFiles[currentMovieIndex]);
+        }
+    });
+
+    // Function to play video from thumbnail click
+    function playVideo(fileName) {
+        // Update the source of the main player
+        videoSourceMP4.src = '/video/' + fileName;
+        moviePlayer.load(); // Load the new video
+        moviePlayer.play(); // Start playing
+        currentMovieIndex = movieFiles.indexOf(fileName); // Update current index
+
+        // Update the currently playing file name
+        updateCurrentFileName(fileName);
+    }
+
+    // Function to update currently playing file name display
+    function updateCurrentFileName(fileName) {
+        currentFileNameDisplay.textContent = fileName.replace("_", "").replace(".", "").replace("-", "").replace("mp4", "").replace("MP4", "");
+    }
+</script>
+
+
+<!--Slider-->

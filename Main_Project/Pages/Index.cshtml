@@ -1,0 +1,178 @@
+﻿@page
+@model IndexModel
+@{
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream</title>
+
+
+    <!-- Tab icon -->
+    <link rel="shortcut icon" href="/web_logo-HD.png" />
+    <!-- Css -->
+    <link rel="stylesheet" href="/css/Index.css">
+
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
+
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@200;300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- JQuary -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+    <form method="post">
+        <input type="hidden" value="@Model.UserId" />
+    </form>
+    <main>
+        <img class="backimage" src="/image/netflixback.png" alt="">
+        <header class="first_page_header">
+            <section class="logo">
+                <img src="/image/web_logo.png" alt="">
+            </section>
+
+                <div class="Sign_in_btn">
+                    <button onclick="redirectTosignin()">Sign in</button>
+                </div>
+        </header>
+        <div class="note">
+            <h1>Unlimited movies, TV shows and more</h1>
+            <h4>Watch anywhere. Cancel anytime</h4>
+            <h4>Ready to watch? Enter your email to create or restart your membership.</h4>
+        </div>
+        <section class="features_showcase">
+            <div class="features_showcase_spacing">
+                <div class="features_showcase_dived">
+                    <div class="left">
+                        <h1>Enjoy Your TV</h1>
+                        <h5>Watch on smart TVs, PlayStation, Xbox, Chromecast, Apple TV, Blu-ray players and more.</h5>
+                    </div>
+                    <div class="right">
+                        <img class="" src="/image/1.gif" alt="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="features_showcase_spacing">
+                <div class="features_showcase_dived">
+                    <div class="left">
+                        <img class="movie_Poster" src="/image/Downlode_photo.png" alt="">
+                    </div>
+                    <div class="right">
+                        <h1>Download your shows to watch offline</h1>
+                        <h5>Save your favourites easily and always have something to watch.</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="features_showcase_spacing">
+                <div class="features_showcase_dived">
+                    <div class="left">
+                        <h1>Create your Watchlist</h1>
+                        <h5>You can add any movie in watchlist and remove from watchlist, and watch anywhare and anytime.</h5>
+                    </div>
+                    <div class="right">
+                        <img class="gif" src="/image/watchlist.png" alt="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="question_main_div">
+            <h1>Ask Question</h1>
+            @foreach (var data in Model.questio_answer_list)
+            {
+                <div class="question" id="question-@data.id" data-target="answer-@data.id">
+                    @data.question <i class="mdi mdi-plus"></i>
+                </div>
+                <p class="answer" id="answer-@data.id">@data.answer</p>
+            }
+        </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!--Footer Start-->
+
+    <footer class="home_footer">
+        <div class="footer_section">
+
+            <div class="footer_logo">
+                <img src="/image/web_logo.png" alt="Logo" />
+            </div>
+
+            <ul>
+                <li><a href="">Terms of Use</a></li>
+                <li><a href="">Privacy & Policy</a></li>
+                <li><a href="">Send us feedback</a></li>
+                <li><a href="">Help</a></li>
+                <li>&copy; <span id="currentYear"></span> PLAYME. All rights reserved.</li>
+            </ul>
+        </div>
+    </footer>
+
+
+
+<script>
+    // Add event listeners to all question divs
+    document.querySelectorAll('.question').forEach(function(question) {
+        question.addEventListener('click', function() {
+            // Get the target answer's ID from the data-target attribute
+            const targetId = this.getAttribute('data-target');
+            const answer = document.getElementById(targetId);
+
+            // Toggle the display of the answer
+            if (answer.style.display === 'none') {
+                answer.style.display = 'block';
+            } else {
+                answer.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#question").click(function () {
+                $("#answer").slideToggle();
+            });
+        });
+    </script>
+
+    <script src="/js/script.js"></script>
+
+
+    <!-- Bootstrap Script -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+            integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+            crossorigin="anonymous"></script>
+</body>
+
+</html>

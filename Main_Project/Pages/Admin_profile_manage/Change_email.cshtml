@@ -1,0 +1,16 @@
+﻿@page
+@model Main_Project.Pages.Admin_profile_manage.Change_emailModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Change Email";
+}
+
+<form method="post" class="mt-5">
+    <div class="form-group row">
+        <label for="email" class="col-sm-3 col-form-label">New Email</label>
+        <div class="col-sm-9">
+            <input type="email" name="email" class="form-control" id="email" value="@Model.email" placeholder="Enter New Email" required>
+        </div>
+    </div>
+    <button type="submit" name="submit" class="btn btn-primary mr-2">Submit</button>
+</form>

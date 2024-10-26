@@ -1,0 +1,58 @@
+﻿@page
+@model Main_Project.Pages.Subscription.View_subscriptionModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "View all Subscription plane";
+}
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Subscription</h4>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Subscription Price</th>
+                            <th>Duration(Days)</th>
+                            <th>Features</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="data">
+                        @foreach (var subscription in Model.subscription)
+                        {
+                            <tr class="data">
+                                <input type="hidden" name="name" value="@subscription.id" />
+                                <td>@subscription.id</td>
+                                <td>@subscription.price</td>
+
+                                <td>@subscription.planeduration</td>
+                                <td>@subscription.planedetail</td>
+                                <td>@subscription.planename</td>
+                                @* <td>
+                            <textarea class="form-control" rows="4">@subscription.subscription</textarea>
+                            </td> *@
+                                <td>
+                                    <a href="/Subscription/Edit_subscription?id=@subscription.id">
+                                        <i style="color: green; font-size: 20px;" class="mdi mdi-square-edit-outline"></i>
+                                    </a> |
+
+                                    <a href="/Subscription/Delete_subscription?id=@subscription.id">
+                                        <i style="color: red; font-size: 20px;" class="mdi mdi-delete"></i>
+                                    </a>
+                                </td>
+                            </tr>
+
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+﻿@page
+@model Main_Project.Pages.Subscription.Add_subscriptionModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Add Subscription";
+}
+
+<h1>Add Subscription</h1>
+
+<hr />
+<div class="col-12 grid-margin stretch-card">
+    <form method="post" class="forms-sample">
+        <div class="form-group">
+            <label for="price" class="control-label">Add Price</label>
+            <input type="text" id="price" name="price" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="planeduration" class="control-label">Add Plane Duration</label>
+            <input type="text" id="planeduration" name="planeduration" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="planedetail" class="control-label">Add Plane Detail</label>
+            <input type="text" id="planedetail" name="planedetail" class="form-control" />
+        </div>
+        
+        <div class="form-group">
+            <label for="planename" class="control-label">Plane Name</label>
+            <input type="text" id="planename" name="planename" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+        
+    </form>
+</div>

@@ -1,0 +1,31 @@
+﻿@page
+@model Main_Project.Pages.Renew_Subscription.Select_your_emailModel
+@{
+    Layout = "_ResatepasswordLayout";
+}
+
+<div class="send_otp_div">
+    <h2>Enter your Email</h2>
+    <form method="post">
+        <div class="form-group">
+            <label for="Email" class="control-label"></label><br />
+            <!-- Bind the input field to the 'Email' property in the model -->
+            <input type="email" id="Email" name="Email" class="form-control" value="@Model.Email" /><br />
+        </div>
+        <button type="submit" name="submit" class="btn btn-primary">Next</button>
+    </form>
+
+    <!-- Show validation error messages -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger mt-3" role="alert">
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (var error in modelState.Errors)
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            }
+        </div>
+    }
+</div>

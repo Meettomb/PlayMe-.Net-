@@ -1,0 +1,30 @@
+﻿@page
+@model Main_Project.Pages.Subscription.ExpiredModel
+@{
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Subscription Expiry</title>
+    <style>
+        .container {
+            height: 95vh; /* Full viewport height */
+        }
+    </style>
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="text-center">
+            <h1>Your subscription has expired</h1>
+            <a href="/Renew_Subscription/Select_your_email" class="btn btn-success">Renew your subscription</a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

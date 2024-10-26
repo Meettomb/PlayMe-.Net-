@@ -1,0 +1,199 @@
+﻿@page
+@model Main_Project.Pages.Movies.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+
+
+
+
+
+
+
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<head>
+    <link rel="stylesheet" href="../../assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../../assets/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="../../assets/vendors/select2/select2.min.css">
+    <link rel="stylesheet" href="../../assets/vendors/select2-bootstrap-theme/select2-bootstrap.min.css">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="../../assets/images/favicon.png" />
+
+</head>
+
+<h1>Edit</h1>
+
+<h4>MoviesTable</h4>
+<hr />
+<div class="row">
+    <div class="col-12 grid-margin stretch-card">
+        <form method="post" class="forms-sample" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MoviesTable.Movieid" />
+            <div class="form-group">
+                <label class="control-label">Movie poster</label>
+                <input type="file" asp-for="uploade" class="form-control" accept="image/*" />
+                <span asp-validation-for="MoviesTable.Movieposter" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Trailer</label>
+                <input type="file" asp-for="uplodetrailer" class="form-control" />
+                <span asp-validation-for="MoviesTable.Trailer" class="text-danger"></span>
+            </div>  
+            
+            <div class="form-group">
+                <label class="control-label">Movie</label>
+                <input type="file" asp-for="uplodemovie" class="form-control" multiple id="movieFilesInput"  />
+                <span asp-validation-for="MoviesTable.Movie" class="text-danger"></span>
+            </div>
+
+
+            <div id="selectedFiles" class="mt-2"></div>
+
+            <script>
+                document.getElementById('movieFilesInput').addEventListener('change', function () {
+                    var fileList = this.files;
+                    var output = document.getElementById('selectedFiles');
+                    output.innerHTML = "";  // Clear previous file names
+
+                    // Iterate through the selected files and display their names
+                    for (var i = 0; i < fileList.length; i++) {
+                        var fileName = document.createElement('p');
+                        fileName.textContent = fileList[i].name;  // Display file name
+                        output.appendChild(fileName);
+                    }
+                });
+            </script>
+
+
+            <div class="form-group">
+                <label class="control-label">Movie Posetr 2(big Poster)</label>
+                <input type="file" asp-for="uplodeposter2" class="form-control" />
+                <span asp-validation-for="MoviesTable.Movieposter2" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Discription</label>
+                <textarea asp-for="MoviesTable.Discription" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="MoviesTable.Discription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Movie Name</label>
+                <input asp-for="MoviesTable.Moviename" class="form-control" />
+                <span asp-validation-for="MoviesTable.Moviename" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Cast</label>
+                <input asp-for="MoviesTable.Moviecast" class="form-control" />
+                <span asp-validation-for="MoviesTable.Moviecast" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Movie type</label>
+
+                <div class="form-group">
+                    <select class="js-example-basic-multiple" multiple="multiple" style="width:100%" asp-for="SelectedCategories">
+                        @foreach (var data in Model.category)
+
+
+
+                        {
+                            <option value="@data.moviecategory" selected="@(Model.SelectedCategories != null && Model.SelectedCategories.Contains(data.moviecategory) ? "selected" : null)">
+                                @data.moviecategory
+                            </option>
+                        }
+                    </select>
+                </div>
+                <span asp-validation-for="MoviesTable.Movietype" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Category</label>
+                <div class="form-group">
+                    <select class="js-example-basic-multiple" asp-for="MoviesTable.Category" style="width:100%">
+                        <option value="Movie">Movie</option>
+                        <option value="TV Shows">TV Shows</option>
+                    </select>
+                    <span asp-validation-for="MoviesTable.Category" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Release year</label>
+                <input type="number" asp-for="MoviesTable.Moviereleaseyear" class="form-control" min="1900" max="2100" />
+
+                <span asp-validation-for="MoviesTable.Moviereleaseyear" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Director</label>
+                <input asp-for="MoviesTable.Moviedirector" class="form-control" />
+                <span asp-validation-for="MoviesTable.Moviedirector" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">IMDB Movie rating</label>
+                <input asp-for="MoviesTable.Movierating" class="form-control" />
+                <span asp-validation-for="MoviesTable.Movierating" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Movie language</label>
+                <input asp-for="MoviesTable.Movielanguage" class="form-control" />
+                <span asp-validation-for="MoviesTable.Movielanguage" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Movie age restrictions</label>
+                <input asp-for="MoviesTable.Movieagerestrictions" class="form-control" />
+                <span asp-validation-for="MoviesTable.Movieagerestrictions" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Content advisory</label>
+                <input asp-for="MoviesTable.Content_advisory" class="form-control" />
+                <span asp-validation-for="MoviesTable.Content_advisory" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+@*
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} *@
+
+
+
+
+<script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+<!-- endinject -->
+<!-- Plugin js for this page -->
+<script src="../../assets/vendors/select2/select2.min.js"></script>
+<script src="../../assets/vendors/typeahead.js/typeahead.bundle.min.js"></script>
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="../../assets/js/off-canvas.js"></script>
+<script src="../../assets/js/hoverable-collapse.js"></script>
+<script src="../../assets/js/misc.js"></script>
+<script src="../../assets/js/settings.js"></script>
+<script src="../../assets/js/todolist.js"></script>
+<!-- endinject -->
+<!-- Custom js for this page -->
+<script src="../../assets/js/file-upload.js"></script>
+<script src="../../assets/js/typeahead.js"></script>
+<script src="../../assets/js/select2.js"></script>

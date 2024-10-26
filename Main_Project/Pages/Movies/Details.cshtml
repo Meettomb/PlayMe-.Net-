@@ -1,0 +1,134 @@
+﻿@page
+@model Main_Project.Pages.Movies.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>MoviesTable</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movieposter)
+        </dt>
+        <dd class="col-sm-10">
+            <img class="poster1" src="/poster/@Html.DisplayFor(model => model.MoviesTable.Movieposter)" width="100%" height="100%" loading="lazy" />
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movie)
+        </dt>
+        <dd class="col-sm-10">
+            <video controls="controls" class="movie">
+                <source src="/video/@Html.DisplayFor(model => model.MoviesTable.Movie)" type="video/mp4" />
+            </video>
+        </dd>
+        
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Trailer)
+        </dt>
+        <dd class="col-sm-10">
+            <video controls="controls" class="movie">
+                <source src="/trailer/@Html.DisplayFor(model => model.MoviesTable.Trailer)" type="video/mp4" />
+            </video>
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movieposter2)
+        </dt>
+        <dd class="col-sm-10">
+            <img class="poster2" src="/poster/@Html.DisplayFor(model => model.MoviesTable.Movieposter2)" width="100%" height="100%" loading="lazy" />
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Discription)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Discription)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Moviename)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Moviename)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Category)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Category)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Moviecast)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Moviecast)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movietype)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movietype)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Moviereleaseyear)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Moviereleaseyear)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movielike)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movielike)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Moviedirector)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Moviedirector)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movierating)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movierating)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movielanguage)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movielanguage)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Movieagerestrictions)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Movieagerestrictions)
+        </dd>  
+        
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MoviesTable.Content_advisory)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MoviesTable.Content_advisory)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.MoviesTable.Movieid">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

@@ -1,0 +1,52 @@
+﻿@page
+@model VerifyOtpModel
+@{
+    Layout = "_ResatepasswordLayout";
+    ViewData["Title"] = "Verify your OTP";
+}
+
+
+
+<div class="send_otp_div">
+    <h2>Verify OTP</h2>
+
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Otp" class="control-label"></label>
+            <input class="verifyotp" maxlength="6" asp-for="Otp" class="form-control" id="Otp" name="Otp" />
+            <span asp-validation-for="Otp" class="text-danger"></span>
+
+            <span id="otpError" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Verify OTP</button>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="text-danger">@Model.Message</div>
+    }
+</div>
+
+<script>
+    document.getElementById('Otp').addEventListener('input', function (event) {
+        const input = event.target.value;
+        const regex = /^[0-9]*$/;
+
+        if (!regex.test(input)) {
+            document.getElementById('otpError').innerText = 'Only numbers are allowed.';
+            event.target.value = input.replace(/[^0-9]/g, '');
+        } else {
+            document.getElementById('otpError').innerText = '';
+        }
+    });
+
+    document.getElementById('otpForm').addEventListener('submit', function (event) {
+        const otp = document.getElementById('Otp').value;
+        if (otp.length !== 6) {
+            document.getElementById('otpError').innerText = 'OTP must be 6 digits.';
+            event.preventDefault();
+        } else {
+            document.getElementById('otpError').innerText = '';
+        }
+    });
+</script>

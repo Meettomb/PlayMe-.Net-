@@ -1,0 +1,18 @@
+﻿:root {
+    /*    --main-color: #222;*/
+    --main-color: #141414;
+    --secondary-color: #252525;
+    /*    --sidenav-bg-color: #141d2e;*/
+    --sidenav-bg-color: #141414;
+    --main-font-color: white;
+    --light-font-color: rgb(221, 220, 220);
+    --secondary-font-color: rgb(0, 0, 0);
+    --button-color: #ed6322;
+    --button-hover-color: #f27d1f;
+    /*    --header-color: #0a0f19;*/
+    --header-color: #141414;
+    /*        --main-font: -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Fira Sans', Ubuntu, Oxygen, 'Oxygen Sans', Cantarell, 'Droid Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Lucida Grande', Helvetica, Arial,  sans-serif;*/
+    --main-font: Netflix Sans, Helvetica Neue, Segoe UI, Roboto, Ubuntu, sans-serif;
+    --secondary-font-color: 'Times New Roman', Times, serif;
+    ;
+}

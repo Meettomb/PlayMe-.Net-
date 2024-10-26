@@ -1,0 +1,68 @@
+﻿@page
+@model Netflix.Pages.Admin.Edit_UsersModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create data";
+}
+<head>
+    <style>
+        .backlink{
+            cursor: pointer;
+            color: deepskyblue;
+            font-size: 17px;
+            margin-top: 50px;
+        }
+        .backlink:hover{
+            text-decoration:underline;
+            color: dodgerblue;
+        }
+    </style>
+</head>
+
+@* From Admin *@
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Edit form</h4>
+            <p class="card-description"> Basic form layout </p>
+            <form class="forms-sample" method="POST">
+                <input type="hidden" name="userid" value="@Model.user.userid" />
+               
+
+                <div class="form-group">
+                    <label for="exampleInputisactive">Is Active - Current Status: @Model.user.isactive</label>
+                    <input type="hidden" name="currentstatus" value="@Model.user.isactive"></input>
+                    <select name="isactive" class="form-control">
+                        <option value="@Model.user.isactive">Select</option>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="">Role: - Current Role: @Model.user.role</label>
+
+                    <select name="role" id="role" class="form-control">
+
+                        <option value="@Model.user.role">Select</option>
+                        <option value="user">user</option>
+                        <option value="admin">admin</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary mr-2">Submit</button>
+            </form>
+            <br />
+            <span class="backlink" onclick="history.back()">Back to list</span>
+            
+        </div>
+    </div>
+</div>
+
+@* <script>
+    function bactopage(){
+        window.history.back(-1);
+    }
+</script>
+ *@

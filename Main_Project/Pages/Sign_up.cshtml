@@ -1,0 +1,221 @@
+﻿@page
+@model Netflix.Pages.Sign_upModel
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up</title>
+
+
+
+    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.min.css" integrity="sha512-/k658G6UsCvbkGRB3vPXpsPHgWeduJwiWGPCGS14IQw3xpr63AEMdA8nMYG2gmYkXitQxDTn6iiK/2fD4T87qA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+    <link rel="shortcut icon" href="/image/web_logo-HD.png" />
+    <!-- Css -->
+    <link href="/css/Signin.css" rel="stylesheet" />
+
+
+</head>
+
+<body>
+    <main>
+        <img class="backimage" src="/image/netflixback2.png" alt="">
+        <header class="first_page_header">
+            <section class="logo">
+                <img src="/image/web_logo.png" alt="Netflix Logo" onclick="redirectTofirstpage()">
+            </section>
+            <section class="form_section">
+                <form id="signupForm" method="post">
+                    <div class="regi">
+                        <h1>Sign up</h1>
+
+                        <div class="input-wrapper">
+                            <input type='text' id='username' name="username" required></input>
+                            <label for='username' class='placeholder'>User Name</label>
+                            <span id="usernameError" class="text-danger"></span>
+                        </div>
+                        <input type="hidden" name="profilepic" id="profilepic" value="netflix_profile_pic_1.png" />
+                        <div class="input-wrapper">
+                            <input type='email' id='email' name="email" required></input>
+                            <label for='email' class='placeholder'>Email Address</label>
+                            <span id="emailError" class="text-danger"></span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+
+                        {
+                            <div class="alert alert-danger">
+                                @Model.ErrorMessage
+                            </div>
+                        }
+                        <div class="input-wrapper">
+                            <input type='text' id='phone' name="phone" maxlength="10" required>
+                            <label for='phone' class='placeholder'>Phone number</label>
+                            <span id="phoneError" class="text-danger"></span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.ErrorMessagephone))
+
+                        {
+                            <div class="alert alert-danger">
+                                @Model.ErrorMessagephone
+                            </div>
+                        }
+
+                        <div class="input-wrapper">
+                            <input type='date' id='dob' name="dob" placeholder="Date of Birth" required></input>
+                            <span id="dobError" class="text-danger"></span>
+                        </div>
+
+                        <div class="input-wrapper">
+                            <input type='password' id='password' name="password" required></input>
+                            <label for='password' class='placeholder'>Password</label>
+                            <span id="passwordError" class="text-danger"></span>
+                            <span onclick="show()" id="mdi-eye" class="mdi mdi-eye"></span>
+                            <span onclick="show()" id="eye-closed" class="mdi mdi-eye-closed"></span>
+                        </div>
+
+                        <input type="hidden" id="role" name="role" value="user" />
+                    </div>
+
+                    <div class="planes">
+                        @foreach (var sub in Model.subscription.Select((value, index) => new { value, index }))
+
+                        {
+                            <div class="monthly" id="form-@sub.index" onclick="sendToForm3('@sub.index')">
+                               
+                                    <input type="text" class="price1" id="price1-@sub.index" name="price" value="₹ @sub.value.price" readonly><br>
+                                    <input type="text" id="duration1-@sub.index" name="duration" value="@sub.value.planeduration days" readonly><br>
+
+                                    <input type="hidden" id="sid-@sub.index" name="sid" value="@sub.value.id" />  
+                                    <input type="hidden" id="price-@sub.index" name="price" value="@sub.value.price" readonly>
+                                    <input type="hidden" id="datetime-@sub.index" name="datetime" readonly>
+                                    <input type="hidden" id="monthly-@sub.index" name="monthly" value="@sub.value.planeduration" readonly>
+
+                                    <div class="plane_details">
+                                        @foreach (var detail in sub.value.planedetail.Split('+'))
+
+                                        {
+                                            <p><i class="mdi mdi-information-variant"></i> @detail</p>
+                                        }
+                                    </div>
+                                
+                            </div>
+                        }
+                    </div>
+
+                    <div id="form3">
+                        <label for="price3">Price:</label>
+                        <input type="text" id="price3" name="price3" readonly><br><br>
+
+                        <label for="paymentMethod">Payment Method:</label>
+                        <select id="paymentMethod" class="paymentMethod" name="paymentMethod" onchange="togglePaymentFields()">
+                            <option value="">Select</option>
+                            <option value="Card">Card</option>
+                            <option value="UPI">UPI</option>
+                        </select><br>
+
+                        <input type="hidden" id="datetime3" name="datetime3" readonly>
+                        <input type="hidden" id="duration3" name="duration3" readonly>
+                        <input type="hidden" id="subid" name="subid" readonly>
+
+                        <div id="cardFields" style="display:none;">
+                            <label for="cardholdername">Card Holder Name:</label>
+                            <input type="text" id="cardholdername" name="cardholdername"><br>
+
+                            <label for="cardnumber">Card Number:</label>
+                            <input type="text" id="cardnumber" maxlength="16" name="cardnumber"><br>
+
+                            <label for="cvv">CVV Number:</label>
+                            <input type="text" id="cvv" name="cvv" maxlength="3"><br>
+                        </div>
+
+                        <div id="upiFields" style="display:none;">
+                            <label for="upiID">UPI ID:</label>
+                            <input type="text" id="upiID" name="upiID"><br>
+                        </div>
+                    </div>
+
+                    <div class="signin_btn">
+                        <button type="submit">Sign up</button>
+                    </div>
+                </form>
+
+            </section>
+        </header>
+    </main>
+
+    <script src="/js/script.js"></script>
+
+    <script>
+        function sendToForm3(index) {
+            // Get the form by the index
+            const form = document.getElementById(`form-${index}`);
+
+            // Get values from the specific form using its unique index
+            const price = form.querySelector(`#price-${index}`).value;
+            const duration = form.querySelector(`#monthly-${index}`).value;
+            const datetime = form.querySelector(`#datetime-${index}`).value;
+            const id = form.querySelector(`#sid-${index}`).value; // Retrieve the id value
+
+            // Populate form3 fields with the retrieved values
+            document.getElementById('price3').value = price;
+            document.getElementById('datetime3').value = datetime;
+            document.getElementById('duration3').value = duration;
+            document.getElementById('subid').value = id; // Set the id value in form3
+
+            // Optionally, highlight the selected plan
+            document.querySelectorAll('.monthly').forEach(div => div.classList.remove('active'));
+            form.classList.add('active');
+        }
+
+
+
+
+        function updateDateTime() {
+            const now = new Date();
+
+            // Adjust for IST (Indian Standard Time)
+            const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours ahead of UTC
+            const istTime = new Date(now.getTime() + istOffset);
+
+            const datetimeLocal = istTime.toISOString().slice(0, 16); // Format to match datetime-local input
+            const datetimeFields = document.querySelectorAll('[name="datetime"]');
+            datetimeFields.forEach(field => field.value = datetimeLocal);
+        }
+
+        // Update the datetime field immediately on load
+        updateDateTime();
+
+        // Update the datetime field every second
+        setInterval(updateDateTime, 1000);
+    </script>
+
+    <script>
+
+        function togglePaymentFields() {
+            var paymentMethod = document.getElementById('paymentMethod').value;
+            var cardFields = document.getElementById('cardFields');
+            var upiFields = document.getElementById('upiFields');
+
+            // Hide all fields initially
+            cardFields.style.display = 'none';
+            upiFields.style.display = 'none';
+
+            if (paymentMethod === 'Card') {
+                cardFields.style.display = 'block';
+            } else if (paymentMethod === 'UPI') {
+                upiFields.style.display = 'block';
+            }
+        }
+
+    </script>
+
+
+</body>
+</html>

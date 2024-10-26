@@ -1,0 +1,48 @@
+﻿@page
+@model Main_Project.Pages.Movies.Add_Movies_CategoryModel
+@{
+    ViewData["Title"] = "Add movie Category";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Add Movies Category</h1>
+
+<hr />
+<div class="col-12 grid-margin stretch-card">
+    <form method="post" class="forms-sample">
+        <div class="form-group">
+            <label for="moviecategory" class="control-label">Add Movie Category</label>
+            <input type="text" id="moviecategory" name="moviecategory" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+
+<div class="col-12 grid-margin stretch-card">
+    <table border="1" class="table table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Movie Category</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var data in Model.category)
+            {
+                <tr>
+                    <td>@data.categoryid</td>
+                    <td>@data.moviecategory</td>
+                    <td>
+                        <a href="/Movies/Add_Movies_Category?handler=Delete&categoryid=@data.categoryid">
+                            <i style="color: red; font-size: 20px;" class="mdi mdi-delete"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

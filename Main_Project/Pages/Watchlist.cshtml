@@ -1,0 +1,109 @@
+﻿@page
+@model Main_Project.Pages.WatchlistModel
+@{
+    Layout = "_Header";
+    ViewData["Title"] = "Watch list";
+}
+<head>
+
+    <link href="/css/Watchlist.css" rel="stylesheet" />
+</head>
+
+
+
+@if (TempData["Message"] != null)
+
+{
+    <div class="alert popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["Message"]
+    </div>
+
+
+}
+@if (TempData["ErrorMessage"] != null)
+
+{
+    <div class="alert alert-danger popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["ErrorMessage"]
+    </div>
+}
+
+<h1> <span>Watch List</span> </h1>
+
+
+@if (!Model.WatchLists.Any())
+{
+    <div class="empty_watchlist_div">
+        <a href="/Home" class="mdi mdi-plus"></a>
+        <span>Your watchlist is Empty</span>
+        <p>Content you add to your watchlist will apper hear.</p>
+    </div>
+}
+else
+{
+    <div class="main3">
+        <div class="section3">
+            <div class="slider" id="slider2">
+                <div class="slider-wrapper">
+                    @foreach (var watchListItem in Model.WatchLists)
+                    {
+                        <div class="movie_poster1 data">
+                            <a href="/Single_movie?movieId=@watchListItem.Movieid" class="openPopup close" data-movie-id="@watchListItem.Movie.Movieid">
+                                <img src="/poster/@watchListItem.Movie.Movieposter2" alt="Movie Poster">
+
+                                <form method="post" asp-page-handler="remove">
+                                    <input type="hidden" name="movieId" value="@watchListItem.Movieid" />
+                                    <input type="hidden" name="action" value="remove" />
+                                    <button type="submit" id="remove_movie" class="mdi mdi-close"></button>
+                                </form>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<main class="main2">
+    <section class="movie_div">
+        <div class="card_div">
+            @foreach (var data in Model.AllMovies) // Change to use the new AllMovies property
+            {
+                <div class="movie_poster data">
+                    <form method="post" action="/Home?handler=SaveMovieType" id="form-@data.Movieid">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="movietype" value="@data.Movietype" />
+                        <input type="hidden" name="movieid" value="@data.Movieid" />
+                        <a href="#" class="openPopup" onclick="document.getElementById('form-@data.Movieid').submit(); return false;">
+                            <img src="/poster/@data.Movieposter2" alt="@data.Moviename" loading="lazy">
+                            <span>@data.Moviename</span>
+                        </a>
+                    </form>
+                </div>
+            }
+        </div>
+
+    </section>
+</main>
+
+
+
+<!--Messge hide show-->
+<script>
+    // Use JavaScript to hide the message after 3 seconds
+    setTimeout(function () {
+        var messageDiv = document.getElementById("tempMessage");
+        if (messageDiv) {
+            messageDiv.style.display = 'none'; // Hide the message
+        }
+    }, 4000); // 2000 milliseconds = 2 seconds
+
+    setTimeout(function () {
+        var messageDiv = document.getElementById("message");
+        if (messageDiv) {
+            messageDiv.style.display = 'none'; // Hide the message
+        }
+    }, 4000); // 2000 milliseconds = 2 seconds
+</script>

@@ -1,0 +1,22 @@
+﻿*{
+    margin:0;
+    padding:0;
+}
+.data_div{
+    width: 100%;
+    height: auto;
+}
+.mdi_btn{
+    font-size:16px;
+}
+.poster1 {
+    width: 140px;
+    height: 200px;
+}
+.poster2{
+    width:50%;
+    height: 300px;
+}
+.movie {
+    width: 500px;
+}

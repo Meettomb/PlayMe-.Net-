@@ -1,0 +1,174 @@
+﻿@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var username = HttpContextAccessor.HttpContext.Session.GetString("Username");
+}
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="/css/home.css">
+
+    <!-- Tab icon -->
+    <link rel="shortcut icon" href="/image/web_logo-HD.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.min.css" integrity="sha512-/k658G6UsCvbkGRB3vPXpsPHgWeduJwiWGPCGS14IQw3xpr63AEMdA8nMYG2gmYkXitQxDTn6iiK/2fD4T87qA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+    <!-- Icon -->
+    <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
+
+</head>
+<body>
+
+
+
+    <div class="main" id="header">
+        <header>
+
+            <div class="header_leftside">
+
+                <div class="logo">
+                    <img src="/image/web_logo.png" alt="" onclick="redirectTohomepage()">
+                </div>
+            </div>
+            <div class="header_rightside">
+                <div class="dots_vertical">
+                    <i class="mdi mdi-dots-vertical"></i>
+                    <div class="dropdown-menu">
+
+                        @if (!string.IsNullOrEmpty(username))
+
+                        {
+                            <a href="#" id="settingsLink"><span class="mdi mdi-cogs"></span> Settings</a>
+                        }
+
+                        else
+
+                        {
+                            <a href="Sign_in" id=""><span class="mdi mdi-cogs"></span> Settings</a>
+
+                        }
+                        @if (!string.IsNullOrEmpty(username))
+
+                        {
+                            <a href="/Logout?handler=Logout">
+                                <span class="mdi mdi-logout"></span> Logout
+                            </a>
+
+
+                        }
+
+                        else
+
+                        {
+
+                            <a href="/Sign_in"><span class="mdi mdi-logout"></span> Login</a>
+                        }
+
+                    </div>
+                </div>
+
+                <div id="popupOverlay" class="popup-overlay">
+                    <div id="popupBox" class="popup-box">
+                        <h1>Settings</h1>
+                        <ul class="popup_ul">
+                            <a href="/Manage_profile">
+                                <span class="mdi mdi-account-edit"></span>
+                            <li>Manage Profile</li>
+                            </a>
+
+                            <a href="/Change_password_page">
+                                <span class="mdi mdi-lock-reset"></span>
+                            <li>Resate Password</li>
+                            </a>
+
+                            <a href="/Terms_of_use">
+                                <span class="mdi mdi-notebook"></span>
+                            <li>terms of use</li>
+                            </a>
+
+                            <a href="/Privacy">
+                                <span class="mdi mdi-security"></span>
+                            <li>privacy & policy </li>
+                            </a>
+
+                            <a href="/Feedback/Feedback_page">
+                                <span class="mdi mdi-message"></span>
+                            <li>Give Feedback</li>
+                            </a>
+
+                            <a href="/Renew_Subscription/Select_subscription">
+                                <span class="mdi mdi-currency-rupee"></span>
+                            <li>Renew your Subscription</li>
+                            </a>
+                           
+                        </ul>
+                        <!-- Add your settings form or content here -->
+                    </div>
+                </div>
+
+
+            </div>
+        </header>
+    </div>
+
+
+
+    <div>
+        @RenderBody()
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script src="~/lib/jquery/jquery-3.6.0.min.js"></script>
+
+    <script src="/js/jQuery.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(".dots_vertical").on("click", function () {
+                // Toggle the visibility of the dropdown menu
+                $(this).find(".dropdown-menu").toggle();
+            });
+
+            // Hide the dropdown if the user clicks outside of it
+            $(document).on("click", function (e) {
+                if (!$(e.target).closest(".dots_vertical").length) {
+                    $(".dropdown-menu").hide();
+                }
+            });
+        });
+    </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            setInterval(checkSubscriptionStatus, 30000); // Check every 30 seconds
+
+            function checkSubscriptionStatus() {
+                $.ajax({
+                    url: '/api/subscription', // Correct URL for AJAX request
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.status === 'expired') {
+                            alert("Your subscription has expired. Please renew your subscription.");
+                            // Optional: Redirect to a subscription renewal page
+                            // window.location.href = '/RenewSubscription';
+                        }
+                    },
+                    error: function (error) {
+                        console.error("Error checking subscription status:", error);
+                    }
+                });
+            }
+        });
+    </script>
+
+
+</body>
+</html>

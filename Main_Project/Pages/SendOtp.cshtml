@@ -1,0 +1,36 @@
+﻿@page
+@model Main_Project.Pages.SendOtpModel
+@{
+    Layout = "_ResatepasswordLayout";
+    ViewData["title"] = "forgate Password";
+}
+
+<div class="send_otp_div">
+    <h2>Send OTP</h2>
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"></label><br />
+            <input asp-for="Email" class="form-control" /><br />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Send OTP</button>
+    </form>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger mt-3" role="alert">
+            @foreach (var modelState in ViewData.ModelState.Values)
+            {
+                foreach (var error in modelState.Errors)
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            }
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+}

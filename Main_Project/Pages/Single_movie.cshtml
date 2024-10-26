@@ -1,0 +1,344 @@
+﻿@page
+@inject IHttpContextAccessor HttpContextAccessor
+
+@model Main_Project.Pages.Single_movieModel
+@{
+    Layout = "_Header";
+    ViewData["Title"] = "Single movie";
+}
+<head>
+    <link href="/css/Single_movie.css" rel="stylesheet" />
+    <style>
+        #noMoviesMessage {
+            display: none; /* Initially hidden */
+            color: red;
+            font-size: 24px;
+            text-align: center;
+            width: 100%;
+            height: 99vh; /* Full viewport height minus a small margin */
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            position: absolute; /* To ensure it covers the whole page */
+            top: 0; /* Stick to the top */
+            left: 0; /* Stick to the left */
+            background-color: rgba(255, 255, 255, 0.8); /* Optional: a light background to stand out */
+            z-index: 999; /* Make sure it’s on top of other content */
+        }
+    </style>
+
+</head>
+
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["Message"]
+    </div>
+
+
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div id="message" class="alert alert-danger popup_message" style="display:none;">
+    <span class="mdi mdi-check-circle"></span> Your subscription has expired. Please renew your subscription.
+</div>
+
+
+@if (Model.Movie != null)
+{
+    <div>
+
+        <div class="singlepage_main_div">
+            <div class="singlepage_movie_poster">
+                <img src="/poster/@Model.Movie.Movieposter2" alt="Movie Poster" loading="lazy">
+                <input type="hidden" name="" value="/@Model.Movie.Moviename" />
+            </div>
+        </div>
+        <section class="section1">
+            <div class="singlepage_moviedetails">
+                <p class="singlepage_moviename">@Model.Movie.Moviename</p>
+                <p class="singlepage_movie_ry_t">
+                    <span>@Model.Movie.Moviereleaseyear</span>, <span>@Model.Movie.Movietype</span>
+                </p>
+                <p class="singlepage_moviediscription">@Model.Movie.Discription</p>
+            </div>
+
+            <div class="singlepage_buttons">
+                @{
+                    var userId = HttpContext.Session.GetInt32("Id");
+                    var subscriptionActiveString = HttpContext.Session.GetString("SubscriptionActive");
+                    bool subscriptionActive = subscriptionActiveString != null && subscriptionActiveString == "True";
+                }
+
+                <a id="watchButton" class="watch" href="#">
+
+                    Watch
+                </a>
+
+
+
+                <script>
+                    document.getElementById("watchButton").onclick = function (event) {
+                        event.preventDefault(); // Prevent default anchor click behavior
+
+                    @if (userId == null)
+                    {
+                        <text>
+                                    window.location.href = '/Sign_in';
+                        </text>
+                    }
+                    else if (!subscriptionActive)
+                    {
+                        <text>
+                                    document.getElementById("message").style.display = "block"; // Show message
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                                    window.location.href = '/Single_movie_player?movieId=@Model.Movie.Movieid'; // Redirect to player
+                        </text>
+                    }
+                                                                                                                                                                    };
+                </script>
+
+
+
+
+
+
+
+                <form method="post">
+                    <input type="hidden" name="movieId" value="@Model.Movie.Movieid" />
+                    <input type="hidden" name="actionType" value="addToWatchList" />
+                    <div class="form_button">
+                        <button class="mdi mdi-playlist-plus" type="submit" title="Add to Watchlist"></button>
+                    </div>
+                </form>
+                <form method="post">
+                    <input type="hidden" name="movieId" value="@Model.Movie.Movieid" />
+                    <input type="hidden" name="actionType" value="like" />
+                    <div class="form_button">
+                        <button class="mdi mdi-thumb-up" type="submit"></button>
+                    </div>
+                </form>
+                <form method="post">
+                    <input type="hidden" name="movieId" value="@Model.Movie.Movieid" />
+                    <input type="hidden" name="actionType" value="dislike" />
+                    <div class="form_button">
+                        <button class="mdi mdi-thumb-down" type="submit"></button>
+                    </div>
+                </form>
+            </div>
+
+
+        </section>
+
+       @if (Model.SuggestedMovies.Count() >= 1)
+        {
+            <h2 class="data">Top @Model.Movie.Movietype</h2>
+            <div class="main1">
+                <div class="section2">
+                    <div class="slider" id="slider1">
+                        <div class="slider-wrapper">
+                            @foreach (var suggestion in Model.SuggestedMovies)
+                            {
+                                <div class="movie_poster data">
+                                    <form method="post" action="/Home?handler=SaveMovieType" id="form-@suggestion.Movieid">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="movietype" value="@suggestion.Movietype" />
+                                        <input type="hidden" name="movieid" value="@suggestion.Movieid" />
+                                        <a href="#" class="openPopup" onclick="document.getElementById('form-@suggestion.Movieid').submit(); return false;">
+                                            <img src="/poster/@suggestion.Movieposter2" alt="@suggestion.Moviename" loading="lazy">
+                                            <span>@suggestion.Moviename</span>
+                                        </a>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                        <button class="slider-button prev">&#10094;</button>
+                        <button class="slider-button next">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+
+
+        @if (Model.IMDBrating.Count() >= 1)
+        {
+            <h3 class="data">Top 10 IMDB rated movies</h3>
+            <div class="main1">
+                <div class="section2">
+                    <div class="slider" id="slider3">
+                        <div class="slider-wrapper">
+                            @foreach (var IMDBrating in Model.IMDBrating)
+                            {
+                                <div class="movie_poster data">
+                                    <form method="post" action="/Home?handler=SaveMovieType" id="form-@IMDBrating.Movieid">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="movietype" value="@IMDBrating.Movietype" />
+                                        <input type="hidden" name="movieid" value="@IMDBrating.Movieid" />
+                                        <a href="#" class="openPopup" onclick="document.getElementById('form-@IMDBrating.Movieid').submit(); return false;">
+                                            <img src="/poster/@IMDBrating.Movieposter2" alt="@IMDBrating.Moviename" loading="lazy">
+                                            <span>@IMDBrating.Moviename</span>
+                                        </a>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                        <button class="slider-button prev">&#10094;</button>
+                        <button class="slider-button next">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.Allmovies != null)
+        {
+
+            <div class="main2">
+                <div class="section3">
+                    <div class="slider" id="slider2">
+                        <div class="slider-wrapper">
+                            @foreach (var Allmovies in Model.Allmovies)
+                            {
+                                <div class="movie_poster data">
+                                    <form method="post" action="/Home?handler=SaveMovieType" id="form-@Allmovies.Movieid">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="movietype" value="@Allmovies.Movietype" />
+                                        <input type="hidden" name="movieid" value="@Allmovies.Movieid" />
+                                        <a href="#" class="openPopup" onclick="document.getElementById('form-@Allmovies.Movieid').submit(); return false;">
+                                            <img src="/poster/@Allmovies.Movieposter2" alt="@Allmovies.Moviename" loading="lazy">
+                                            <span>@Allmovies.Moviename</span>
+                                        </a>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                        <button class="slider-button prev">&#10094;</button>
+                        <button class="slider-button next">&#10095;</button>
+                    </div>
+                </div>
+            </div>
+        }
+    
+    </div>
+
+
+
+
+}
+else
+{
+    <div class="notfounde404">
+        <img src="/image/404.jpg" alt="404 not founde" />
+        <button onclick="redirectTohomepage()">Expolore more...</button>
+    </div>
+}
+
+<script src="/js/script.js"></script>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function initializeSlider(sliderId) {
+            console.log(`Initializing slider with ID: ${sliderId}`);
+            const slider = document.getElementById(sliderId);
+
+            if (!slider) {
+                console.error(`Slider with ID ${sliderId} not found`);
+                return;
+            }
+
+            const prevButton = slider.querySelector('.slider-button.prev');
+            const nextButton = slider.querySelector('.slider-button.next');
+            const sliderWrapper = slider.querySelector('.slider-wrapper');
+
+            if (!prevButton || !nextButton || !sliderWrapper) {
+                console.error(`Required elements not found in slider with ID ${sliderId}`);
+                return;
+            }
+
+            let currentIndex = 0;
+            const posterWidth = slider.querySelector('.movie_poster').offsetWidth;
+            const totalMovies = slider.querySelectorAll('.movie_poster').length;
+            const moviesToShow = Math.floor(sliderWrapper.parentElement.offsetWidth / (posterWidth + 20)); // 20 is the margin on each side
+
+            console.log(`Total movies: ${totalMovies}, Movies to show: ${moviesToShow}`);
+
+            function updateSlider() {
+                const offset = -currentIndex * (posterWidth + 20); // 20 is the margin on each side
+                sliderWrapper.style.transform = `translateX(${offset}px)`;
+                updateButtonVisibility(); // Update button visibility on each slide
+            }
+
+            function updateButtonVisibility() {
+                prevButton.style.display = currentIndex > 0 ? 'block' : 'none';
+                nextButton.style.display = currentIndex < totalMovies - moviesToShow ? 'block' : 'none';
+            }
+
+            prevButton.addEventListener('click', function () {
+                console.log(`Prev button clicked on slider ${sliderId}`);
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateSlider();
+                }
+            });
+
+            nextButton.addEventListener('click', function () {
+                console.log(`Next button clicked on slider ${sliderId}`);
+                if (currentIndex < totalMovies - moviesToShow) {
+                    currentIndex++;
+                    updateSlider();
+                }
+            });
+
+            // Touch support
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            sliderWrapper.addEventListener('touchstart', function (e) {
+                touchStartX = e.touches[0].clientX;
+            });
+
+            sliderWrapper.addEventListener('touchmove', function (e) {
+                touchEndX = e.touches[0].clientX;
+            });
+
+            sliderWrapper.addEventListener('touchend', function () {
+                if (touchEndX < touchStartX - 50) {
+                    console.log('Swiped left');
+                    if (currentIndex < totalMovies - moviesToShow) {
+                        currentIndex++;
+                        updateSlider();
+                    }
+                }
+
+                if (touchEndX > touchStartX + 50) {
+                    console.log('Swiped right');
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                        updateSlider();
+                    }
+                }
+            });
+
+            // Initial update
+            updateSlider();
+        }
+
+        initializeSlider('slider1');
+        initializeSlider('slider2');
+        initializeSlider('slider3');
+    });
+</script>
+
