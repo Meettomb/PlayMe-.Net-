@@ -30,14 +30,12 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 // Email Service
-builder.Services.AddTransient<EmailService>();
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddSingleton<IEmailService, EmailService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 // Configure DbContext
-builder.Services.AddDbContext<Main_Project.Models.NetflixDataContext>(options =>
+builder.Services.AddDbContext<NetflixDataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NetflixDatabase")));
-builder.Services.AddScoped<Main_Project.Models.NetflixDataContext>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -49,6 +47,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true; // Make the session cookie essential
 });
+builder.Services.AddControllersWithViews();
 
 // Configure Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -65,13 +64,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // Set the form options to allow for large file uploads (6 GB)
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 8442450944; // 6 GB limit
+    options.MultipartBodyLengthLimit = 8442450944; // 8 GB limit
 });
 
 // Configure Kestrel for large uploads (6 GB)
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.Limits.MaxRequestBodySize = 8442450944; // 6 GB limit
+    serverOptions.Limits.MaxRequestBodySize = 8442450944; // 8 GB limit
 });
 
 var app = builder.Build();
@@ -94,10 +93,12 @@ app.UseRouting();
 
 // Enable session middleware
 app.UseSession();
-app.UseSubscription_Middleware();
+app.UseSubscription_Middleware(); // Ensure custom middleware is implemented
+
 app.UseAuthentication(); // Enable authentication middleware
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapControllers();
 
 app.Run();

@@ -67,6 +67,11 @@
 
                             <a href="/Sign_in"><span class="mdi mdi-logout"></span> Login</a>
                         }
+                        @if (Model.UserRole == "admin")
+
+                        {
+                            <a href="/Deshbord"><span class="mdi mdi-speedometer"></span> Deshbord</a>
+                        }
 
                     </div>
                 </div>
@@ -95,7 +100,7 @@
                             <li>privacy & policy </li>
                             </a>
 
-                            <a href="/Feedback/Feedback_page">
+                            <a href="/Feedbacks/Feedback_page">
                                 <span class="mdi mdi-message"></span>
                             <li>Give Feedback</li>
                             </a>

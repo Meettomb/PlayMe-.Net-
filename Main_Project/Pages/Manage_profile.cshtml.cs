@@ -11,10 +11,14 @@ namespace Main_Project.Pages
     public class Manage_profileModel : PageModel
     {
         private readonly IEmailService _emailService;
+        private readonly ILogger<Manage_profileModel> _logger;
+        private readonly string _connectionString;
 
-        public Manage_profileModel(IEmailService emailService)
+        public Manage_profileModel(IEmailService emailService, ILogger<Manage_profileModel> logger, IConfiguration configuration)
         {
             _emailService = emailService;
+            _logger = logger;
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
 
         public string UserName { get; set; }
@@ -26,7 +30,6 @@ namespace Main_Project.Pages
 
         public string ErrorMessage { get; set; }
 
-        private readonly string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
 
         public void OnGet()
         {
@@ -36,9 +39,9 @@ namespace Main_Project.Pages
             // If session email is not null, fetch user data from the database
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
-                    string selectQuery = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
+                    string selectQuery = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(selectQuery, con))
                     {
                         cmd.Parameters.AddWithValue("@Email", sessionEmail);
@@ -83,7 +86,7 @@ namespace Main_Project.Pages
 
             if (profilePic != null)
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string updateQuery = "UPDATE User_data SET profilepic = @ProfilePic WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(updateQuery, con))
@@ -117,7 +120,7 @@ namespace Main_Project.Pages
             // Debugging: Output values to the console/log
             Console.WriteLine($"Email: {newEmail}, Username: {username}, DOB: {dob}, Gender: {gender}");
 
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string updateQuery = @"
             UPDATE User_data 
