@@ -229,6 +229,40 @@ else
 </main>
 
 
+
+@* Store Data in localStorage Using JavaScript *@
+
+<script>
+    // Retrieve the session data from Razor ViewData
+    const id = "@ViewData["Id"]";
+    const username = "@ViewData["Username"]";
+    const profilepic = "@ViewData["ProfilePic"]";
+    const email = "@ViewData["Email"]";
+    const dob = "@ViewData["DOB"]";
+    const gender = "@ViewData["Gender"]";
+    const userRole = "@ViewData["UserRole"]";
+    const subscriptionActive = "@ViewData["SubscriptionActive"]";
+
+    // Store the data in localStorage
+    if (id) localStorage.setItem("Id", id);
+    if (username) localStorage.setItem("Username", username);
+    if (profilepic) localStorage.setItem("ProfilePic", profilepic);
+    if (email) localStorage.setItem("Email", email);
+    if (dob) localStorage.setItem("DOB", dob);
+    if (gender) localStorage.setItem("Gender", gender);
+    if (userRole) localStorage.setItem("UserRole", userRole);
+    if (subscriptionActive) localStorage.setItem("SubscriptionActive", subscriptionActive);
+
+    // Retrieve data from localStorage
+    const username = localStorage.getItem("Username");
+    const profilePic = localStorage.getItem("ProfilePic");
+    const email = localStorage.getItem("Email");
+    // And so on for other items
+
+</script>
+
+
+
 <script>
     // Function to play the video when hovering
     function playTrailer(element) {

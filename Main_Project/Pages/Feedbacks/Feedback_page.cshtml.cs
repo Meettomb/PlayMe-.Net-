@@ -9,16 +9,18 @@ namespace Main_Project.Pages.Feedbacks
 {
     public class Feedback_pageModel : PageModel
     {
-        private readonly IEmailService _emailService;
-
-        public Feedback_pageModel(IEmailService emailService)
+        private readonly IEmailService _emailService; 
+        private readonly ILogger<Terms_of_useModel> _logger;
+        private readonly string _connectionString;
+        public Feedback_pageModel(IEmailService emailService, ILogger<Terms_of_useModel> logger, IConfiguration configuration)
         {
+            _logger = logger;
+            _connectionString = configuration.GetConnectionString("NetflixDatabase"); 
             _emailService = emailService;
         }
 
         public Feedback_table feedback = new Feedback_table();
 
-        string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
         public string UserName { get; set; }
         public string id { get; set; }
         public string Email { get; set; }
@@ -31,9 +33,9 @@ namespace Main_Project.Pages.Feedbacks
             // If session email is not null, fetch user data from the database
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
-                    string selectQuery = "SELECT id, username FROM User_data WHERE email = @Email";
+                    string selectQuery = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(selectQuery, con))
                     {
                         cmd.Parameters.AddWithValue("@Email", sessionEmail);
@@ -77,7 +79,7 @@ namespace Main_Project.Pages.Feedbacks
 
             // Insert feedback into the database
             string insertQuery = "INSERT INTO Feedback_table (username, feedbackemail, feedback, userid) VALUES (@username, @FeedbackEmail, @Feedback, @userid)";
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(insertQuery, connection))
                 {

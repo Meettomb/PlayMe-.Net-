@@ -11,6 +11,12 @@ using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using System.Globalization;
 using Microsoft.AspNetCore.Identity;
+using System.Management; // Add this line for ManagementObject and ManagementObjectSearcher
+
+using Xamarin.Essentials;
+
+using NuGet.Configuration;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Netflix.Pages
 {
@@ -44,8 +50,6 @@ namespace Netflix.Pages
             return Page();
         }
 
-
-
         public async Task<IActionResult> OnPostAsync()
         {
             if (string.IsNullOrEmpty(User.email) || string.IsNullOrEmpty(User.password))
@@ -58,137 +62,190 @@ namespace Netflix.Pages
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string query = @"SELECT id, dob, gender, username, role, profilepic, email, isactive, logintime, 
-                subscriptionactive, datetime, duration, password 
-                FROM user_data 
-                WHERE email = @Email AND isactive = 1";
+                string query = @"SELECT id, username, profilepic, dob, gender, email, role, isactive, 
+                        logintime, subscriptionactive, password, auth_token 
+                        FROM User_data 
+                        WHERE email = @Email AND isactive = 1";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     cmd.Parameters.AddWithValue("@Email", User.email);
-
-                    SqlDataAdapter da = new SqlDataAdapter(cmd);
-                    DataSet ds = new DataSet();
-
                     con.Open();
-                    da.Fill(ds);
-                    con.Close();
+                    SqlDataReader reader = cmd.ExecuteReader();
 
-                    if (ds.Tables[0].Rows.Count >= 1)
+                    if (reader.Read())
                     {
-                        DataRow row = ds.Tables[0].Rows[0];
-                        string storedHashedPassword = row["password"].ToString();
+                        // Retrieve and store necessary fields in local variables
+                        string storedPassword = reader["password"].ToString();
+                        int userId = Convert.ToInt32(reader["id"]);
+                        string username = reader["username"].ToString();
+                        string profilepic = reader["profilepic"].ToString();
+                        string dob = reader["dob"].ToString();
+                        string gender = reader["gender"].ToString();
+                        string email = reader["email"].ToString();
+                        string role = reader["role"].ToString();
+                        bool isActive = reader["isactive"] != DBNull.Value && Convert.ToBoolean(reader["isactive"]);
+                        bool subscriptionActive = reader["subscriptionactive"] != DBNull.Value && Convert.ToBoolean(reader["subscriptionactive"]);
 
-                        // Use PasswordHasher to verify the password
+                        // Fetch the auth_token safely
+                        string auth_token = reader["auth_token"] != DBNull.Value ? reader["auth_token"].ToString() : string.Empty;
+
+                        reader.Close(); // Close the reader now that data is stored in variables
+
+                        // Verify the password
                         var passwordHasher = new PasswordHasher<object>();
-                        var passwordVerificationResult = passwordHasher.VerifyHashedPassword(null, storedHashedPassword, User.password);
+                        var passwordVerificationResult = passwordHasher.VerifyHashedPassword(null, storedPassword, User.password);
 
                         if (passwordVerificationResult == PasswordVerificationResult.Success)
                         {
-                            int id = Convert.ToInt32(row["id"]);
-                            string username = row["username"].ToString();
-                            string profilepic = row["profilepic"].ToString();
-                            string dob = row["dob"].ToString();
-                            string gender = row["gender"].ToString();
-                            string email = row["email"].ToString();
-                            string role = row["role"].ToString();
-                            bool isActive = row["isactive"] != DBNull.Value && Convert.ToBoolean(row["isactive"]);
-                            bool logintime = row["logintime"] != DBNull.Value && Convert.ToBoolean(row["logintime"]);
-                            bool subscriptionActive = row["subscriptionactive"] != DBNull.Value && Convert.ToBoolean(row["subscriptionactive"]);
-
                             if (!isActive)
                             {
                                 ModelState.AddModelError(string.Empty, "User not found.");
                                 return Page();
                             }
 
-                            // Proceed with login based on logintime
-                            if (!logintime)
-                            {
-                                HttpContext.Session.SetInt32("Id", id);
-                                HttpContext.Session.SetString("Username", username);
-                                HttpContext.Session.SetString("profilepic", profilepic);
-                                HttpContext.Session.SetString("email", email);
-                                HttpContext.Session.SetString("dob", dob);
-                                HttpContext.Session.SetString("gender", gender);
-                                HttpContext.Session.SetString("UserRole", role);
-                                HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
+                            // Set session values
+                            HttpContext.Session.SetInt32("Id", userId);
+                            HttpContext.Session.SetString("Username", username);
+                            HttpContext.Session.SetString("profilepic", profilepic);
+                            HttpContext.Session.SetString("email", email);
+                            HttpContext.Session.SetString("dob", dob);
+                            HttpContext.Session.SetString("gender", gender);
+                            HttpContext.Session.SetString("UserRole", role);
+                            HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
 
-                                // Redirect based on user role
-                                if (role.Equals("admin", StringComparison.OrdinalIgnoreCase))
+                            // Retrieve the unique device ID based on the platform
+                            string deviceId = GetUniqueDeviceId();
+
+                            // Check if device ID already exists in auth_token
+                            if (!string.IsNullOrEmpty(auth_token))
+                            {
+                                // Split existing tokens into a list
+                                var existingTokens = new List<string>(auth_token.Split(','));
+
+                                // Add the new device ID if it doesn't already exist
+                                if (!existingTokens.Contains(deviceId))
                                 {
-                                    return RedirectToPage("/Deshbord");
+                                    existingTokens.Add(deviceId);
                                 }
-                                else if (role.Equals("user", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    return RedirectToPage("/Home");
-                                }
-                                else
-                                {
-                                    ModelState.AddModelError(string.Empty, "Invalid role.");
-                                    return Page();
-                                }
+
+                                // Reconstruct the auth_token
+                                auth_token = string.Join(",", existingTokens);
                             }
                             else
                             {
-                                // Generate and send OTP
-                                string otp = GenerateOtp();
-                                SendOtpToEmail(User.email, otp);
-
-                                HttpContext.Session.SetString("Otp", otp);
-                                HttpContext.Session.SetInt32("Id", id);
-                                HttpContext.Session.SetString("Username", username);
-                                HttpContext.Session.SetString("profilepic", profilepic);
-                                HttpContext.Session.SetString("email", email);
-                                HttpContext.Session.SetString("dob", dob);
-                                HttpContext.Session.SetString("gender", gender);
-                                HttpContext.Session.SetString("UserRole", role);
-
-                                return RedirectToPage("/OtpVerification/Sign_in_otp_verify");
+                                // If no existing tokens, use the new device ID
+                                auth_token = deviceId;
                             }
+
+                            // Update the auth_token in the database
+                            string updateTokenQuery = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
+
+                            using (SqlCommand updateCmd = new SqlCommand(updateTokenQuery, con))
+                            {
+                                updateCmd.Parameters.AddWithValue("@AuthToken", auth_token); // Use the updated auth token here
+                                updateCmd.Parameters.AddWithValue("@UserId", userId);
+                                updateCmd.ExecuteNonQuery();
+                            }
+
+                            // Set auth token in a secure, HTTP-only cookie
+                            HttpContext.Response.Cookies.Append("AuthToken", deviceId, new CookieOptions
+                            {
+                                HttpOnly = true,
+                                Expires = DateTimeOffset.UtcNow.AddDays(30),
+                                Secure = true
+                            });
+
+                            return RedirectToPage("/Home");
                         }
                         else
                         {
                             ModelState.AddModelError(string.Empty, "Invalid password.");
-                            return Page();
                         }
                     }
                     else
                     {
                         ModelState.AddModelError(string.Empty, "Email not found.");
-                        return Page();
                     }
+
+                    con.Close(); // Ensure connection is closed after use
                 }
             }
+            return Page();
         }
 
 
-
-        private string GenerateOtp()
+        private string GetUniqueDeviceId()
         {
-            return random.Next(100000, 999999).ToString();
+            string deviceId = string.Empty;
+
+            // Detect the platform (this is a simplified example)
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT) // Windows
+            {
+                try
+                {
+                    using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT SerialNumber FROM Win32_BIOS"))
+                    {
+                        foreach (ManagementObject obj in searcher.Get())
+                        {
+                            deviceId = obj["SerialNumber"]?.ToString();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An error occurred while retrieving the device ID for Windows: " + ex.Message);
+                }
+            }
+            else if (IsAndroid()) // Check for Android
+            {
+                // Implement Android-specific logic here, e.g., retrieving the Android ID
+                deviceId = GetAndroidDeviceId(); // You can call your method to get Android ID here
+            }
+            else if (IsIOS()) // Check for iOS
+            {
+                // Implement iOS-specific logic here, e.g., retrieving the iOS ID
+                deviceId = GetIOSDeviceId(); // You can call your method to get iOS ID here
+            }
+
+            // Fallback if device ID could not be retrieved
+            if (string.IsNullOrEmpty(deviceId))
+            {
+                deviceId = Guid.NewGuid().ToString(); // Use a GUID as a fallback device ID
+            }
+
+            return deviceId;
         }
 
-        private void SendOtpToEmail(string email, string otp)
+        // Check if the app is running on Android
+        private bool IsAndroid()
         {
-            var smtpClient = new SmtpClient(_configuration["EmailSettings:SmtpServer"])
-            {
-                Port = _configuration.GetValue<int>("EmailSettings:SmtpPort"),
-                Credentials = new NetworkCredential(_configuration["EmailSettings:Username"], _configuration["EmailSettings:Password"]),
-                EnableSsl = true,
-            };
-
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(_configuration["EmailSettings:SenderEmail"], _configuration["EmailSettings:SenderName"]),
-                Subject = "Your OTP Code",
-                Body = $"Your OTP code is {otp}",
-                IsBodyHtml = false,
-            };
-
-            mailMessage.To.Add(email);
-
-            smtpClient.Send(mailMessage);
+            return DeviceInfo.Platform == DevicePlatform.Android;
         }
+
+        // Check if the app is running on iOS
+        private bool IsIOS()
+        {
+            return DeviceInfo.Platform == DevicePlatform.iOS;
+        }
+
+        // Method to get Android ID (implement the logic as required)
+        private string GetAndroidDeviceId()
+        {
+            // Add Android ID retrieval logic here, if applicable
+            return "AndroidDeviceID"; // Placeholder logic
+        }
+
+        // Method to get iOS ID (implement the logic as required)
+        private string GetIOSDeviceId()
+        {
+            // Add iOS ID retrieval logic here, if applicable
+            return "iOSDeviceID"; // Placeholder logic
+        }
+
+
+
+
+
     }
 }

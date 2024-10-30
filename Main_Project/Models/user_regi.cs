@@ -29,6 +29,7 @@ namespace Netflix.Models
 
         public bool? emailsent { get; set; }
         public int? subid { get; set; }
+        public string? auth_token { get; set; }
 
     }
     public class Revenue
@@ -117,14 +118,13 @@ namespace Netflix.Models
         // Navigation property
         public MoviesTable Movie { get; set; }
     }
-
+    
     public class UserSessions
     {
         public int id { get; set; }
         public int UserId { get; set; }
         public int SubscriptionPlanId { get; set; }
-        public DateTime LastLogin { get; set; }
-        public bool IsWatching { get; set; }
+        public int UserActiveNumbers { get; set; }
     }
 
 

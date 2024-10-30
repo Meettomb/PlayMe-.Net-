@@ -56,7 +56,7 @@ namespace Main_Project.Pages.Renew_Subscription
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
-                    string query = "SELECT username, profilepic FROM User_data WHERE email = @Email";
+                    string query = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Email", sessionEmail);
