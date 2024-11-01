@@ -156,7 +156,15 @@ namespace Netflix.Pages
                                 Secure = true
                             });
 
-                            return RedirectToPage("/Home");
+                            // Redirect based on user role
+                            if (role == "admin")
+                            {
+                                return RedirectToPage("/Deshbord");
+                            }
+                            else if (role == "user")
+                            {
+                                return RedirectToPage("/Home");
+                            }
                         }
                         else
                         {

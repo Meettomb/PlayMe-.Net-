@@ -21,7 +21,7 @@ namespace Main_Project.Pages.Renew_Subscription
 
 
 
-        private readonly EmailService _emailService;
+        private readonly IEmailService _emailService;
         private readonly EmailSettings _emailSettings;
         private readonly string _connectionString;
 
@@ -40,7 +40,7 @@ namespace Main_Project.Pages.Renew_Subscription
         public string UserRole { get; set; }
 
 
-        public Select_subscriptionModel(EmailService emailService, IOptions<EmailSettings> emailSettings, IConfiguration configuration)
+        public Select_subscriptionModel(IEmailService emailService, IOptions<EmailSettings> emailSettings, IConfiguration configuration)
         {
             _emailService = emailService;
             _emailSettings = emailSettings.Value;

@@ -14,7 +14,6 @@ namespace Main_Project.Pages
 
         private readonly string _connectionString;
 
-        // Define the UserId and StoredAuthToken properties
         public int? UserId { get; set; }
         public string StoredAuthToken { get; set; } // Auth token from session
         public string DeviceId { get; set; } // New property for device ID
@@ -27,22 +26,16 @@ namespace Main_Project.Pages
         public IActionResult OnGet()
         {
             UserId = HttpContext.Session.GetInt32("Id");
-
-            // Fetch the stored auth token from session
             StoredAuthToken = HttpContext.Session.GetString("auth_token");
-
-            // Get the unique device ID
             DeviceId = GetUniqueDeviceId();
 
-            // Check if UserId is not set, then verify device ID against database
             if (!UserId.HasValue)
             {
                 UserId = ValidateDeviceIdAndFetchUser(DeviceId);
 
                 if (UserId.HasValue)
                 {
-                    // Redirect to the home page after setting user details in session
-                    return RedirectToPage("/Home");
+                    return RedirectToHomeOrDashboard();
                 }
                 else
                 {
@@ -51,10 +44,9 @@ namespace Main_Project.Pages
             }
             else
             {
-                // Check if auth_token matches the unique device ID
                 if (StoredAuthToken == DeviceId)
                 {
-                    return RedirectToPage("/Home");
+                    return RedirectToHomeOrDashboard();
                 }
                 else
                 {
@@ -62,9 +54,24 @@ namespace Main_Project.Pages
                 }
             }
 
-            // Fetch data from the database
             GetQuestionsAndAnswers();
+            return Page();
+        }
 
+        private IActionResult RedirectToHomeOrDashboard()
+        {
+            string userRole = HttpContext.Session.GetString("UserRole");
+
+            if (userRole == "admin")
+            {
+                return RedirectToPage("/Deshbord");
+            }
+            else if (userRole == "user")
+            {
+                return RedirectToPage("/Home");
+            }
+
+            ModelState.AddModelError(string.Empty, "Invalid user role.");
             return Page();
         }
 
@@ -72,7 +79,6 @@ namespace Main_Project.Pages
         {
             try
             {
-                // Implement logic to get the unique device ID
                 using (var searcher = new System.Management.ManagementObjectSearcher("SELECT SerialNumber FROM Win32_BIOS"))
                 {
                     foreach (var obj in searcher.Get())
@@ -86,7 +92,7 @@ namespace Main_Project.Pages
                 // Handle exceptions as necessary
             }
 
-            return "Device ID not found"; // Handle default case
+            return "Device ID not found"; // Default case if no device ID is found
         }
 
         private int? ValidateDeviceIdAndFetchUser(string deviceId)
@@ -103,25 +109,19 @@ namespace Main_Project.Pages
                 {
                     if (reader.Read())
                     {
-                        // Retrieve and store user details in session
                         int userId = reader.GetInt32(0);
                         string username = reader.GetString(1);
                         string profilepic = reader.GetString(2);
-                        string dob = reader.GetString(3);
-                        string gender = reader.GetString(4);
                         string email = reader.GetString(5);
                         string role = reader.GetString(6);
 
-                        // Store user details in session
                         HttpContext.Session.SetInt32("Id", userId);
                         HttpContext.Session.SetString("Username", username);
                         HttpContext.Session.SetString("profilepic", profilepic);
                         HttpContext.Session.SetString("email", email);
-                        HttpContext.Session.SetString("dob", dob);
-                        HttpContext.Session.SetString("gender", gender);
                         HttpContext.Session.SetString("UserRole", role);
 
-                        return userId; // Return the found user ID
+                        return userId;
                     }
                 }
             }
