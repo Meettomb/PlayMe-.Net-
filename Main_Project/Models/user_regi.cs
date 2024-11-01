@@ -127,5 +127,25 @@ namespace Netflix.Models
         public int UserActiveNumbers { get; set; }
     }
 
+    public class Movie_like
+    {
+        public int id { get; set; }
+        public int userid { get; set; }
+        public int movieid { get; set; }
+
+        // Navigation property
+        public user_regi uid { get; set; }
+        public MoviesTable mid { get; set; }
+    } 
+    public class Movie_dislike
+    {
+        public int id { get; set; }
+        public int userid { get; set; }
+        public int movieid { get; set; }
+
+        // Navigation property
+        public user_regi uid { get; set; }
+        public MoviesTable mid { get; set; }
+    }
 
 }

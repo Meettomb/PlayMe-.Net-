@@ -29,9 +29,11 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = supportedCultures;
 });
 
-// Email Service
-builder.Services.AddSingleton<IEmailService, EmailService>();
+
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddSingleton<IEmailService, EmailService>();
+ 
+
 
 // Configure DbContext
 builder.Services.AddDbContext<NetflixDataContext>(options =>

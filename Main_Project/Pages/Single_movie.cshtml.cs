@@ -29,6 +29,8 @@ namespace Main_Project.Pages
         public IList<MoviesTable> SuggestedMovies { get; set; }
         public IList<MoviesTable> Allmovies { get; set; }
         public IList<MoviesTable> IMDBrating { get; set; }
+        public IList<Movie_like> Movie_Like { get; set; }
+        public IList<Movie_dislike> Movie_dislike { get; set; }
         public string UserName { get; set; }
         public string profilepic { get; set; }
         public string email { get; set; }
@@ -38,6 +40,9 @@ namespace Main_Project.Pages
         public IList<MoviesTable> MoviesTable { get; set; } = new List<MoviesTable>();
         public List<Search_history> SearchHistory { get; set; } = new List<Search_history>();
         public IList<Movie_category_table> MovieCategories { get; set; } = new List<Movie_category_table>();
+        public bool HasUserLikedMovie { get; set; }
+        public bool HasUserDislikedMovie { get; set; }
+        public bool HasUserAddedOnWatchlistMovie { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? movieId, string SearchKeyword)
         {
@@ -46,6 +51,26 @@ namespace Main_Project.Pages
             string sessionEmail = HttpContext.Session.GetString("email");
 
             string subscriptionActive = HttpContext.Session.GetString("SubscriptionActive");
+
+            var userId = HttpContext.Session.GetInt32("Id");
+
+            if (!userId.HasValue)
+            {
+                // Redirect to sign-in page if user is not logged in
+                return RedirectToPage("/Sign_in");
+            }
+
+            // Check if the movie is already in the user's watch list
+            HasUserAddedOnWatchlistMovie = await _context.WatchLists
+                .AnyAsync(w => w.Userid == userId.Value && w.Movieid == movieId);
+
+            // Check if the user has already liked the movie
+            string checkLikeQuery = $"SELECT COUNT(*) FROM Movie_like WHERE userid = {userId.Value} AND movieid = {movieId}";
+            HasUserLikedMovie = await CheckIfExistsAsync(checkLikeQuery);
+
+            // Check if the user has disliked this movie
+            string checkDislikeQuery = $"SELECT COUNT(*) FROM Movie_dislike WHERE userid = {userId.Value} AND movieid = {movieId}";
+            HasUserDislikedMovie = await CheckIfExistsAsync(checkDislikeQuery);
 
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
@@ -261,44 +286,119 @@ namespace Main_Project.Pages
 
                     if (existingWatchListItem != null)
                     {
-                        TempData["Message"] = "You have already added this movie to your watch list.";
-                        return RedirectToPage("/Single_movie", new { movieId });
+                        // Remove from watch list
+                        _context.WatchLists.Remove(existingWatchListItem);
+                        await _context.SaveChangesAsync();
+                        TempData["Message"] = "Movie removed from your watch list.";
                     }
-
-                    var watchListItem = new WatchList
+                    else
                     {
-                        Userid = userId.Value,
-                        Movieid = movieId
-                    };
+                        // Add to watch list
+                        var watchListItem = new WatchList
+                        {
+                            Userid = userId.Value,
+                            Movieid = movieId
+                        };
 
-                    _context.WatchLists.Add(watchListItem);
-                    await _context.SaveChangesAsync();
-
-                    TempData["Message"] = "Movie added to your watch list.";
+                        _context.WatchLists.Add(watchListItem);
+                        await _context.SaveChangesAsync();
+                        TempData["Message"] = "Movie added to your watch list.";
+                    }
                     break;
 
+
+
                 case "like":
-                    var movieToLike = await _context.MoviesTables.FirstOrDefaultAsync(m => m.Movieid == movieId);
-                    if (movieToLike != null)
+                    // Check if the user has already liked the movie
+                    string checkLikeQuery = $"SELECT COUNT(*) FROM Movie_like WHERE userid = {userId} AND movieid = {movieId}";
+                    bool alreadyLiked = await CheckIfExistsAsync(checkLikeQuery);
+
+                    if (alreadyLiked)
                     {
-                        movieToLike.Movielike = (movieToLike.Movielike ?? 0) + 1;
-                        await _context.SaveChangesAsync();
+                        // User has already liked the movie; unlike it
+                        string deleteLikeQuery = $"DELETE FROM Movie_like WHERE userid = {userId} AND movieid = {movieId}";
+                        await ExecuteSqlCommandAsync(deleteLikeQuery);
+
+                        // Decrement like count in MoviesTable
+                        string decrementLikeQuery = $"UPDATE Movies_table SET Movielike = COALESCE(Movielike, 0) - 1 WHERE Movieid = {movieId}";
+                        await ExecuteSqlCommandAsync(decrementLikeQuery);
+
+                        TempData["Message"] = "You removed your like from this movie.";
+                    }
+                    else
+                    {
+                        // User has not liked the movie; like it
+                        string insertLikeQuery = $"INSERT INTO Movie_like (userid, movieid) VALUES ({userId}, {movieId})";
+                        await ExecuteSqlCommandAsync(insertLikeQuery);
+
+                        // Increment like count in MoviesTable
+                        string incrementLikeQuery = $"UPDATE Movies_table SET Movielike = COALESCE(Movielike, 0) + 1 WHERE Movieid = {movieId}";
+                        await ExecuteSqlCommandAsync(incrementLikeQuery);
+
                         TempData["Message"] = "You liked this movie.";
                     }
                     break;
 
+
                 case "dislike":
-                    var movieToDislike = await _context.MoviesTables.FirstOrDefaultAsync(m => m.Movieid == movieId);
-                    if (movieToDislike != null)
+                    // Check if the user has already disliked the movie
+                    string checkDislikeQuery = $"SELECT COUNT(*) FROM Movie_dislike WHERE userid = {userId.Value} AND movieid = {movieId}";
+                    bool alreadyDisliked = await CheckIfExistsAsync(checkDislikeQuery);
+
+                    if (alreadyDisliked)
                     {
-                        movieToDislike.Movielike = (movieToDislike.Movielike ?? 0) - 1;
-                        await _context.SaveChangesAsync();
+                        // User has already disliked the movie; remove dislike
+                        string deleteDislikeQuery = $"DELETE FROM Movie_dislike WHERE userid = {userId.Value} AND movieid = {movieId}";
+                        await ExecuteSqlCommandAsync(deleteDislikeQuery);
+
+                        // Increment like count in MoviesTable
+                        string incrementLikeQuery = $"UPDATE Movies_table SET Movielike = COALESCE(Movielike, 0) + 1 WHERE Movieid = {movieId}";
+                        await ExecuteSqlCommandAsync(incrementLikeQuery);
+
+                        TempData["Message"] = "You removed your dislike from this movie.";
+                    }
+                    else
+                    {
+                        // User has not disliked the movie; dislike it
+                        string insertDislikeQuery = $"INSERT INTO Movie_dislike (userid, movieid) VALUES ({userId.Value}, {movieId})";
+                        await ExecuteSqlCommandAsync(insertDislikeQuery);
+
+                        // Decrement like count in MoviesTable
+                        string decrementLikeQuery = $"UPDATE Movies_table SET Movielike = COALESCE(Movielike, 0) - 1 WHERE Movieid = {movieId}";
+                        await ExecuteSqlCommandAsync(decrementLikeQuery);
+
                         TempData["Message"] = "You disliked this movie.";
                     }
                     break;
             }
 
             return RedirectToPage("/Single_movie", new { movieId });
+        }
+
+        // Helper method to execute raw SQL commands asynchronously
+        private async Task ExecuteSqlCommandAsync(string query)
+        {
+            using (var connection = new SqlConnection(connectionstring))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(query, connection))
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+        // Helper method to check if a record exists asynchronously
+        private async Task<bool> CheckIfExistsAsync(string query)
+        {
+            using (var connection = new SqlConnection(connectionstring))
+            {
+                await connection.OpenAsync();
+                using (var command = new SqlCommand(query, connection))
+                {
+                    var result = await command.ExecuteScalarAsync();
+                    return Convert.ToInt32(result) > 0;
+                }
+            }
         }
 
         [ValidateAntiForgeryToken]

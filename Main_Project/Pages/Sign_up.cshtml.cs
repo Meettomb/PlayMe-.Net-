@@ -17,12 +17,12 @@ namespace Netflix.Pages
     {
         public List<subscription> subscription = new List<subscription>();
 
-        private readonly EmailService _emailService;
+        private readonly IEmailService _emailService;
         private readonly EmailSettings _emailSettings;
         private readonly string _connectionString;
         private static Random random = new Random();
 
-        public Sign_upModel(EmailService emailService, IOptions<EmailSettings> emailSettings, IConfiguration configuration)
+        public Sign_upModel(IEmailService emailService, IOptions<EmailSettings> emailSettings, IConfiguration configuration)
         {
             _emailService = emailService;
             _emailSettings = emailSettings.Value;

@@ -8,24 +8,7 @@
 }
 <head>
     <link href="/css/Single_movie.css" rel="stylesheet" />
-    <style>
-        #noMoviesMessage {
-            display: none; /* Initially hidden */
-            color: red;
-            font-size: 24px;
-            text-align: center;
-            width: 100%;
-            height: 99vh; /* Full viewport height minus a small margin */
-            display: flex;
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-            position: absolute; /* To ensure it covers the whole page */
-            top: 0; /* Stick to the top */
-            left: 0; /* Stick to the left */
-            background-color: rgba(255, 255, 255, 0.8); /* Optional: a light background to stand out */
-            z-index: 999; /* Make sure it’s on top of other content */
-        }
-    </style>
+
 
 </head>
 
@@ -105,7 +88,7 @@
                                     window.location.href = '/Single_movie_player?movieId=@Model.Movie.Movieid'; // Redirect to player
                         </text>
                     }
-                                                                                                                                                                    };
+                                                                                                                                                                                                            };
                 </script>
 
 
@@ -118,21 +101,48 @@
                     <input type="hidden" name="movieId" value="@Model.Movie.Movieid" />
                     <input type="hidden" name="actionType" value="addToWatchList" />
                     <div class="form_button">
-                        <button class="mdi mdi-playlist-plus" type="submit" title="Add to Watchlist"></button>
+                        @if (Model.HasUserAddedOnWatchlistMovie)
+                        {
+                            <!-- Show remove icon if the movie is in the watch list -->
+                            <button class="mdi mdi-playlist-remove" type="submit" title="Remove from Watchlist"></button>
+                        }
+                        else
+                        {
+                            <!-- Show add icon if the movie is not in the watch list -->
+                            <button class="mdi mdi-playlist-plus" type="submit" title="Add to Watchlist"></button>
+                        }
                     </div>
                 </form>
+
                 <form method="post">
                     <input type="hidden" name="movieId" value="@Model.Movie.Movieid" />
                     <input type="hidden" name="actionType" value="like" />
                     <div class="form_button">
-                        <button class="mdi mdi-thumb-up" type="submit"></button>
+                        @if (Model.HasUserLikedMovie)
+                        {
+                            <!-- Show filled like button if the user has liked the movie -->
+                            <button class="mdi mdi-thumb-up" type="submit"></button>
+                        }
+                        else
+                        {
+                            <!-- Show outline like button if the user has not liked the movie -->
+                            <button class="mdi mdi-thumb-up-outline" type="submit"></button>
+                        }
                     </div>
                 </form>
+
                 <form method="post">
                     <input type="hidden" name="movieId" value="@Model.Movie.Movieid" />
                     <input type="hidden" name="actionType" value="dislike" />
                     <div class="form_button">
-                        <button class="mdi mdi-thumb-down" type="submit"></button>
+                        @if (Model.HasUserDislikedMovie)
+                        {
+                            <button class="mdi mdi-thumb-down" type="submit"></button> <!-- Filled button for already disliked -->
+                        }
+                        else
+                        {
+                            <button class="mdi mdi-thumb-down-outline" type="submit"></button> <!-- Outline button for no dislike -->
+                        }
                     </div>
                 </form>
             </div>
@@ -140,7 +150,7 @@
 
         </section>
 
-       @if (Model.SuggestedMovies.Count() >= 1)
+        @if (Model.SuggestedMovies.Count() >= 1)
         {
             <h2 class="data">Top @Model.Movie.Movietype</h2>
             <div class="main1">
@@ -229,7 +239,7 @@
                 </div>
             </div>
         }
-    
+
     </div>
 
 
