@@ -1,0 +1,63 @@
+﻿@page
+@model Main_Project.Pages.Question_answer.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<head>
+    <style>
+        textarea::-webkit-scrollbar{
+            display: none;
+        }
+    </style>
+</head>
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Question[0].Question1)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Question[0].Answer)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="data">
+                        @foreach (var item in Model.Question)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Question1)
+                                </td>
+                                <td>
+
+                                    <textarea class="form-control">
+                                        @Html.DisplayFor(modelItem => item.Answer)
+                                    </textarea>
+                                </td>
+                                <td>
+                                    <a asp-page="./Edit" asp-route-id="@item.Id"><i style="color: green; font-size:25px;" class="mdi mdi-square-edit-outline"></i></a> |
+                                    <a asp-page="./Details" asp-route-id="@item.Id"><i style="color: deepskyblue; font-size: 25px;" class="mdi mdi-account-details"></i></a> |
+                                    <a asp-page="./Delete" asp-route-id="@item.Id"><i style="color: red; font-size: 25px;" class="mdi mdi-delete"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

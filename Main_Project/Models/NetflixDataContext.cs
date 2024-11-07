@@ -19,6 +19,7 @@ public partial class NetflixDataContext : DbContext
     public virtual DbSet<MoviesTable> MoviesTables { get; set; }
 
     public virtual DbSet<UserDatum> UserData { get; set; }
+    public virtual DbSet<Question> Question { get; set; }
 
     public virtual DbSet<WatchList> WatchLists { get; set; }
 
@@ -172,6 +173,24 @@ public partial class NetflixDataContext : DbContext
                 .HasForeignKey(d => d.Userid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Watch_list_User_data");
+        });
+
+        modelBuilder.Entity<Question>(entity =>
+        {
+            entity.ToTable("Questions");
+
+
+            entity.Property(e => e.Id).HasColumnName("id");
+
+            entity.Property(e => e.Question1)
+              .HasMaxLength(50)
+              .IsUnicode(false)
+              .HasColumnName("question");
+            entity.Property(e => e.Answer)
+              .HasMaxLength(50)
+              .IsUnicode(false)
+              .HasColumnName("answer");
+
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -33,7 +33,7 @@ namespace Main_Project.Pages.User_Profile_manage
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
-                    // Retrieve user data
+                    // Retrieve user data, including subscription active status from the User_data table
                     string selectUserQuery = "SELECT * FROM User_data WHERE id = @UserId";
                     using (SqlCommand cmd = new SqlCommand(selectUserQuery, con))
                     {
@@ -47,12 +47,21 @@ namespace Main_Project.Pages.User_Profile_manage
                                 id = reader["id"].ToString();
                                 UserRole = reader["role"].ToString();
                                 Subscription_id = reader["subid"].ToString();
+
+                                // Check if the subscription is active from the User_data table
+                                bool subscriptionActive = reader["subscriptionactive"] != DBNull.Value && (bool)reader["subscriptionactive"];
+                                if (!subscriptionActive)
+                                {
+                                    // Subscription is expired
+                                    ModelState.AddModelError(string.Empty, "Your subscription has expired.");
+                                    return; // Exit here since subscription is expired, no need to continue fetching subscription details
+                                }
                             }
                         }
                         con.Close();
                     }
 
-                    // Check if Subscription_id is valid and fetch subscription details
+                    // Check if Subscription_id is valid and fetch subscription details from the Subscription table
                     if (int.TryParse(Subscription_id, out int subscriptionId))
                     {
                         string selectSubscriptionQuery = "SELECT * FROM Subscription WHERE id = @SubscriptionId";
@@ -80,5 +89,7 @@ namespace Main_Project.Pages.User_Profile_manage
                 }
             }
         }
+
+
     }
 }

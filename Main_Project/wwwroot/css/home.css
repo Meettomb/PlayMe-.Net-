@@ -4,6 +4,12 @@
 * {
     margin: 0;
     padding: 0;
+    user-select: none;
+}
+
+/* Allow selection on inputs and textareas */
+input, textarea {
+    user-select: text;
 }
 
 body {

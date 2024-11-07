@@ -156,29 +156,7 @@
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            setInterval(checkSubscriptionStatus, 30000); // Check every 30 seconds
-
-            function checkSubscriptionStatus() {
-                $.ajax({
-                    url: '/api/subscription', // Correct URL for AJAX request
-                    type: 'GET',
-                    success: function (response) {
-                        if (response.status === 'expired') {
-                            alert("Your subscription has expired. Please renew your subscription.");
-                            // Optional: Redirect to a subscription renewal page
-                            // window.location.href = '/RenewSubscription';
-                        }
-                    },
-                    error: function (error) {
-                        console.error("Error checking subscription status:", error);
-                    }
-                });
-            }
-        });
-    </script>
-
+    
 
 </body>
 </html>
