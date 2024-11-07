@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Main_Project.Pages
+namespace Main_Project.Pages.User_Profile_manage
 {
     public class Manage_profileModel : PageModel
     {

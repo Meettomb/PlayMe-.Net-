@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Main_Project.Pages
+namespace Main_Project.Pages.Support_links
 {
-    public class Otp_Page_DesignModel : PageModel
+    public class HelpModel : PageModel
     {
         public void OnGet()
         {

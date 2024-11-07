@@ -9,8 +9,11 @@ namespace Main_Project.Pages.Admin_profile_manage
 {
     public class Create_new_passwordModel : PageModel
     {
-        string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+       private readonly string _connectionString;
+        public Create_new_passwordModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         [BindProperty]
         public string NewPassword { get; set; }
 
@@ -29,7 +32,7 @@ namespace Main_Project.Pages.Admin_profile_manage
             string sessionEmail = HttpContext.Session.GetString("email");
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     // Hash the new password
                     var passwordHasher = new PasswordHasher<object>();

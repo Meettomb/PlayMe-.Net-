@@ -15,11 +15,14 @@ namespace Main_Project.Pages.Admin_profile_manage
     public class Check_old_passwordModel : PageModel
     {
         public List<user_regi> userlist = new List<user_regi>();
-        string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-        private readonly IEmailService _emailService; 
+        private readonly IEmailService _emailService;
 
-        public Check_old_passwordModel(IEmailService emailService) 
+        private readonly string _connectionString;
+      
+
+        public Check_old_passwordModel(IEmailService emailService, IConfiguration configuration) 
         {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
             _emailService = emailService;
         }
         public string UserName { get; set; }
@@ -35,7 +38,7 @@ namespace Main_Project.Pages.Admin_profile_manage
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT id, username, dob, gender, profilepic FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -64,7 +67,7 @@ namespace Main_Project.Pages.Admin_profile_manage
             string sessionEmail = HttpContext.Session.GetString("email");
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT password FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))

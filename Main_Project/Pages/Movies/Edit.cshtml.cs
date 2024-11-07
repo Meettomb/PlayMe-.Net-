@@ -17,14 +17,16 @@ namespace Main_Project.Pages.Movies
     {
         private readonly Main_Project.Models.NetflixDataContext _context;
         private IHostingEnvironment _environment;
+        private readonly string _connectionString;
 
         public List<Movie_category_table> category { get; set; } = new List<Movie_category_table>();
 
         [BindProperty]
         public List<string> SelectedCategories { get; set; }
 
-        public EditModel(Main_Project.Models.NetflixDataContext context, IHostingEnvironment environment)
+        public EditModel(Main_Project.Models.NetflixDataContext context, IHostingEnvironment environment, IConfiguration configuration)
         {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
             _context = context;
             _environment = environment;
         }
@@ -40,14 +42,13 @@ namespace Main_Project.Pages.Movies
         public string email { get; set; }
         public string profilepic { get; set; }
 
-        public string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             // Fetch user details from session
             string sessionEmail = HttpContext.Session.GetString("email");
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -69,7 +70,7 @@ namespace Main_Project.Pages.Movies
             }
 
             // Fetch categories from Movie_category_table
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "SELECT * FROM Movie_category_table";
                 using (SqlCommand cmd = new SqlCommand(query, con))

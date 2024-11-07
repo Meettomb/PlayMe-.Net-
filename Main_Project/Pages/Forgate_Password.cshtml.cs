@@ -10,8 +10,11 @@ namespace Main_Project.Pages
 {
     public class Forgate_PasswordModel : PageModel
     {
-        private readonly string _connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+        private readonly string _connectionString;
+        public Forgate_PasswordModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         [BindProperty]
         public string NewPassword { get; set; }
 

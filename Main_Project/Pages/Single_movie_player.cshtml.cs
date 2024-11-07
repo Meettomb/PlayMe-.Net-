@@ -20,15 +20,15 @@ namespace Main_Project.Pages
         private readonly IConfiguration _configuration;
         private readonly SqlConnection _connection;
 
+        private readonly string  _connectionString;
 
-
-        public string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+        
         public Single_movie_playerModel(NetflixDataContext context, ILogger<Single_movieModel> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
-            _configuration = configuration;
+
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
 
 
@@ -70,7 +70,7 @@ namespace Main_Project.Pages
             // Fetch user details if the session email exists
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -124,7 +124,7 @@ namespace Main_Project.Pages
 
             if (sessionUserId.HasValue) // Check if the user ID is present
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     // Prepare the SQL query to select top 5 records ordered by searchDateTime in ascending order
                     string query = "SELECT TOP 5 * FROM Search_history WHERE userid = @UserId ORDER BY searchDateTime DESC";
@@ -164,7 +164,7 @@ namespace Main_Project.Pages
 
 
             // Load movie categories
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string quary = "select * from Movie_category_table";
                 using (SqlCommand cmd = new SqlCommand(quary, con))
@@ -210,7 +210,7 @@ namespace Main_Project.Pages
             // Determine if the movie is completed (parse from "1" or "0")
             bool movieCompleted = moviecomplet == "1";  // '1' for true, '0' for false
 
-            using (SqlConnection conn = new SqlConnection(connectionstring))
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 await conn.OpenAsync();
 

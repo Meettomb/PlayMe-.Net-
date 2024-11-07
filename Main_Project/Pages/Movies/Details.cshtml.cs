@@ -14,10 +14,11 @@ namespace Main_Project.Pages.Movies
     public class DetailsModel : PageModel
     {
         private readonly Main_Project.Models.NetflixDataContext _context;
-
-        public DetailsModel(Main_Project.Models.NetflixDataContext context)
+        private readonly string _connectionString;
+        public DetailsModel(Main_Project.Models.NetflixDataContext context, IConfiguration configuration)
         {
             _context = context;
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
         public string UserName { get; set; }
         public string email { get; set; }
@@ -25,13 +26,12 @@ namespace Main_Project.Pages.Movies
         public MoviesTable MoviesTable { get; set; } = default!;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+           
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))

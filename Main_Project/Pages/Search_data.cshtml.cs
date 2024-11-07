@@ -14,10 +14,11 @@ namespace Main_Project.Pages
     public class Search_dataModel : PageModel
     {
         private readonly NetflixDataContext _context;
-        private readonly string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
-        public Search_dataModel(NetflixDataContext context)
+        private readonly string _connectionString;
+      
+        public Search_dataModel(NetflixDataContext context, IConfiguration configuration)
         {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
             _context = context;
         }
 
@@ -44,7 +45,7 @@ namespace Main_Project.Pages
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -81,7 +82,7 @@ namespace Main_Project.Pages
 
             if (sessionUserId.HasValue) // Check if the user ID is present
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     // Prepare the SQL query to select top 5 records ordered by searchDateTime in ascending order
                     string query = "SELECT TOP 5 * FROM Search_history WHERE userid = @UserId ORDER BY searchDateTime DESC";
@@ -119,9 +120,8 @@ namespace Main_Project.Pages
             }
 
 
-
             // Fetch movie categories
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "SELECT * FROM Movie_category_table";
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -152,7 +152,7 @@ namespace Main_Project.Pages
                 if (userId.HasValue) // Check if userId is valid
                 {
                     // Insert search history directly into the database
-                    using (SqlConnection con = new SqlConnection(connectionstring))
+                    using (SqlConnection con = new SqlConnection(_connectionString))
                     {
                         string insertQuery = "INSERT INTO Search_history (userid, searchtext, searchDateTime) VALUES (@UserId, @SearchText, @SearchDateTime)";
                         using (SqlCommand cmd = new SqlCommand(insertQuery, con))

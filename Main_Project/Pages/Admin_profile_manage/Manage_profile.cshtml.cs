@@ -16,14 +16,14 @@ namespace Main_Project.Pages.Admin_profile_manage
     {
         private readonly IEmailService _emailService;
         private readonly ILogger<Manage_profileModel> _logger; // Add logger for debugging
-
+        private readonly string _connectionString;
         public List<user_regi> userlist = new List<user_regi>();
-        string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
-        public Manage_profileModel(IEmailService emailService, ILogger<Manage_profileModel> logger)
+       
+        public Manage_profileModel(IEmailService emailService, ILogger<Manage_profileModel> logger, IConfiguration configuration)
         {
             _emailService = emailService;
             _logger = logger;
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
 
         public string UserName { get; set; }
@@ -41,7 +41,7 @@ namespace Main_Project.Pages.Admin_profile_manage
             string sessionEmail = HttpContext.Session.GetString("email");
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string selectQuery = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(selectQuery, con))
@@ -94,7 +94,7 @@ namespace Main_Project.Pages.Admin_profile_manage
                     return RedirectToPage("/Sign_in");
                 }
 
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string updateQuery = "UPDATE User_data SET profilepic = @profilePic WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(updateQuery, con))
@@ -122,7 +122,7 @@ namespace Main_Project.Pages.Admin_profile_manage
             string dob = Request.Form["dob"];
             string gender = Request.Form["gender"];
 
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string updateQuery = @"
                 UPDATE User_data 

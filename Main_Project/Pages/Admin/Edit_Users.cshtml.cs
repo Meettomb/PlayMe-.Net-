@@ -9,17 +9,21 @@ namespace Netflix.Pages.Admin
     public class Edit_UsersModel : PageModel
     {
         public user_regi user = new user_regi();
-        string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
         public string UserName { get; set; }
         public string email { get; set; }
         public string profilepic { get; set; }
+        private readonly string _connectionString;
+        public Edit_UsersModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         public void OnGet()
         {
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -42,7 +46,7 @@ namespace Netflix.Pages.Admin
 
             int userid = Convert.ToInt32(Request.Query["userid"].ToString());
             DataSet ds = new DataSet();
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "select * from User_data where id=" + userid + "";
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -83,7 +87,7 @@ namespace Netflix.Pages.Admin
                 isactive = Request.Form["currentstatus"].ToString();
 
             string query = "update User_data set isactive = '" + isactive + "', role = '"+ role +"' where id = " + userid + " ";
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {

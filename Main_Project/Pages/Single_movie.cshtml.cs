@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
 using Netflix.Models;
 using System.Data;
+using System.Configuration;
 
 namespace Main_Project.Pages
 {
@@ -17,12 +18,13 @@ namespace Main_Project.Pages
         private readonly NetflixDataContext _context;
         private readonly ILogger<Single_movieModel> _logger;
 
-        string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
 
-        public Single_movieModel(NetflixDataContext context, ILogger<Single_movieModel> logger)
+        private readonly string _connectionString;
+        public Single_movieModel(NetflixDataContext context, ILogger<Single_movieModel> logger, IConfiguration configuration)
         {
             _context = context;
             _logger = logger;
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
 
         public MoviesTable Movie { get; set; }
@@ -75,7 +77,7 @@ namespace Main_Project.Pages
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -107,7 +109,7 @@ namespace Main_Project.Pages
 
             if (sessionUserId.HasValue) // Check if the user ID is present
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     // Prepare the SQL query to select top 5 records ordered by searchDateTime in ascending order
                     string query = "SELECT TOP 5 * FROM Search_history WHERE userid = @UserId ORDER BY searchDateTime DESC";
@@ -146,7 +148,7 @@ namespace Main_Project.Pages
 
 
             // Fetch the user's subscription status from the database
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "SELECT subscriptionactive FROM User_data WHERE email = @Email";
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -209,7 +211,7 @@ namespace Main_Project.Pages
                 }
             }
 
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "SELECT * FROM Movie_category_table";
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -378,7 +380,7 @@ namespace Main_Project.Pages
         // Helper method to execute raw SQL commands asynchronously
         private async Task ExecuteSqlCommandAsync(string query)
         {
-            using (var connection = new SqlConnection(connectionstring))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var command = new SqlCommand(query, connection))
@@ -390,7 +392,7 @@ namespace Main_Project.Pages
         // Helper method to check if a record exists asynchronously
         private async Task<bool> CheckIfExistsAsync(string query)
         {
-            using (var connection = new SqlConnection(connectionstring))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
                 using (var command = new SqlCommand(query, connection))
@@ -416,7 +418,7 @@ namespace Main_Project.Pages
                 try
                 {
                     // Using Entity Framework or ADO.NET to insert the user activity
-                    using (SqlConnection con = new SqlConnection(connectionstring))
+                    using (SqlConnection con = new SqlConnection(_connectionString))
                     {
                         string query = "INSERT INTO User_activity (userid, movietype, DateTime) VALUES (@UserId, @MovieType, @DateTime)";
                         using (SqlCommand cmd = new SqlCommand(query, con))

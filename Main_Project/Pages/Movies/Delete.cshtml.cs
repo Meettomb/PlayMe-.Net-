@@ -14,10 +14,12 @@ namespace Main_Project.Pages.Movies
     public class DeleteModel : PageModel
     {
         private readonly Main_Project.Models.NetflixDataContext _context;
+        private readonly string _connectionString;
 
-        public DeleteModel(Main_Project.Models.NetflixDataContext context)
+        public DeleteModel(Main_Project.Models.NetflixDataContext context, IConfiguration configuration)
         {
             _context = context;
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
 
         [BindProperty]
@@ -27,14 +29,13 @@ namespace Main_Project.Pages.Movies
         public string profilepic { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+            
 
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))

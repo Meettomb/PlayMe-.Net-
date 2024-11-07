@@ -10,7 +10,11 @@ namespace Main_Project.Pages.Subscription
     {
         public subscription subscription = new subscription();
 
-        string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
+        private readonly string _connectionString;
+        public Add_subscriptionModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         public string UserName { get; set; }
         public string id { get; set; }
         public string email { get; set; }
@@ -25,7 +29,7 @@ namespace Main_Project.Pages.Subscription
             // If session email is not null, fetch user data from the database
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string selectQuery = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(selectQuery, con))
@@ -65,7 +69,7 @@ namespace Main_Project.Pages.Subscription
                 string insertquery = "INSERT INTO subscription (price, planeduration, planedetail, planename) VALUES (@price, @planeduration, @planedetail, @planename)";
 
                 // Using SqlConnection
-                using (SqlConnection connection = new SqlConnection(connectionstring))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     await connection.OpenAsync();  // Open the connection
 

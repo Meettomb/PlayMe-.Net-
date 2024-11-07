@@ -10,6 +10,13 @@ namespace Main_Project.Pages.Movies
     public class Add_Movies_CategoryModel : PageModel
     {
         public List<Movie_category_table> category = new List<Movie_category_table>();
+
+        private readonly string _connectionString;
+        public Add_Movies_CategoryModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
+
         public string UserName { get; set; }
         public string email { get; set; }
         public string profilepic { get; set; }
@@ -18,13 +25,12 @@ namespace Main_Project.Pages.Movies
 
         public IActionResult OnGet()
         {
-            string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+           
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -49,7 +55,7 @@ namespace Main_Project.Pages.Movies
 
 
 
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "select * from Movie_category_table";
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -73,8 +79,7 @@ namespace Main_Project.Pages.Movies
 
         public IActionResult OnPost()
         {
-            string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 Movie_category_table category = new Movie_category_table();
                 category.moviecategory = Request.Form["moviecategory"].ToString();
@@ -92,8 +97,7 @@ namespace Main_Project.Pages.Movies
 
         public IActionResult OnGetDelete(int categoryid)
         {
-            string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "DELETE FROM Movie_category_table WHERE categoryid = @categoryid";
                 using (SqlCommand cmd = new SqlCommand(query, con))

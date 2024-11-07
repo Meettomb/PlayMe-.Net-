@@ -3,16 +3,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Configuration;
 
-namespace Main_Project.Pages
+namespace Main_Project.Pages.Support_links
 {
     public class PrivacyModel : PageModel
     {
-        private readonly ILogger<PrivacyModel> _logger; 
+        private readonly ILogger<PrivacyModel> _logger;
         private readonly string _connectionString;
 
         public PrivacyModel(ILogger<PrivacyModel> logger, IConfiguration configuration)
         {
-            _logger = logger; 
+            _logger = logger;
             _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
         public string UserName { get; set; }
@@ -50,7 +50,7 @@ namespace Main_Project.Pages
                 }
             }
         }
-    
+
     }
 
 }

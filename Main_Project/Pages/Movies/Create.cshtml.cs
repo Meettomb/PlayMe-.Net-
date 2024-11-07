@@ -17,6 +17,7 @@ namespace Main_Project.Pages.Movies
     {
         private readonly Main_Project.Models.NetflixDataContext _context;
         private IHostingEnvironment _environment;
+        private readonly string _connectionString;
 
         public List<Movie_category_table> category = new List<Movie_category_table>();
 
@@ -26,10 +27,11 @@ namespace Main_Project.Pages.Movies
         [BindProperty]
         public List<IFormFile> UplodeMovies { get; set; }
 
-        public CreateModel(Main_Project.Models.NetflixDataContext context, IHostingEnvironment environment)
+        public CreateModel(Main_Project.Models.NetflixDataContext context, IHostingEnvironment environment, IConfiguration configuration)
         {
             _context = context;
             _environment = environment;
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
 
         public string UserName { get; set; }
@@ -38,13 +40,12 @@ namespace Main_Project.Pages.Movies
 
         public IActionResult OnGet()
         {
-            string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+            
             string sessionEmail = HttpContext.Session.GetString("email");
 
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -65,7 +66,7 @@ namespace Main_Project.Pages.Movies
                 }
             }
 
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "SELECT * FROM Movie_category_table";
                 using (SqlCommand cmd = new SqlCommand(query, con))

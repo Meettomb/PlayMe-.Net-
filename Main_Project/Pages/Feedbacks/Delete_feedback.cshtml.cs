@@ -7,7 +7,12 @@ namespace Main_Project.Pages.Feedbacks
     public class Delete_feedbackModel : PageModel
     {
 
-        string connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
+        private readonly string _connectionString;
+        public Delete_feedbackModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
+
 
         [BindProperty]
         public int FeedbackId { get; set; }
@@ -29,7 +34,7 @@ namespace Main_Project.Pages.Feedbacks
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -58,7 +63,7 @@ namespace Main_Project.Pages.Feedbacks
         private void FetchFeedbackDetails()
         {
            
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 con.Open();
                 string query = @"
@@ -94,9 +99,7 @@ namespace Main_Project.Pages.Feedbacks
                 return RedirectToPage("/Feedbacks/Show_all_feedback");
             }
 
-            string connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 con.Open();
                 string query = "DELETE FROM Feedback_table WHERE feedbackid = @FeedbackId";
