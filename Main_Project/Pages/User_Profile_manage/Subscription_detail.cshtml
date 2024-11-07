@@ -1,0 +1,34 @@
+﻿@page
+@model Main_Project.Pages.User_Profile_manage.Subscription_detailModel
+@{
+    Layout = "_Setting";
+    ViewData["title"] = "Subscription Details";
+}
+
+
+    <h1 class="your_subscription_details">Your Subscription Details</h1>
+    <div class="subscription_container">
+        <div class="subscription_div">
+
+            @if (!string.IsNullOrEmpty(Model.SubscriptionName))
+            {
+                <p class="SubscriptionName"> @Model.SubscriptionName</p>
+                <p class="SubscriptionPrice"> ₹@Model.SubscriptionPrice</p>
+                <p class="SubscriptionDuration"> @Model.SubscriptionDuration days</p>
+
+                <!-- Display subscription details, splitting by '+' if needed -->
+                @if (!string.IsNullOrEmpty(Model.SubscriptionDetail))
+                {
+                    foreach (var detail in Model.SubscriptionDetail.Split('+'))
+                    {
+                        <p class="SubscriptionDetail"><i class="mdi mdi-information-variant"></i> @detail</p>
+                    }
+                }
+
+            }
+            else
+            {
+                <p>No subscription details available.</p>
+            }
+        </div>
+    </div>

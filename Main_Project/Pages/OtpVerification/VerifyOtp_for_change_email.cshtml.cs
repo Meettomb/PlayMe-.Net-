@@ -6,8 +6,11 @@ namespace Main_Project.Pages.OtpVerification
 {
     public class VerifyOtp_for_change_emailModel : PageModel
     {
-        private readonly string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+        private readonly string _connectionString;
+        public VerifyOtp_for_change_emailModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         public string ErrorMessage { get; set; }
 
         public void OnGet()
@@ -23,7 +26,7 @@ namespace Main_Project.Pages.OtpVerification
             {
                 string newEmail = HttpContext.Session.GetString("NewEmail");
 
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string updateQuery = "UPDATE User_data SET email = @NewEmail WHERE email = @OldEmail";
                     using (SqlCommand cmd = new SqlCommand(updateQuery, con))
@@ -40,7 +43,7 @@ namespace Main_Project.Pages.OtpVerification
                 // Update session email
                 HttpContext.Session.SetString("email", newEmail);
                 TempData["message"] = "Email updated successfully.";
-                return RedirectToPage("/Manage_profile");
+                return RedirectToPage("/User_Profile_manage/Manage_profile");
             }
             else
             {

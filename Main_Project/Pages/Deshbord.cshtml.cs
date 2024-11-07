@@ -41,7 +41,11 @@ namespace Main_Project.Pages
         public decimal MonthBeforePreviousPercentage { get; set; }
 
 
-
+        private readonly string _connectionString;
+        public DeshbordModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
 
 
 
@@ -52,13 +56,11 @@ namespace Main_Project.Pages
         {
 
 
-            string connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -78,7 +80,7 @@ namespace Main_Project.Pages
                     }
                 }
             }
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 con.Open();
 
@@ -262,16 +264,6 @@ namespace Main_Project.Pages
                 }
 
 
-
-
-                // Pass these values to the view
-
-
-
-
-
-
-
                 // Fetch feedback data and user details
                 string feedbackQuery = @"
                 SELECT TOP 5 f.username, f.feedbackemail, f.feedback, f.userid, 
@@ -304,7 +296,7 @@ namespace Main_Project.Pages
 
 
                 }
-                CalculateUserStatistics(connectionString);
+                CalculateUserStatistics(_connectionString);
             }
             return Page();
         }

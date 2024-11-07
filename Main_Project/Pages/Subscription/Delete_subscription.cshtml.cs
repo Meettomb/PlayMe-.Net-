@@ -11,7 +11,11 @@ namespace Main_Project.Pages.Subscription
 
         public subscription subscription = new subscription();
 
-        string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
+        private readonly string _connectionString;
+        public Delete_subscriptionModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         public string UserName { get; set; }
         public string id { get; set; }
         public string email { get; set; }
@@ -28,7 +32,7 @@ namespace Main_Project.Pages.Subscription
             // If session email is not null, fetch user data from the database
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string selectQuery = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(selectQuery, con))
@@ -59,7 +63,7 @@ namespace Main_Project.Pages.Subscription
             int SubscriptionId = Convert.ToInt32(Request.Query["id"].ToString());
             DataSet ds = new DataSet();
 
-            using (SqlConnection connection = new SqlConnection(connectionstring))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string fetchquery = "SELECT * FROM subscription WHERE id = @id";
 
@@ -98,9 +102,8 @@ namespace Main_Project.Pages.Subscription
                 return RedirectToPage("/Subscription/View_subscription");
             }
 
-            string connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
-            using (SqlConnection con = new SqlConnection(connectionString))
+            
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 con.Open();
                 string query = "DELETE FROM subscription WHERE id = @id";

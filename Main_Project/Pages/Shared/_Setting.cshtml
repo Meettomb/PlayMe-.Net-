@@ -15,6 +15,7 @@
     <!-- Tab icon -->
     <link rel="shortcut icon" href="/image/web_logo-HD.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.min.css" integrity="sha512-/k658G6UsCvbkGRB3vPXpsPHgWeduJwiWGPCGS14IQw3xpr63AEMdA8nMYG2gmYkXitQxDTn6iiK/2fD4T87qA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
     <!-- Icon -->
@@ -48,7 +49,7 @@
                         else
 
                         {
-                            <a href="Sign_in" id=""><span class="mdi mdi-cogs"></span> Settings</a>
+                            <a href="/Sign_in" id=""><span class="mdi mdi-cogs"></span> Settings</a>
 
                         }
                         @if (!string.IsNullOrEmpty(username))
@@ -57,8 +58,6 @@
                             <a href="/Logout?handler=Logout">
                                 <span class="mdi mdi-logout"></span> Logout
                             </a>
-
-
                         }
 
                         else
@@ -80,22 +79,22 @@
                     <div id="popupBox" class="popup-box">
                         <h1>Settings</h1>
                         <ul class="popup_ul">
-                            <a href="/Manage_profile">
+                            <a href="/User_Profile_manage/Manage_profile">
                                 <span class="mdi mdi-account-edit"></span>
                             <li>Manage Profile</li>
                             </a>
 
-                            <a href="/Change_password_page">
+                            <a href="/User_Profile_manage/Change_password_page">
                                 <span class="mdi mdi-lock-reset"></span>
                             <li>Resate Password</li>
                             </a>
 
-                            <a href="/Terms_of_use">
+                            <a href="/Support_links/Terms_of_use">
                                 <span class="mdi mdi-notebook"></span>
                             <li>terms of use</li>
                             </a>
 
-                            <a href="/Privacy">
+                            <a href="/Support_links/Privacy">
                                 <span class="mdi mdi-security"></span>
                             <li>privacy & policy </li>
                             </a>
@@ -108,6 +107,12 @@
                             <a href="/Renew_Subscription/Select_subscription">
                                 <span class="mdi mdi-currency-rupee"></span>
                             <li>Renew your Subscription</li>
+                            </a>
+
+
+                            <a href="/User_Profile_manage/Subscription_detail">
+                                <span class="fa-solid fa-crown"></span>
+                            <li>Subscription Detail</li>
                             </a>
                            
                         </ul>

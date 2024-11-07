@@ -13,8 +13,11 @@ namespace Main_Project.Pages.OtpVerification
         public string Message { get; set; }
         public string NewEmail { get; set; }
 
-        private readonly string connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+        private readonly string _connectionString;
+        public VerifyOtp_for_change_passwordModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         public void OnGet()
         {
             // Fetch newEmail from session
@@ -49,7 +52,7 @@ namespace Main_Project.Pages.OtpVerification
             }
 
             // If OTP is valid, redirect to the page to set a new password
-            return RedirectToPage("/Set_new_password");
+            return RedirectToPage("/User_Profile_manage/Set_new_password");
         }
     }
 }

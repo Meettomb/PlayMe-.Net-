@@ -10,10 +10,11 @@ namespace Main_Project.Pages.Admin_profile_manage
     public class Change_emailModel : PageModel
     {
         private readonly IEmailService _emailService;
-        private string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
-        public Change_emailModel(IEmailService emailService)
+        private readonly string _connectionString;
+        
+        public Change_emailModel(IEmailService emailService, IConfiguration configuration)
         {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
             _emailService = emailService;
         }
 
@@ -71,7 +72,7 @@ namespace Main_Project.Pages.Admin_profile_manage
             string sessionEmail = HttpContext.Session.GetString("email");
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string selectQuery = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(selectQuery, con))

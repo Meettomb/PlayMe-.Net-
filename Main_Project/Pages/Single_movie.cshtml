@@ -36,13 +36,13 @@
 @if (Model.Movie != null)
 {
     <div>
-
         <div class="singlepage_main_div">
             <div class="singlepage_movie_poster">
-                <img src="/poster/@Model.Movie.Movieposter2" alt="Movie Poster" loading="lazy">
+                <img src="/poster/@Model.Movie.Movieposter2" alt="Movie Poster" loading="lazy" class="big_poster">
                 <input type="hidden" name="" value="/@Model.Movie.Moviename" />
             </div>
         </div>
+
         <section class="section1">
             <div class="singlepage_moviedetails">
                 <p class="singlepage_moviename">@Model.Movie.Moviename</p>
@@ -59,16 +59,13 @@
                     bool subscriptionActive = subscriptionActiveString != null && subscriptionActiveString == "True";
                 }
 
-                <a id="watchButton" class="watch" href="#">
-
-                    Watch
-                </a>
+                <a id="watchButton" class="watch" href="#">Watch</a>
 
 
 
                 <script>
                     document.getElementById("watchButton").onclick = function (event) {
-                        event.preventDefault(); // Prevent default anchor click behavior
+                        event.preventDefault(); // prevent default anchor click behavior
 
                     @if (userId == null)
                     {
@@ -88,14 +85,8 @@
                                     window.location.href = '/Single_movie_player?movieId=@Model.Movie.Movieid'; // Redirect to player
                         </text>
                     }
-                                                                                                                                                                                                            };
+                                                                                                                                                                                                                                                                        };
                 </script>
-
-
-
-
-
-
 
                 <form method="post">
                     <input type="hidden" name="movieId" value="@Model.Movie.Movieid" />
@@ -149,24 +140,24 @@
 
 
         </section>
-
+        <hr />
         @if (Model.SuggestedMovies.Count() >= 1)
         {
-            <h2 class="data">Top @Model.Movie.Movietype</h2>
+            <h3 class="h3">Top @Model.Movie.Movietype</h3>
             <div class="main1">
                 <div class="section2">
                     <div class="slider" id="slider1">
                         <div class="slider-wrapper">
                             @foreach (var suggestion in Model.SuggestedMovies)
                             {
-                                <div class="movie_poster data">
+                                <div class="movie_poster1">
                                     <form method="post" action="/Home?handler=SaveMovieType" id="form-@suggestion.Movieid">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="movietype" value="@suggestion.Movietype" />
                                         <input type="hidden" name="movieid" value="@suggestion.Movieid" />
                                         <a href="#" class="openPopup" onclick="document.getElementById('form-@suggestion.Movieid').submit(); return false;">
                                             <img src="/poster/@suggestion.Movieposter2" alt="@suggestion.Moviename" loading="lazy">
-                                            <span>@suggestion.Moviename</span>
+                                            <span class="movie_name">@suggestion.Moviename</span>
                                         </a>
                                     </form>
                                 </div>
@@ -179,26 +170,23 @@
             </div>
         }
 
-
-
-
         @if (Model.IMDBrating.Count() >= 1)
         {
-            <h3 class="data">Top 10 IMDB rated movies</h3>
+            <h3 class="h3">Top 10 IMDB rated movies</h3>
             <div class="main1">
                 <div class="section2">
                     <div class="slider" id="slider3">
                         <div class="slider-wrapper">
                             @foreach (var IMDBrating in Model.IMDBrating)
                             {
-                                <div class="movie_poster data">
+                                <div class="movie_poster1">
                                     <form method="post" action="/Home?handler=SaveMovieType" id="form-@IMDBrating.Movieid">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="movietype" value="@IMDBrating.Movietype" />
                                         <input type="hidden" name="movieid" value="@IMDBrating.Movieid" />
                                         <a href="#" class="openPopup" onclick="document.getElementById('form-@IMDBrating.Movieid').submit(); return false;">
                                             <img src="/poster/@IMDBrating.Movieposter2" alt="@IMDBrating.Moviename" loading="lazy">
-                                            <span>@IMDBrating.Moviename</span>
+                                            <span class="movie_name">@IMDBrating.Moviename</span>
                                         </a>
                                     </form>
                                 </div>
@@ -216,27 +204,23 @@
 
             <div class="main2">
                 <div class="section3">
-                    <div class="slider" id="slider2">
-                        <div class="slider-wrapper">
-                            @foreach (var Allmovies in Model.Allmovies)
-                            {
-                                <div class="movie_poster data">
-                                    <form method="post" action="/Home?handler=SaveMovieType" id="form-@Allmovies.Movieid">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="movietype" value="@Allmovies.Movietype" />
-                                        <input type="hidden" name="movieid" value="@Allmovies.Movieid" />
-                                        <a href="#" class="openPopup" onclick="document.getElementById('form-@Allmovies.Movieid').submit(); return false;">
-                                            <img src="/poster/@Allmovies.Movieposter2" alt="@Allmovies.Moviename" loading="lazy">
-                                            <span>@Allmovies.Moviename</span>
-                                        </a>
-                                    </form>
-                                </div>
-                            }
+
+                    @foreach (var Allmovies in Model.Allmovies)
+                    {
+                        <div class="movie_poster data">
+                            <form method="post" action="/Home?handler=SaveMovieType" id="form-@Allmovies.Movieid">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="movietype" value="@Allmovies.Movietype" />
+                                <input type="hidden" name="movieid" value="@Allmovies.Movieid" />
+                                <a href="#" class="openPopup" onclick="document.getElementById('form-@Allmovies.Movieid').submit(); return false;">
+                                    <img src="/poster/@Allmovies.Movieposter2" alt="@Allmovies.Moviename" loading="lazy">
+                                    <span>@Allmovies.Moviename</span>
+                                </a>
+                            </form>
                         </div>
-                        <button class="slider-button prev">&#10094;</button>
-                        <button class="slider-button next">&#10095;</button>
-                    </div>
+                    }
                 </div>
+
             </div>
         }
 
@@ -255,8 +239,6 @@ else
 }
 
 <script src="/js/script.js"></script>
-
-
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -279,8 +261,8 @@ else
             }
 
             let currentIndex = 0;
-            const posterWidth = slider.querySelector('.movie_poster').offsetWidth;
-            const totalMovies = slider.querySelectorAll('.movie_poster').length;
+            const posterWidth = slider.querySelector('.movie_poster1').offsetWidth;
+            const totalMovies = slider.querySelectorAll('.movie_poster1').length;
             const moviesToShow = Math.floor(sliderWrapper.parentElement.offsetWidth / (posterWidth + 20)); // 20 is the margin on each side
 
             console.log(`Total movies: ${totalMovies}, Movies to show: ${moviesToShow}`);
@@ -351,4 +333,3 @@ else
         initializeSlider('slider3');
     });
 </script>
-

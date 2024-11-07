@@ -15,11 +15,12 @@
 
     <!-- Tab icon -->
     <link rel="shortcut icon" href="/image/web_logo-HD.png" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <!-- Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/assets/vendors/mdi/css/materialdesignicons.min.css">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 </head>
 <body>
@@ -120,23 +121,23 @@
                             @if (!string.IsNullOrEmpty(username))
                             {
                                 <ul class="popup_ul">
-                                    <a href="/Manage_profile?email=@Model.email">
+                                    <a href="/User_Profile_manage/Manage_profile">
                                         <span class="mdi mdi-account-edit"></span>
                                     <li>Manage Profile</li>
                                     </a>
 
 
-                                    <a href="/Change_password_page">
+                                    <a href="/User_Profile_manage/Change_password_page">
                                         <span class="mdi mdi-lock-reset"></span>
                                     <li>Change Password</li>
                                     </a>
 
-                                    <a href="/Terms_of_use">
+                                    <a href="/Support_links/Terms_of_use">
                                         <span class="mdi mdi-notebook"></span>
                                     <li>terms of use</li>
                                     </a>
 
-                                    <a href="/Privacy">
+                                    <a href="/Support_links/Privacy">
                                         <span class="mdi mdi-security"></span>
                                     <li>privacy & policy </li>
                                     </a>
@@ -147,10 +148,15 @@
                                     </a>
 
                                     <a href="/Renew_Subscription/Select_subscription">
-                                        <span class="mdi mdi-currency-rupee">₹</span>
+                                        <span class="fa-solid fa-indian-rupee-sign"></span>
                                     <li>Renew your Subscription</li>
                                     </a>
 
+                                    <a href="/User_Profile_manage/Subscription_detail">
+                                        <span class="fa-solid fa-crown"></span>
+                                    <li>Subscription Detail</li>
+                                    </a>
+@* 
                                     <a href="/" class="delete_user" style="color: red;">
                                         <span style="color: red;" class="mdi mdi-delete"></span>
                                     <li>Delete your account permament</li>
@@ -168,7 +174,7 @@
                                             </form>
                                         </div>
                                     </div>
-
+ *@
                                 </ul>
                             }
                             else
@@ -201,7 +207,6 @@
                     <li><a href="">Terms of Use</a></li>
                     <li><a href="">Privacy & Policy</a></li>
                     <li><a href="">Send us feedback</a></li>
-                    <li><a href="">Help</a></li>
                     <li>&copy; <span id="currentYear"></span> PLAYME. All rights reserved.</li>
                 </ul>
             </div>
@@ -266,10 +271,10 @@
             // Function to handle filtering and resetting
             function filterMovies(value) {
                 if (value.length > 0) {
-                    $(".singlepage_main_div, .cetegory_page_main_div, .main1, .main3, .footer_container, .wtachhidtory, .suggestionh2, .section1, .detail, #moviePlayer, .big_poster, .small_poster,.next, .prev").hide();
+                    $(".singlepage_main_div, .cetegory_page_main_div, .main1, .main3, .footer_container, .wtachhidtory, .suggestionh2, .section1, .detail, #moviePlayer, .big_poster, .small_poster,.next, .prev, .h3").hide();
                     $(".main2").show();
                 } else {
-                    $(".singlepage_main_div, .cetegory_page_main_div, .main1, .main3, .footer_container, .wtachhidtory, .suggestionh2, .section1, .detail, #moviePlayer, .small_poster, .big_poster, .next, .prev").show();
+                    $(".singlepage_main_div, .cetegory_page_main_div, .main1, .main3, .footer_container, .wtachhidtory, .suggestionh2, .section1, .detail, #moviePlayer, .small_poster, .big_poster, .next, .prev, .h3").show();
                     $(".main2").hide();
                     $("#noMoviesMessage").hide();
                 }
@@ -331,30 +336,6 @@
             });
         });
     </script>
-
-    @* <script>
-        $(document).ready(function () {
-            setInterval(checkSubscriptionStatus, 30000); // Check every 30 seconds
-
-            function checkSubscriptionStatus() {
-                $.ajax({
-                    url: '/api/subscription', // Route to check status
-                    type: 'GET',
-                    success: function (response) {
-                        if (response.status === 'expired') {
-                            alert("Your subscription has expired. Please renew your subscription.");
-                            // Optional: Redirect to a subscription renewal page
-                            // window.location.href = '/RenewSubscription';
-                        }
-                    },
-                    error: function (error) {
-                        console.error("Error checking subscription status:", error);
-                    }
-                });
-            }
-        });
-    </script> *@
-
 
 
 </body>

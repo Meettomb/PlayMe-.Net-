@@ -11,15 +11,21 @@ namespace Main_Project.Pages.Admin
         public string UserName { get; set; }
         public string email { get; set; }
         public string profilepic { get; set; }
+
+
+        private readonly string _connectionString;
+        public Deleted_userModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         public IActionResult OnGet()
         {
-            string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+            
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -41,7 +47,7 @@ namespace Main_Project.Pages.Admin
             }
 
 
-            using (SqlConnection con = new SqlConnection(connectionstring))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string quary = "select * from User_data where isactive='" + false + "'";
                 using (SqlCommand cmd = new SqlCommand(quary, con))

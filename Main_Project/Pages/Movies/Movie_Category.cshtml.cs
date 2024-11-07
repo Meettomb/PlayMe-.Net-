@@ -8,6 +8,7 @@ using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace Main_Project.Pages.Movies
 {
@@ -15,11 +16,14 @@ namespace Main_Project.Pages.Movies
     {
 
         private readonly NetflixDataContext _context;
-        string connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
 
-        public Movie_CategoryModel(NetflixDataContext context)
+        private readonly string _connectionString;
+
+        public Movie_CategoryModel(NetflixDataContext context, IConfiguration configuration)
         {
             _context = context;
+
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
         public string UserName { get; set; }
         public string profilepic { get; set; }
@@ -41,7 +45,7 @@ namespace Main_Project.Pages.Movies
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -69,7 +73,7 @@ namespace Main_Project.Pages.Movies
 
             if (sessionUserId.HasValue) // Check if the user ID is present
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT TOP 5 * FROM Search_history WHERE userid = @UserId ORDER BY searchDateTime DESC";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -119,7 +123,7 @@ namespace Main_Project.Pages.Movies
 
         private async Task LoadMovieCategoriesAsync()
         {
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "SELECT * FROM Movie_category_table";
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -143,7 +147,7 @@ namespace Main_Project.Pages.Movies
 
         private async Task LoadMoviesByCategoryAsync(string category)
         {
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = "SELECT * FROM Movies_table WHERE Movietype LIKE @category";
                 using (SqlCommand cmd = new SqlCommand(query, con))
@@ -179,7 +183,7 @@ namespace Main_Project.Pages.Movies
             {
                 try
                 {
-                    using (SqlConnection con = new SqlConnection(connectionString))
+                    using (SqlConnection con = new SqlConnection(_connectionString))
                     {
                         string query = "INSERT INTO User_activity (userid, movietype, DateTime) VALUES (@UserId, @MovieType, @DateTime)";
                         using (SqlCommand cmd = new SqlCommand(query, con))

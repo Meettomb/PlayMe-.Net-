@@ -10,10 +10,12 @@ namespace Main_Project.Pages
     public class SendOtpModel : PageModel
     {
         private readonly IEmailService _emailService;
-        private readonly string _connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
+        private readonly string _connectionString;
+    
 
-        public SendOtpModel(IEmailService emailService)
+        public SendOtpModel(IEmailService emailService, IConfiguration configuration)
         {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
             _emailService = emailService;
         }
 

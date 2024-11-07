@@ -14,11 +14,12 @@ namespace Main_Project.Pages
     public class HomeModel : PageModel
     {
         private readonly NetflixDataContext _context;
-        private readonly string _connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
+        private readonly string _connectionString;
+       
 
-
-        public HomeModel(NetflixDataContext context)
+        public HomeModel(NetflixDataContext context, IConfiguration configuration)
         {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
             _context = context;
         }
 

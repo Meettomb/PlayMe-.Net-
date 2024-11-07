@@ -16,10 +16,9 @@
 {
     <main class="cetegory_page_main_div">
         <section class="movie_div">
-            <div class="card_div">
                 @foreach (var item in Model.Movies)
                 {
-                    <div class="movie_poster">
+                    <div class="movie_poster5">
                         <form method="post" action="/Home?handler=SaveMovieType" id="form-@item.Movieid">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="movietype" value="@item.Movietype" />
@@ -31,28 +30,25 @@
                         </form>
                     </div>
                 }
-            </div>
         </section>
     </main>
 
-    <main class="main2">
+    <main class="main2 cetegory_page_main_div">
         <section class="movie_div">
-            <div class="card_div">
                 @foreach (var data in Model.AllMovies) // Change to use the new AllMovies property
                 {
-                    <div class="movie_poster data">
+                    <div class="movie_poster5 data">
                         <form method="post" action="/Home?handler=SaveMovieType" id="form-@data.Movieid">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="movietype" value="@data.Movietype" />
                             <input type="hidden" name="movieid" value="@data.Movieid" />
                             <a href="#" class="openPopup" onclick="document.getElementById('form-@data.Movieid').submit(); return false;">
-                                <img src="/poster/@data.Movieposter" alt="@data.Moviename" loading="lazy">
+                                <img src="/poster/@data.Movieposter2" alt="@data.Moviename" loading="lazy">
                                 <span>@data.Moviename</span>
                             </a>
                         </form>
                     </div>
                 }
-            </div>
 
         </section>
     </main>

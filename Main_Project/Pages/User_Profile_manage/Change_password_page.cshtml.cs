@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Identity;
 
-namespace Main_Project.Pages
+namespace Main_Project.Pages.User_Profile_manage
 {
     public class Change_password_pageModel : PageModel
     {

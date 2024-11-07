@@ -6,8 +6,11 @@ namespace Main_Project.Pages.OtpVerification
 {
     public class VerifyOtp_for_change_Admin_emailModel : PageModel
     {
-        private readonly string connectionstring = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+        private readonly string _connectionString;
+        public VerifyOtp_for_change_Admin_emailModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         public string ErrorMessage { get; set; }
 
         public void OnGet()
@@ -23,7 +26,7 @@ namespace Main_Project.Pages.OtpVerification
             if (enteredOtp == sessionOtp)
             {
                 // Update email in the database
-                using (SqlConnection con = new SqlConnection(connectionstring))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string updateQuery = "UPDATE User_data SET email = @NewEmail WHERE email = @OldEmail";
                     using (SqlCommand cmd = new SqlCommand(updateQuery, con))

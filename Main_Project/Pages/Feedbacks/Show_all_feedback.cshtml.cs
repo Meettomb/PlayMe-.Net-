@@ -7,8 +7,12 @@ namespace Main_Project.Pages.Feedbacks
 {
     public class Show_all_feedbackModel : PageModel
     {
-        string connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+        
+        private readonly string _connectionString;
+        public Show_all_feedbackModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
 
         public List<user_regi> userlist = new List<user_regi>();
         public List<Feedback_table> feedbacklist = new List<Feedback_table>();
@@ -24,7 +28,7 @@ namespace Main_Project.Pages.Feedbacks
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
-                using (SqlConnection con = new SqlConnection(connectionString))
+                using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string query = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -45,7 +49,7 @@ namespace Main_Project.Pages.Feedbacks
                 }
             }
 
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 con.Open();
 
@@ -89,7 +93,7 @@ namespace Main_Project.Pages.Feedbacks
         [HttpGet]
         public IActionResult Delete_feedback(int id)
         {
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 con.Open();
                 string query = "DELETE FROM Feedback_table WHERE feedbackid = @FeedbackId";

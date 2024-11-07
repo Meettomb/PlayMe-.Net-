@@ -4,14 +4,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 
-namespace Main_Project.Pages
+namespace Main_Project.Pages.User_Profile_manage
 {
     public class Set_new_passwordModel : PageModel
     {
         public string Message { get; set; }
 
-        private readonly string connectionString = "Server=LAPTOP-2850PE29\\SQLEXPRESS;Database=NetflixData;Trusted_Connection=True;Encrypt=False";
-
+        private readonly string _connectionString;
+        public Set_new_passwordModel(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
         [BindProperty]
         public string NewPassword { get; set; }
 
@@ -38,7 +41,7 @@ namespace Main_Project.Pages
             var passwordHasher = new PasswordHasher<object>();
             string hashedPassword = passwordHasher.HashPassword(null, NewPassword);
 
-            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string updateQuery = "UPDATE User_data SET password = @NewPassword WHERE email = @Email";
                 using (SqlCommand cmd = new SqlCommand(updateQuery, con))
