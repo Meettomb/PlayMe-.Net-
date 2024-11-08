@@ -612,7 +612,8 @@ body.no-scroll {
         }
 
 .manage_profile {
-    padding: 0px 100px;
+    max-width: 90%;
+    min-width: 0%;
     margin-bottom: 50px;
 }
 
@@ -1884,6 +1885,7 @@ progress {
             text-align: center;
             margin: 15px 0 0 0;
         }
+        
 }
 
 
@@ -1930,5 +1932,25 @@ progress {
     }
     .your_subscription_details{
         font-size: 25px;
+    }
+    .update_email input{
+        margin-left: -70px;
+        width: 260px;
+    }
+}
+
+@media (min-width: 200px) and (max-width :353px) {
+    .update_email input {
+        margin-left: -70px;
+        width: 200px;
+    }
+}
+
+
+@media (min-width: 200px) and (max-width :482px) {
+    .update_email span{
+        position: relative;
+        top: -30px;
+        left: 180px;
     }
 }
