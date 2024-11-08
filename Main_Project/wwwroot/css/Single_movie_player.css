@@ -18,14 +18,13 @@ main {
     padding-bottom: 20px;
 }
 
-    .movie_player video {
-        width: 100%;
-        height: 680px;
-    }
-
+.detail_container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
 .detail {
-    width: 98%;
-    padding: 0 20px;
+    width: 97%;
 }
 
 .movie_ty_ry {
@@ -33,14 +32,17 @@ main {
     row-gap: 20px;
     display: flex;
     column-gap: 20px;
+    flex-wrap: wrap;
 }
-
-.buttton {
-    width: 100%;
-    display: flex;
-    column-gap: 20px;
-    align-items: center;
-}
+    .movie_ty_ry li{
+        font-size: 16px;
+    }
+    .buttton {
+        width: 100%;
+        display: flex;
+        column-gap: 20px;
+        align-items: center;
+    }
 
 .movie_name {
     width: 70%;
@@ -245,7 +247,6 @@ h2 {
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 .series_a {
@@ -395,7 +396,9 @@ h2 {
     display: flex;
     position: absolute;
     width: 100%;
+    height: 100%;
     justify-content: space-around;
+    align-items: center;
 }
 
 .state-btn {
@@ -409,7 +412,7 @@ h2 {
     justify-content: center;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     background: rgba(36, 36, 36, 0.667);
-    z-index: 9999;
+    z-index: 999;
     -webkit-tap-highlight-color: transparent;
     opacity: 0;
     user-select: none;
@@ -455,7 +458,7 @@ h2 {
     opacity: 0;
     transform: translateY(40px);
     visibility: hidden;
-    z-index: 99;
+    z-index: 9999;
     transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     user-select: none;
     -webkit-tap-highlight-color: transparent;
@@ -790,4 +793,175 @@ h2 {
 }
 #watchTimeForm button {
     display: none;
+}
+
+
+
+/*------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------RESPONCIV------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------*/
+
+
+@media (min-width: 634px) and (max-width :827px){
+    .movie_name{
+        width: 100%;
+        font-size: 40px;
+    }
+    .movie_ty_ry{
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    .movie_ty_ry li {
+        font-size: 14px;
+    }
+    .collapsible b{
+        font-size: 20px;
+    }
+    .collapsible .discriptrion {
+        font-size: 15px;
+    }
+    .collapsible span{
+        font-size: 30px;
+    }
+    .extra_details b{
+        font-size: 20px;
+    }
+    .extra_details p{
+        font-size: 15px;
+    }
+    .detail{
+        width: 95%;
+    }
+}
+
+@media (min-width: 200px) and (max-width :634px) {
+    #currentFileName{
+        font-size: 13px;
+        padding:10px 0;
+    }
+    .movie_name {
+        width: 100%;
+        font-size: 30px;
+    }
+    .movie_ty_ry {
+        margin-top: 30px;
+    }
+    .movie_ty_ry li {
+        font-size: 13px;
+        width: 100%;
+    }
+
+    .collapsible b {
+        font-size: 16px;
+    }
+
+    .collapsible .discriptrion {
+        font-size: 13px;
+    }
+
+    .collapsible span {
+        font-size: 20px;
+    }
+
+    .extra_details b {
+        font-size: 16px;
+    }
+
+    .extra_details p {
+        font-size: 13px;
+    }
+    .detail {
+        width: 95%;
+    }
+    
+}
+
+
+@media (min-width: 400px) and (max-width :634px) {
+    .serise_div {
+        max-width: 20%;
+        min-width: 60%;
+        right: 1%;
+        position: absolute;
+        height: 410px;
+        z-index: 99999;
+        top: 20%;
+        overflow: scroll;
+    }
+
+    .series_a {
+        width: 100%;
+    }
+
+    .episode_div video {
+        width: 40%;
+        height: 50px;
+    }
+
+    .episode_div p {
+        font-size: 10px;
+    }
+}
+
+@media (min-width: 200px) and (max-width :400px) {
+    .serise_div {
+        max-width: 20%;
+        min-width: 60%;
+        right: 1%;
+        position: absolute;
+        height: 410px;
+        z-index: 99999;
+        bottom: 8%;
+        overflow: scroll;
+    }
+
+    .series_a {
+        width: 100%;
+    }
+
+    .episode_div video {
+        width: 40%;
+        height: 40px;
+    }
+
+    .episode_div p {
+        font-size: 8px;
+    }
+
+
+    .collapsible b {
+        font-size: 15px;
+    }
+
+    .collapsible .discriptrion {
+        font-size: 12px;
+    }
+
+    .collapsible span {
+        font-size: 20px;
+    }
+
+    .extra_details b {
+        font-size: 15px;
+    }
+
+    .extra_details p {
+        font-size: 12px;
+    }
+
+    .time-container{
+        font-size: 10px;
+    }
+    .control-btn {
+        width: 30px;
+        height: 25px;
+        /*width: 0;
+        height: 0;
+        padding: 13px;
+
+        */
+        font-size: 15px;
+    }
 }
