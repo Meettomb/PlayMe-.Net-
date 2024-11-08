@@ -26,31 +26,66 @@ namespace Main_Project.Pages
         public IActionResult OnGet()
         {
             UserId = HttpContext.Session.GetInt32("Id");
-            StoredAuthToken = HttpContext.Session.GetString("auth_token");
-            DeviceId = GetUniqueDeviceId();
 
-            if (!UserId.HasValue)
+
+            if (UserId.HasValue)
             {
-                UserId = ValidateDeviceIdAndFetchUser(DeviceId);
-
-                if (UserId.HasValue)
-                {
-                    return RedirectToHomeOrDashboard();
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Device authentication failed.");
-                }
+                // If the user is logged in, redirect to the Home page
+                return RedirectToPage("/Home");
             }
-            else
+
+            // Retrieve the device ID from the cookie
+            string deviceId = Request.Cookies["deviceUniqueId"];
+            if (string.IsNullOrEmpty(deviceId))
             {
-                if (StoredAuthToken == DeviceId)
+                // If the device ID is not present, stay on the Index page
+                return Page();
+            }
+
+            // Query the database to check if the auth_token (device ID) exists in the comma-separated list
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT id, username, profilepic, dob, gender, email, role, isactive, subscriptionactive 
+                         FROM User_data 
+                         WHERE ',' + auth_token + ',' LIKE '%,' + @DeviceId + ',%'";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
                 {
-                    return RedirectToHomeOrDashboard();
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Device authentication failed.");
+                    cmd.Parameters.AddWithValue("@DeviceId", deviceId);
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        // Retrieve user information
+                        int userId = Convert.ToInt32(reader["id"]);
+                        string username = reader["username"].ToString();
+                        string profilepic = reader["profilepic"].ToString();
+                        string dob = reader["dob"].ToString();
+                        string gender = reader["gender"].ToString();
+                        string email = reader["email"].ToString();
+                        string role = reader["role"].ToString();
+                        bool isActive = reader["isactive"] != DBNull.Value && Convert.ToBoolean(reader["isactive"]);
+                        bool subscriptionActive = reader["subscriptionactive"] != DBNull.Value && Convert.ToBoolean(reader["subscriptionactive"]);
+
+                        if (isActive)
+                        {
+                            // Store necessary data in the session
+                            HttpContext.Session.SetInt32("Id", userId);
+                            HttpContext.Session.SetString("Username", username);
+                            HttpContext.Session.SetString("profilepic", profilepic);
+                            HttpContext.Session.SetString("email", email);
+                            HttpContext.Session.SetString("dob", dob);
+                            HttpContext.Session.SetString("gender", gender);
+                            HttpContext.Session.SetString("UserRole", role);
+                            HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
+
+                            // Redirect to the Home page
+                            return RedirectToPage("/Home");
+                        }
+                    }
+
+                    reader.Close();
                 }
             }
 
@@ -75,59 +110,7 @@ namespace Main_Project.Pages
             return Page();
         }
 
-        private string GetUniqueDeviceId()
-        {
-            try
-            {
-                using (var searcher = new System.Management.ManagementObjectSearcher("SELECT SerialNumber FROM Win32_BIOS"))
-                {
-                    foreach (var obj in searcher.Get())
-                    {
-                        return obj["SerialNumber"]?.ToString();
-                    }
-                }
-            }
-            catch
-            {
-                // Handle exceptions as necessary
-            }
-
-            return "Device ID not found"; // Default case if no device ID is found
-        }
-
-        private int? ValidateDeviceIdAndFetchUser(string deviceId)
-        {
-            string query = "SELECT id, username, profilepic, dob, gender, email, role FROM User_data WHERE auth_token = @DeviceId";
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@DeviceId", deviceId);
-                connection.Open();
-
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        int userId = reader.GetInt32(0);
-                        string username = reader.GetString(1);
-                        string profilepic = reader.GetString(2);
-                        string email = reader.GetString(5);
-                        string role = reader.GetString(6);
-
-                        HttpContext.Session.SetInt32("Id", userId);
-                        HttpContext.Session.SetString("Username", username);
-                        HttpContext.Session.SetString("profilepic", profilepic);
-                        HttpContext.Session.SetString("email", email);
-                        HttpContext.Session.SetString("UserRole", role);
-
-                        return userId;
-                    }
-                }
-            }
-            return null; // Return null if no user is found
-        }
-
+      
         private void GetQuestionsAndAnswers()
         {
             string query = "SELECT * FROM Questions";

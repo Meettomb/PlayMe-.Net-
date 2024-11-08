@@ -42,45 +42,71 @@ namespace Netflix.Pages
 
         public IActionResult OnGet()
         {
-            // Retrieve user ID from session and store it in the UserId property
+            // Retrieve user ID from session to check if the user is already logged in
             UserId = HttpContext.Session.GetInt32("Id");
 
-           /* if (UserId.HasValue)
+            if (UserId.HasValue)
             {
-                // If the user is logged in (UserId exists), redirect to the Home page
+                // If the user is logged in, redirect to the Home page
                 return RedirectToPage("/Home");
             }
-*/
 
-            StoredAuthToken = HttpContext.Session.GetString("auth_token");
-            DeviceId = GetUniqueDeviceId();
-
-            if (!UserId.HasValue)
+            // Retrieve the device ID from the cookie
+            string deviceId = Request.Cookies["deviceUniqueId"];
+            if (string.IsNullOrEmpty(deviceId))
             {
-                UserId = ValidateDeviceIdAndFetchUser(DeviceId);
-
-                if (UserId.HasValue)
-                {
-                    return RedirectToHomeOrDashboard();
-                }
-                /*else
-                {
-                    ModelState.AddModelError(string.Empty, "Device authentication failed.");
-                }*/
-            }
-            else
-            {
-                if (StoredAuthToken == DeviceId)
-                {
-                    return RedirectToHomeOrDashboard();
-                }
-                /*else
-                {
-                    ModelState.AddModelError(string.Empty, "Device authentication failed.");
-                }*/
+                // If the device ID is not present, stay on the Index page
+                return Page();
             }
 
-            // If the user is not logged in (UserId does not exist), stay on the Index page
+            // Query the database to check if the auth_token (device ID) exists in the comma-separated list
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT id, username, profilepic, dob, gender, email, role, isactive, subscriptionactive 
+                         FROM User_data 
+                         WHERE ',' + auth_token + ',' LIKE '%,' + @DeviceId + ',%'";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@DeviceId", deviceId);
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        // Retrieve user information
+                        int userId = Convert.ToInt32(reader["id"]);
+                        string username = reader["username"].ToString();
+                        string profilepic = reader["profilepic"].ToString();
+                        string dob = reader["dob"].ToString();
+                        string gender = reader["gender"].ToString();
+                        string email = reader["email"].ToString();
+                        string role = reader["role"].ToString();
+                        bool isActive = reader["isactive"] != DBNull.Value && Convert.ToBoolean(reader["isactive"]);
+                        bool subscriptionActive = reader["subscriptionactive"] != DBNull.Value && Convert.ToBoolean(reader["subscriptionactive"]);
+
+                        if (isActive)
+                        {
+                            // Store necessary data in the session
+                            HttpContext.Session.SetInt32("Id", userId);
+                            HttpContext.Session.SetString("Username", username);
+                            HttpContext.Session.SetString("profilepic", profilepic);
+                            HttpContext.Session.SetString("email", email);
+                            HttpContext.Session.SetString("dob", dob);
+                            HttpContext.Session.SetString("gender", gender);
+                            HttpContext.Session.SetString("UserRole", role);
+                            HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
+
+                            // Redirect to the Home page
+                            return RedirectToPage("/Home");
+                        }
+                    }
+
+                    reader.Close();
+                }
+            }
+
+            // If auth_token does not match any user, stay on the Index page
             return Page();
         }
 
@@ -103,41 +129,6 @@ namespace Netflix.Pages
         }
 
 
-        private int? ValidateDeviceIdAndFetchUser(string deviceId)
-        {
-            string query = "SELECT id, username, profilepic, dob, gender, email, role FROM User_data WHERE auth_token = @DeviceId";
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@DeviceId", deviceId);
-                connection.Open();
-
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        int userId = reader.GetInt32(0);
-                        string username = reader.GetString(1);
-                        string profilepic = reader.GetString(2);
-                        string email = reader.GetString(5);
-                        string role = reader.GetString(6);
-
-                        HttpContext.Session.SetInt32("Id", userId);
-                        HttpContext.Session.SetString("Username", username);
-                        HttpContext.Session.SetString("profilepic", profilepic);
-                        HttpContext.Session.SetString("email", email);
-                        HttpContext.Session.SetString("UserRole", role);
-
-                        return userId;
-                    }
-                }
-            }
-            return null; // Return null if no user is found
-        }
-
-
-
 
 
 
@@ -151,15 +142,14 @@ namespace Netflix.Pages
                 return Page();
             }
 
-
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                string query = @"SELECT id, username, profilepic, dob, gender, email, role, isactive, 
-                        logintime, subscriptionactive, password, auth_token 
-                        FROM User_data 
-                        WHERE email = @Email AND isactive = 1";
+                string userQuery = @"SELECT id, username, profilepic, dob, gender, email, role, isactive, 
+                            subscriptionactive, password, auth_token, subid
+                            FROM User_data 
+                            WHERE email = @Email AND isactive = 1";
 
-                using (SqlCommand cmd = new SqlCommand(query, con))
+                using (SqlCommand cmd = new SqlCommand(userQuery, con))
                 {
                     cmd.Parameters.AddWithValue("@Email", User.email);
                     con.Open();
@@ -167,7 +157,7 @@ namespace Netflix.Pages
 
                     if (reader.Read())
                     {
-                        // Retrieve and store necessary fields in local variables
+                        // Retrieve user information
                         string storedPassword = reader["password"].ToString();
                         int userId = Convert.ToInt32(reader["id"]);
                         string username = reader["username"].ToString();
@@ -176,13 +166,12 @@ namespace Netflix.Pages
                         string gender = reader["gender"].ToString();
                         string email = reader["email"].ToString();
                         string role = reader["role"].ToString();
-                        bool isActive = reader["isactive"] != DBNull.Value && Convert.ToBoolean(reader["isactive"]);
-                        bool subscriptionActive = reader["subscriptionactive"] != DBNull.Value && Convert.ToBoolean(reader["subscriptionactive"]);
+                        bool isActive = Convert.ToBoolean(reader["isactive"]);
+                        bool subscriptionActive = Convert.ToBoolean(reader["subscriptionactive"]);
+                        string auth_token = reader["auth_token"]?.ToString() ?? string.Empty;
+                        int subId = Convert.ToInt32(reader["subid"]);
 
-                        // Fetch the auth_token safely
-                        string auth_token = reader["auth_token"] != DBNull.Value ? reader["auth_token"].ToString() : string.Empty;
-
-                        reader.Close(); // Close the reader now that data is stored in variables
+                        reader.Close();
 
                         // Verify the password
                         var passwordHasher = new PasswordHasher<object>();
@@ -196,66 +185,85 @@ namespace Netflix.Pages
                                 return Page();
                             }
 
-                            // Set session values
-                            HttpContext.Session.SetInt32("Id", userId);
-                            HttpContext.Session.SetString("Username", username);
-                            HttpContext.Session.SetString("profilepic", profilepic);
-                            HttpContext.Session.SetString("email", email);
-                            HttpContext.Session.SetString("dob", dob);
-                            HttpContext.Session.SetString("gender", gender);
-                            HttpContext.Session.SetString("UserRole", role);
-                            HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
-
-                            // Retrieve the unique device ID based on the platform
-                            string deviceId = GetUniqueDeviceId();
-
-                            // Check if device ID already exists in auth_token
-                            if (!string.IsNullOrEmpty(auth_token))
+                            // Fetch subscription details
+                            string subscriptionQuery = @"SELECT planedetail FROM Subscription WHERE id = @SubId";
+                            using (SqlCommand subCmd = new SqlCommand(subscriptionQuery, con))
                             {
-                                // Split existing tokens into a list
-                                var existingTokens = new List<string>(auth_token.Split(','));
+                                subCmd.Parameters.AddWithValue("@SubId", subId);
+                                SqlDataReader subReader = subCmd.ExecuteReader();
 
-                                // Add the new device ID if it doesn't already exist
-                                if (!existingTokens.Contains(deviceId))
+                                if (subReader.Read())
                                 {
-                                    existingTokens.Add(deviceId);
+                                    string planDetails = subReader["planedetail"].ToString();
+                                    subReader.Close();
+
+                                    // Parse the maximum login count from plan details
+                                    int maxLoginCount = 1; // Default to 1 if not specified
+                                    if (planDetails.Contains("User login at a time"))
+                                    {
+                                        string[] details = planDetails.Split('+');
+                                        foreach (string detail in details)
+                                        {
+                                            if (detail.Contains("User login at a time"))
+                                            {
+                                                int.TryParse(new string(detail.Where(char.IsDigit).ToArray()), out maxLoginCount);
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    // Retrieve or create the device ID
+                                    string deviceId = Request.Cookies["deviceUniqueId"];
+                                    if (string.IsNullOrEmpty(deviceId))
+                                    {
+                                        deviceId = "id-" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + "-" + Guid.NewGuid().ToString("N");
+                                        Response.Cookies.Append("deviceUniqueId", deviceId, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
+                                    }
+
+                                    // Check current device count
+                                    var deviceList = auth_token.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                    if (!deviceList.Contains(deviceId))
+                                    {
+                                        if (deviceList.Length < maxLoginCount)
+                                        {
+                                            // Add new device ID to auth_token
+                                            auth_token = string.IsNullOrEmpty(auth_token) ? deviceId : auth_token + "," + deviceId;
+
+                                            string updateQuery = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
+                                            using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
+                                            {
+                                                updateCmd.Parameters.AddWithValue("@AuthToken", auth_token);
+                                                updateCmd.Parameters.AddWithValue("@UserId", userId);
+                                                updateCmd.ExecuteNonQuery();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            ModelState.AddModelError(string.Empty, $"Your plan allows a maximum of {maxLoginCount} devices to be logged in at the same time.");
+                                            return Page();
+                                        }
+                                    }
+
+                                    // Set session values
+                                    HttpContext.Session.SetInt32("Id", userId);
+                                    HttpContext.Session.SetString("Username", username);
+                                    HttpContext.Session.SetString("profilepic", profilepic);
+                                    HttpContext.Session.SetString("email", email);
+                                    HttpContext.Session.SetString("dob", dob);
+                                    HttpContext.Session.SetString("gender", gender);
+                                    HttpContext.Session.SetString("UserRole", role);
+                                    HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
+
+                                    // Redirect based on user role
+                                    if (role == "admin")
+                                    {
+                                        return RedirectToPage("/Dashboard");
+                                    }
+                                    else if (role == "user")
+                                    {
+                                        return RedirectToPage("/Home");
+                                    }
                                 }
-
-                                // Reconstruct the auth_token
-                                auth_token = string.Join(",", existingTokens);
-                            }
-                            else
-                            {
-                                // If no existing tokens, use the new device ID
-                                auth_token = deviceId;
-                            }
-
-                            // Update the auth_token in the database
-                            string updateTokenQuery = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
-
-                            using (SqlCommand updateCmd = new SqlCommand(updateTokenQuery, con))
-                            {
-                                updateCmd.Parameters.AddWithValue("@AuthToken", auth_token); // Use the updated auth token here
-                                updateCmd.Parameters.AddWithValue("@UserId", userId);
-                                updateCmd.ExecuteNonQuery();
-                            }
-
-                            // Set auth token in a secure, HTTP-only cookie
-                            HttpContext.Response.Cookies.Append("AuthToken", deviceId, new CookieOptions
-                            {
-                                HttpOnly = true,
-                                Expires = DateTimeOffset.UtcNow.AddDays(30),
-                                Secure = true
-                            });
-
-                            // Redirect based on user role
-                            if (role == "admin")
-                            {
-                                return RedirectToPage("/Deshbord");
-                            }
-                            else if (role == "user")
-                            {
-                                return RedirectToPage("/Home");
                             }
                         }
                         else
@@ -268,45 +276,12 @@ namespace Netflix.Pages
                         ModelState.AddModelError(string.Empty, "Email not found.");
                     }
 
-                    con.Close(); // Ensure connection is closed after use
+                    con.Close();
                 }
             }
             return Page();
         }
 
-
-        private string GetUniqueDeviceId()
-        {
-            string deviceId = string.Empty;
-
-            // Detect the platform (this is a simplified example)
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT) // Windows
-            {
-                try
-                {
-                    using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT SerialNumber FROM Win32_BIOS"))
-                    {
-                        foreach (ManagementObject obj in searcher.Get())
-                        {
-                            deviceId = obj["SerialNumber"]?.ToString();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("An error occurred while retrieving the device ID for Windows: " + ex.Message);
-                }
-            }
-            
-
-            // Fallback if device ID could not be retrieved
-            if (string.IsNullOrEmpty(deviceId))
-            {
-                deviceId = Guid.NewGuid().ToString(); // Use a GUID as a fallback device ID
-            }
-
-            return deviceId;
-        }
 
     }
 }
