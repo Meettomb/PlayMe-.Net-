@@ -3,7 +3,6 @@
 @model Main_Project.Pages.HomeModel
 @{
     Layout = "_Header";
-
     ViewData["Title"] = "Home";
 
     var randomMovies = Model.MoviesTable.OrderBy(x => Guid.NewGuid()).Take(5).ToList();
