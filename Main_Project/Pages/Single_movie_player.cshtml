@@ -174,6 +174,12 @@
             <p id="currentFileName" class="data">@Model.MovieFiles.First().Replace("_", "").Replace(".", "").Replace("-", "").Replace("mp4", "").Replace("MP4", "")</p>
         }
 
+
+        <div style="position: fixed;" id="content_advisory" class="content_advisory">
+            <p>U/A @Model.Movie.Movieagerestrictions +</p>
+            <span> @Model.Movie.Content_advisory</span>
+        </div>
+
         <div class="detail_container">
             <div class="detail">
                 <p class="movie_name">@Model.Movie.Moviename</p>
@@ -224,7 +230,6 @@
                     <p><b>Cast: </b> @Model.Movie.Moviecast</p>
                     <p><b>Director: </b> @Model.Movie.Moviedirector</p>
                     <p><b>Language: </b> @Model.Movie.Movielanguage</p>
-                    <p><b>Content advisory: </b> @Model.Movie.Content_advisory</p>
                 </div>
             </div>
         </div>
@@ -236,7 +241,18 @@ else
     <p>Movie details not found.</p>
 }
 
+<script src="/js/jQuery.js"></script>
+<script>
+    $(document).ready(function () {
+        // Show the paragraph when the document is ready
+        $("#content_advisory").fadeIn(500); // Fade in over 0.5 seconds
 
+        // Set a timeout to hide it after 5 seconds
+        setTimeout(function () {
+            $("#content_advisory").fadeOut(500); // Fade out over 0.5 seconds
+        }, 5000); // 5000 milliseconds = 5 seconds
+    });
+</script>
 @* video play and pause script *@
 <script>
     // Play or Pause the video when clicking on the main-state button
@@ -368,9 +384,9 @@ else
             .then(data => {
                 if (data.success) {
     @* console.log("Watch history saved successfully!"); *@
-                    } else {
+                        } else {
     @*  console.error("Failed to save watch history."); *@
-                    }
+                        }
             })
             .catch(error => console.error('Error:', error));
     }

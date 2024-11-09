@@ -81,7 +81,7 @@ namespace Main_Project.Pages
                             HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
 
                             // Redirect to the Home page
-                            return RedirectToPage("/Home");
+                            return RedirectToHomeOrDashboard();
                         }
                     }
 

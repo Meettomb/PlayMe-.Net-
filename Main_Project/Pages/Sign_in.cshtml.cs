@@ -98,7 +98,7 @@ namespace Netflix.Pages
                             HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
 
                             // Redirect to the Home page
-                            return RedirectToPage("/Home");
+                            return RedirectToHomeOrDashboard();
                         }
                     }
 
@@ -109,8 +109,6 @@ namespace Netflix.Pages
             // If auth_token does not match any user, stay on the Index page
             return Page();
         }
-
-
         private IActionResult RedirectToHomeOrDashboard()
         {
             string userRole = HttpContext.Session.GetString("UserRole");
@@ -257,7 +255,7 @@ namespace Netflix.Pages
                                     // Redirect based on user role
                                     if (role == "admin")
                                     {
-                                        return RedirectToPage("/Dashboard");
+                                        return RedirectToPage("/Deshbord");
                                     }
                                     else if (role == "user")
                                     {

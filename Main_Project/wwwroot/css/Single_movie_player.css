@@ -795,6 +795,38 @@ h2 {
     display: none;
 }
 
+.content_advisory {
+    background-color: black;
+    padding: 15px 30px;
+    position: absolute;
+    top: 3%;
+    border-left: 10px solid;
+    border-left-color: var(--button-color);
+    left: 1%;
+    font-size: 17px;
+    z-index: 999;
+    flex-wrap: wrap;
+    height: auto;
+    display: none;
+    animation: content_advisory 1s ease-in-out;
+}
+.content_advisory p{
+    font-size: 20px;
+    font-weight: 500;
+    padding: 0px 0px 5px 0px;
+}
+    .content_advisory span {
+        letter-spacing: 1px;
+        word-spacing: 5px;
+    }
+@keyframes content_advisory {
+    from{
+        left: -50%;
+    }
+    to{
+        left: 1%;
+    }
+}
 
 
 /*------------------------------------------------------------------------------------------------------------------------------*/
@@ -802,9 +834,7 @@ h2 {
 /*---------------------------------------------------------------RESPONCIV------------------------------------------------------*/
 /*------------------------------------------------------------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------------------------------------------------------------*/
-
-
-@media (min-width: 634px) and (max-width :827px){
+@media (min-width: 634px) and (max-width :827px) {
     .movie_name{
         width: 100%;
         font-size: 40px;
@@ -903,6 +933,27 @@ h2 {
     .episode_div p {
         font-size: 10px;
     }
+
+
+    .content_advisory {
+        padding: 15px 30px;
+        position: absolute;
+        top: 3%;
+        left: 1%;
+        padding: 10px 30px;
+    }
+
+        .content_advisory p {
+            font-size: 18px;
+            font-weight: 500;
+            padding: 0px 0px 5px 0px;
+        }
+
+        .content_advisory span {
+            letter-spacing: 1px;
+            word-spacing: 5px;
+            font-size: 16px;
+        }
 }
 
 @media (min-width: 200px) and (max-width :400px) {
@@ -957,11 +1008,29 @@ h2 {
     .control-btn {
         width: 30px;
         height: 25px;
-        /*width: 0;
-        height: 0;
-        padding: 13px;
-
-        */
+        
         font-size: 15px;
     }
+
+
+    .content_advisory {
+        padding: 15px 30px;
+        position: absolute;
+        top: 3%;
+        left: 1%;
+        width: 70%;
+        padding: 8px 10px;
+    }
+
+        .content_advisory p {
+            font-size: 16px;
+            font-weight: 500;
+            padding: 0px 0px 1px 0px;
+        }
+
+        .content_advisory span {
+            letter-spacing: 1px;
+            word-spacing: 5px;
+            font-size: 12px;
+        }
 }
