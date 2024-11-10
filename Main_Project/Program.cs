@@ -3,6 +3,7 @@ using Main_Project;
 using Main_Project.Models;
 using Main_Project.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,16 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddControllersWithViews();
 
+
+builder.Services.AddRazorPages(options =>
+{
+    // Pages that are publicly accessible
+    options.Conventions.AllowAnonymousToPage("/Index");  // Public login page
+    options.Conventions.AllowAnonymousToPage("/Sign_in");  // Public login page
+    options.Conventions.AllowAnonymousToPage("/Sign_up");  // Public sign-up page
+});
+
+
 // Configure Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -62,6 +73,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true; // Refresh cookie expiration on each request
         options.ExpireTimeSpan = TimeSpan.FromDays(30); // Set cookie expiration
     });
+
+
 
 // Set the form options to allow for large file uploads (6 GB)
 builder.Services.Configure<FormOptions>(options =>
@@ -95,7 +108,8 @@ app.UseRouting();
 
 // Enable session middleware
 app.UseSession();
-app.UseSubscription_Middleware(); // Ensure custom middleware is implemented
+app.UseSubscription_Middleware();
+app.UseMiddleware<DeviceLimitMiddleware>();
 
 app.UseAuthentication(); // Enable authentication middleware
 app.UseAuthorization();

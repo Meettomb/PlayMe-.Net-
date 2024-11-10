@@ -29,7 +29,7 @@ namespace Netflix.Pages
         private static Random random = new Random();
 
         private readonly string _connectionString;
-    
+
         public Sign_inModel(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("NetflixDatabase");
@@ -183,7 +183,26 @@ namespace Netflix.Pages
                                 return Page();
                             }
 
-                            // Fetch subscription details
+                            // Check if the user is an admin; skip device check if so
+                            if (role == "admin")
+                            {
+                                // Set session values
+                                HttpContext.Session.SetInt32("Id", userId);
+                                HttpContext.Session.SetString("Username", username);
+                                HttpContext.Session.SetString("profilepic", profilepic);
+                                HttpContext.Session.SetString("email", email);
+                                HttpContext.Session.SetString("dob", dob);
+                                HttpContext.Session.SetString("gender", gender);
+                                HttpContext.Session.SetString("UserRole", role);
+                                HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
+
+                                return RedirectToPage("/Deshbord");
+                            }
+                            else
+                            {
+
+
+                            // For users, fetch subscription details and check device limit
                             string subscriptionQuery = @"SELECT planedetail FROM Subscription WHERE id = @SubId";
                             using (SqlCommand subCmd = new SqlCommand(subscriptionQuery, con))
                             {
@@ -219,30 +238,47 @@ namespace Netflix.Pages
                                     }
 
                                     // Check current device count
-                                    var deviceList = auth_token.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                                    var deviceList = auth_token.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                                     if (!deviceList.Contains(deviceId))
                                     {
-                                        if (deviceList.Length < maxLoginCount)
+                                        if (deviceList.Count < maxLoginCount)
                                         {
                                             // Add new device ID to auth_token
-                                            auth_token = string.IsNullOrEmpty(auth_token) ? deviceId : auth_token + "," + deviceId;
-
-                                            string updateQuery = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
-                                            using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
-                                            {
-                                                updateCmd.Parameters.AddWithValue("@AuthToken", auth_token);
-                                                updateCmd.Parameters.AddWithValue("@UserId", userId);
-                                                updateCmd.ExecuteNonQuery();
-                                            }
+                                            deviceList.Add(deviceId);
                                         }
                                         else
                                         {
+                                            // Remove excess devices if they exceed maxLoginCount
+                                            while (deviceList.Count > maxLoginCount)
+                                            {
+                                                deviceList.RemoveAt(0);  // Remove the oldest devices
+                                            }
+
+                                            // Logout the last device if the limit is exceeded
                                             ModelState.AddModelError(string.Empty, $"Your plan allows a maximum of {maxLoginCount} devices to be logged in at the same time.");
-                                            return Page();
-                                        }
+                                            string updateQuery = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
+                                            using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
+                                            {
+                                                updateCmd.Parameters.AddWithValue("@AuthToken", string.Join(",", deviceList));
+                                                updateCmd.Parameters.AddWithValue("@UserId", userId);
+                                                updateCmd.ExecuteNonQuery();
+                                            }
+
+                                                return Page(); // Redirect to index page if limit exceeded
+                                            }
                                     }
 
-                                    // Set session values
+                                    // Update the auth_token in the database
+                                    string updatedAuthToken = string.Join(",", deviceList);
+                                    string updateQueryAuthToken = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
+                                    using (SqlCommand updateCmd = new SqlCommand(updateQueryAuthToken, con))
+                                    {
+                                        updateCmd.Parameters.AddWithValue("@AuthToken", updatedAuthToken);
+                                        updateCmd.Parameters.AddWithValue("@UserId", userId);
+                                        updateCmd.ExecuteNonQuery();
+                                    }
+
+                                    // Set session values for the user
                                     HttpContext.Session.SetInt32("Id", userId);
                                     HttpContext.Session.SetString("Username", username);
                                     HttpContext.Session.SetString("profilepic", profilepic);
@@ -252,17 +288,10 @@ namespace Netflix.Pages
                                     HttpContext.Session.SetString("UserRole", role);
                                     HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
 
-                                    // Redirect based on user role
-                                    if (role == "admin")
-                                    {
-                                        return RedirectToPage("/Deshbord");
-                                    }
-                                    else if (role == "user")
-                                    {
-                                        return RedirectToPage("/Home");
-                                    }
+                                    return RedirectToPage("/Home");
                                 }
                             }
+                        }
                         }
                         else
                         {
@@ -279,6 +308,8 @@ namespace Netflix.Pages
             }
             return Page();
         }
+
+
 
 
     }

@@ -32,8 +32,13 @@ namespace Main_Project.Pages.Admin_profile_manage
         public string OTP { get; set; } 
         [BindProperty]
         public string Oldpassword { get; set; }
-        public void OnGet()
-        {
+        public IActionResult OnGet()
+        {int? userId = HttpContext.Session.GetInt32("Id");
+            string role = HttpContext.Session.GetString("UserRole");
+            if (!userId.HasValue | role != "admin")
+            {
+                return Redirect("/");
+            }
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
@@ -59,6 +64,7 @@ namespace Main_Project.Pages.Admin_profile_manage
                     }
                 }
             }
+            return Page();
         }
 
 

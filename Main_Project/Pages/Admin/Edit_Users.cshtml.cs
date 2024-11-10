@@ -17,8 +17,14 @@ namespace Netflix.Pages.Admin
         {
             _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            int? userId = HttpContext.Session.GetInt32("Id");
+            string role = HttpContext.Session.GetString("UserRole");
+            if (!userId.HasValue | role != "admin")
+            {
+                return Redirect("/");
+            }
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
@@ -65,7 +71,7 @@ namespace Netflix.Pages.Admin
                 user.isactive = Convert.ToBoolean(ds.Tables[0].Rows[0][5].ToString());
                 user.role = ds.Tables[0].Rows[0][10].ToString();
             }
-
+            return Page();
         }
 
         public IActionResult OnPost()

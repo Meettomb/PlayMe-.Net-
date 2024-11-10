@@ -51,7 +51,11 @@ namespace Main_Project.Pages
         public IList<Movie_category_table> MovieCategories { get; set; } = new List<Movie_category_table>();
         public async Task<IActionResult> OnGetAsync(int movieId)
         {
-
+            int? userId = HttpContext.Session.GetInt32("Id");
+            if (!userId.HasValue)
+            {
+                return Redirect("/");
+            }
             // Fetch search history from HttpContext
             if (HttpContext.Items["SearchHistory"] is List<Search_history> searchHistory)
             {

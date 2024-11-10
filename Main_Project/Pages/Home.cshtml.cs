@@ -8,11 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Netflix.Models;
 using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Main_Project.Pages
 {
     public class HomeModel : PageModel
     {
+        
         private readonly NetflixDataContext _context;
         private readonly string _connectionString;
        
@@ -45,9 +47,12 @@ namespace Main_Project.Pages
         {
             // Check if the user is logged in by checking if the session has a valid user ID
             int? userId = HttpContext.Session.GetInt32("Id");
-
-            // Ensure user is logged in before fetching user activity
-            if (userId.HasValue)
+            if (!userId.HasValue)
+            {
+                return Redirect("/");
+            }
+                // Ensure user is logged in before fetching user activity
+                if (userId.HasValue)
             {
                 // Fetch the movie types from the last 5 days
                 string typeQuery = @"

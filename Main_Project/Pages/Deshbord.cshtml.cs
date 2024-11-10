@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using static Main_Project.Pages.DeshbordModel;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace Main_Project.Pages
 {
@@ -54,8 +56,13 @@ namespace Main_Project.Pages
 
         public IActionResult OnGet()
         {
-
-
+            // Check if the user is logged in by checking if the session has a valid user ID
+            int? userId = HttpContext.Session.GetInt32("Id");
+            string role = HttpContext.Session.GetString("UserRole");
+            if (!userId.HasValue | role != "admin")
+            {
+                return Redirect("/");
+            }
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))

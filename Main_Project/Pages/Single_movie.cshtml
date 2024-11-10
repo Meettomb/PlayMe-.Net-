@@ -38,7 +38,10 @@
     <div>
         <div class="singlepage_main_div">
             <div class="singlepage_movie_poster">
-                <img src="/poster/@Model.Movie.Movieposter2" alt="Movie Poster" loading="lazy" class="big_poster">
+                @* <img src="/poster/@Model.Movie.Movieposter2" alt="Movie Poster" loading="lazy" class="big_poster"> *@
+                <video id="moviePlayer" disableRemotePlayback autoplay>
+                    <source id="videoSourceMP4" src="/trailer/@Model.Movie.Trailer" />
+                </video>
                 <input type="hidden" name="" value="/@Model.Movie.Moviename" />
             </div>
         </div>
@@ -85,7 +88,7 @@
                                     window.location.href = '/Single_movie_player?movieId=@Model.Movie.Movieid'; // Redirect to player
                         </text>
                     }
-                                                                                                                                                                                                                                                                        };
+                                                                                                                                                                                                                                                                                            };
                 </script>
 
                 <form method="post">
