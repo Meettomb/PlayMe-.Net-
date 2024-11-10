@@ -38,10 +38,16 @@ namespace Main_Project.Pages.Movies
 
 
 
-        public async Task OnGetAsync(string category)
+        public async Task<IActionResult> OnGetAsync(string category)
         {
             string sessionEmail = HttpContext.Session.GetString("email");
+            int? userId = HttpContext.Session.GetInt32("Id");
 
+            if (!userId.HasValue)
+            {
+                // If the user is not authenticated, redirect to home
+                return RedirectToPage("/Index");
+            }
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
@@ -118,6 +124,8 @@ namespace Main_Project.Pages.Movies
             else
             {
             }
+
+            return Page();
         }
 
 

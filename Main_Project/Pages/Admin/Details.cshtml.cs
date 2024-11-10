@@ -19,9 +19,15 @@ namespace Main_Project.Pages.Admin
         {
             _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
-        public void OnGet(int userid)
+        public IActionResult OnGet(int userid)
         {
-           
+            int? userId = HttpContext.Session.GetInt32("Id");
+            string role = HttpContext.Session.GetString("UserRole");
+            if (!userId.HasValue | role != "admin")
+            {
+                return Redirect("/");
+            }
+
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
@@ -104,6 +110,7 @@ namespace Main_Project.Pages.Admin
                     con.Close();
                 }
             }
+            return Page();
         }
     }
 }

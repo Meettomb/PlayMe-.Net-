@@ -494,7 +494,7 @@
 <!-- Revanue Chart -->
 <script>
     var monthlyProfits = @Html.Raw(JsonConvert.SerializeObject(Model.MonthlyProfits));
-    console.log('Monthly Profits Data:', monthlyProfits);
+    @* console.log('Monthly Profits Data:', monthlyProfits); *@
 
     // Initialize data for the chart
     var labels = [];
@@ -523,8 +523,8 @@
         }
     });
 
-    console.log('Labels:', labels);
-    console.log('Data:', data);
+  @*   console.log('Labels:', labels);
+    console.log('Data:', data); *@
 
     var ctx = document.getElementById('profitChart').getContext('2d');
     var profitChart = new Chart(ctx, {
@@ -587,7 +587,7 @@
     const userGrowthData = @Html.Raw(Model.UserGrowthJson);
 
     // Print fetched data to the console
-    console.log("Fetched User Growth Data:", userGrowthData);
+    @* console.log("Fetched User Growth Data:", userGrowthData); *@
 
     const userGrowthLabels = [
         "January", "February", "March", "April", "May", "June",

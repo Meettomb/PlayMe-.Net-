@@ -36,9 +36,15 @@ namespace Main_Project.Pages.Admin_profile_manage
         public string OTP { get; set; }
 
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
             string sessionEmail = HttpContext.Session.GetString("email");
+            int? userId = HttpContext.Session.GetInt32("Id");
+            string role = HttpContext.Session.GetString("UserRole");
+            if (!userId.HasValue | role != "admin")
+            {
+                return Redirect("/");
+            }
             if (!string.IsNullOrEmpty(sessionEmail))
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
@@ -64,6 +70,7 @@ namespace Main_Project.Pages.Admin_profile_manage
                     }
                 }
             }
+            return Page();
         }
 
         public async Task<IActionResult> OnPostUpdateProfilePicAsync()

@@ -115,7 +115,7 @@ namespace Main_Project.Pages.Movies
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Check if any movie files were uploaded
+            // Process uploaded movie files (multiple files)
             if (uplodemovie != null && uplodemovie.Count > 0)
             {
                 List<string> movieFiles = new List<string>(); // To store multiple movie filenames
@@ -141,8 +141,13 @@ namespace Main_Project.Pages.Movies
                 // Store the uploaded video filenames in the MoviesTable.Movie column (comma-separated if multiple)
                 MoviesTable.Movie = string.Join(",", movieFiles);
             }
+            else
+            {
+                // Keep the existing value if no new files were uploaded
+                ModelState.Remove("MoviesTable.Movie");
+            }
 
-            // Upload the main poster
+            // Process main poster upload
             if (uploade != null && uploade.Length > 0)
             {
                 var posterFilePath = Path.Combine(_environment.ContentRootPath, "wwwroot/poster", uploade.FileName);
@@ -150,10 +155,14 @@ namespace Main_Project.Pages.Movies
                 {
                     await uploade.CopyToAsync(posterStream);
                 }
-                MoviesTable.Movieposter = uploade.FileName; // Store poster filename
+                MoviesTable.Movieposter = uploade.FileName;
+            }
+            else
+            {
+                ModelState.Remove("MoviesTable.Movieposter");
             }
 
-            // Upload the second poster
+            // Process second poster upload
             if (uplodeposter2 != null && uplodeposter2.Length > 0)
             {
                 var poster2FilePath = Path.Combine(_environment.ContentRootPath, "wwwroot/poster", uplodeposter2.FileName);
@@ -161,21 +170,29 @@ namespace Main_Project.Pages.Movies
                 {
                     await uplodeposter2.CopyToAsync(poster2Stream);
                 }
-                MoviesTable.Movieposter2 = uplodeposter2.FileName; // Store second poster filename
+                MoviesTable.Movieposter2 = uplodeposter2.FileName;
+            }
+            else
+            {
+                ModelState.Remove("MoviesTable.Movieposter2");
             }
 
-            // Upload the Trailer
+            // Process trailer upload
             if (uplodetrailer != null && uplodetrailer.Length > 0)
             {
-                var uplodetrailerFilePath = Path.Combine(_environment.ContentRootPath, "wwwroot/trailer", uplodetrailer.FileName);
-                using (var TrailerStream = new FileStream(uplodetrailerFilePath, FileMode.Create))
+                var trailerFilePath = Path.Combine(_environment.ContentRootPath, "wwwroot/trailer", uplodetrailer.FileName);
+                using (var trailerStream = new FileStream(trailerFilePath, FileMode.Create))
                 {
-                    await uplodetrailer.CopyToAsync(TrailerStream);
+                    await uplodetrailer.CopyToAsync(trailerStream);
                 }
-                MoviesTable.Trailer = uplodetrailer.FileName; // Store second poster filename
+                MoviesTable.Trailer = uplodetrailer.FileName;
+            }
+            else
+            {
+                ModelState.Remove("MoviesTable.Trailer");
             }
 
-            // Save selected categories as a comma-separated string
+            // Save selected categories as a comma-separated string if provided
             if (SelectedCategories != null && SelectedCategories.Any())
             {
                 MoviesTable.Movietype = string.Join(",", SelectedCategories);
@@ -203,10 +220,13 @@ namespace Main_Project.Pages.Movies
             return RedirectToPage("./Index");
         }
 
-
+        // Helper method to check if the MoviesTable entry exists
         private bool MoviesTableExists(int id)
         {
             return _context.MoviesTables.Any(e => e.Movieid == id);
         }
+
+
+       
     }
 }

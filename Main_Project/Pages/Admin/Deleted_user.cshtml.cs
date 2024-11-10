@@ -20,7 +20,12 @@ namespace Main_Project.Pages.Admin
         }
         public IActionResult OnGet()
         {
-            
+            int? userId = HttpContext.Session.GetInt32("Id");
+            string role = HttpContext.Session.GetString("UserRole");
+            if (!userId.HasValue | role != "admin")
+            {
+                return Redirect("/");
+            }
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))

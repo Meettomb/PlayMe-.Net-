@@ -35,12 +35,18 @@ namespace Main_Project.Pages
         public IList<Movie_category_table> MovieCategories { get; set; } = new List<Movie_category_table>();
         public List<Search_history> SearchHistory { get; set; } = new List<Search_history>();
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+           
             UserName = HttpContext.Session.GetString("Username");
             profilepic = HttpContext.Session.GetString("profilepic");
             string sessionEmail = HttpContext.Session.GetString("email");
-           
+            int? userId = HttpContext.Session.GetInt32("Id");
+            if (!userId.HasValue)
+            {
+                return Redirect("/");
+                
+            }
             AllMovies = await _context.MoviesTables.ToListAsync(); // Fetch all movies if no category is specified
 
 
@@ -140,6 +146,7 @@ namespace Main_Project.Pages
                 // For example, redirect to login or show an error message
             }
 
+            return Page();
 
         }
 

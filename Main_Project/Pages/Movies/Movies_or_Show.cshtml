@@ -1,0 +1,71 @@
+﻿@page
+@model Main_Project.Pages.Movies.Movies_or_ShowModel
+@{
+    Layout = "_Header";
+    ViewData["Title"] = "Movie Category";
+
+    // Randomly shuffle the movies for the second section
+    var randomMovies2 = Model.Movies.OrderBy(x => Guid.NewGuid()).ToList();
+}
+
+<head>
+    <link href="/css/Movie_category.css" rel="stylesheet" />
+</head>
+
+@if (Model.Movies != null && Model.Movies.Count > 0)
+{
+    <main class="cetegory_page_main_div">
+        <section class="movie_div">
+            @if (Model.Movies != null && Model.Movies.Any())
+            {
+                @foreach (var item in Model.Movies)
+                {
+                    <div class="movie_poster5">
+                        <form method="post" action="/Home?handler=SaveMovieType" id="form-@item.Movieid">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="movietype" value="@item.Movietype" />
+                            <input type="hidden" name="movieid" value="@item.Movieid" />
+                            <a href="#" class="openPopup" onclick="document.getElementById('form-@item.Movieid').submit(); return false;">
+                                <img src="/poster/@item.Movieposter2" alt="@item.Moviename" loading="lazy">
+                                <span>@item.Moviename</span>
+                            </a>
+                        </form>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No movies found in this category.</p>
+            }
+        </section>
+    </main>
+
+
+    <main class="main2 cetegory_page_main_div">
+        <section class="movie_div">
+            @foreach (var data in Model.AllMovies) // Change to use the new AllMovies property
+            {
+                <div class="movie_poster5 data">
+                    <form method="post" action="/Home?handler=SaveMovieType" id="form-@data.Movieid">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="movietype" value="@data.Movietype" />
+                        <input type="hidden" name="movieid" value="@data.Movieid" />
+                        <a href="#" class="openPopup" onclick="document.getElementById('form-@data.Movieid').submit(); return false;">
+                            <img src="/poster/@data.Movieposter2" alt="@data.Moviename" loading="lazy">
+                            <span>@data.Moviename</span>
+                        </a>
+                    </form>
+                </div>
+            }
+
+        </section>
+    </main>
+
+}
+else
+{
+    <div class="notfounde404">
+        <img src="/image/404.jpg" alt="404 not found" />
+        <button onclick="redirectTohomepage()">Explore more...</button>
+    </div>
+}

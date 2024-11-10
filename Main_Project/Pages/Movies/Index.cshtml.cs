@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Main_Project.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Main_Project.Pages.Movies
 {

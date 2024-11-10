@@ -31,21 +31,27 @@
         <form method="post" class="forms-sample" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="MoviesTable.Movieid" />
+
             <div class="form-group">
                 <label class="control-label">Movie poster</label>
                 <input type="file" asp-for="uploade" class="form-control" accept="image/*" />
+                <input type="hidden" asp-for="MoviesTable.Movieposter" />
                 <span asp-validation-for="MoviesTable.Movieposter" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label class="control-label">Trailer</label>
                 <input type="file" asp-for="uplodetrailer" class="form-control" />
+                <input type="hidden" asp-for="MoviesTable.Trailer" />
+
                 <span asp-validation-for="MoviesTable.Trailer" class="text-danger"></span>
             </div>  
             
             <div class="form-group">
                 <label class="control-label">Movie</label>
                 <input type="file" asp-for="uplodemovie" class="form-control" multiple id="movieFilesInput"  />
+                <input type="hidden" asp-for="MoviesTable.Movie" />
+
                 <span asp-validation-for="MoviesTable.Movie" class="text-danger"></span>
             </div>
 
@@ -70,7 +76,9 @@
 
             <div class="form-group">
                 <label class="control-label">Movie Posetr 2(big Poster)</label>
-                <input type="file" asp-for="uplodeposter2" class="form-control" />
+                <input type="file" asp-for="uplodeposter2" class="form-control" /> 
+                <input type="hidden" asp-for="MoviesTable.Movieposter2" />
+
                 <span asp-validation-for="MoviesTable.Movieposter2" class="text-danger"></span>
             </div>
 
