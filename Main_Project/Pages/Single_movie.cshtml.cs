@@ -410,7 +410,7 @@ namespace Main_Project.Pages
             int? userId = HttpContext.Session.GetInt32("Id");
 
             // Log the userId for debugging purposes
-            Console.WriteLine($"UserId from session: {userId}");
+            //Console.WriteLine($"UserId from session: {userId}");
 
             // Check if the required values are present
             if (userId.HasValue && !string.IsNullOrEmpty(movietype) && !string.IsNullOrEmpty(movieid))
@@ -440,13 +440,13 @@ namespace Main_Project.Pages
                 catch (Exception ex)
                 {
                     // Log the exception message
-                    Console.WriteLine("Exception: " + ex.Message);
+                    //Console.WriteLine("Exception: " + ex.Message);
                     // Handle the exception (logging, etc.) and redirect to an error page
                     return RedirectToPage("/Error"); // Change this to your error handling logic
                 }
             }
 
-            Console.WriteLine("Invalid data");
+            //Console.WriteLine("Invalid data");
             return RedirectToPage("/Error"); // Redirect on invalid data
         }
 

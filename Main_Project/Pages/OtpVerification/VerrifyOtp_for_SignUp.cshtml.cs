@@ -16,13 +16,13 @@ namespace Main_Project.Pages.OtpVerification
     public class VerrifyOtp_for_SignUpModel : PageModel
     {
         private readonly string _connectionString;
-        private readonly EmailService _emailService;
+        private readonly IEmailService _emailService;
         private readonly PasswordHasher<user_regi> _passwordHasher;
 
-        public VerrifyOtp_for_SignUpModel(IConfiguration configuration, EmailService emailService)
+        public VerrifyOtp_for_SignUpModel(IConfiguration configuration, IEmailService emailService)
         {
             _connectionString = configuration.GetConnectionString("NetflixDatabase");
-            _emailService = emailService;
+            _emailService = emailService; // Properly initialize the service
             _passwordHasher = new PasswordHasher<user_regi>(); // Initialize PasswordHasher
         }
 
@@ -52,6 +52,13 @@ namespace Main_Project.Pages.OtpVerification
             var storedOtp = TempData["Otp"] as string;
 
             // Check if the OTP is valid
+            if (string.IsNullOrEmpty(storedOtp))
+            {
+                ErrorMessage = "OTP data not found. Please try again.";
+                Console.WriteLine(ErrorMessage); // Print to console
+                return Page();
+            }
+
             if (Otp != storedOtp)
             {
                 ErrorMessage = "Invalid OTP. Please try again.";
@@ -66,11 +73,20 @@ namespace Main_Project.Pages.OtpVerification
                 Console.WriteLine(ErrorMessage); // Print to console
                 return Page();
             }
+
             // Hash the password before saving to the database
             user.password = _passwordHasher.HashPassword(user, user.password); // Hash the password
 
             Console.WriteLine($"User Data: Full Name: {user.fullname}, Email: {user.email}, Phone: {user.phone}, " +
                               $"DOB: {user.dob}, Price: {user.price3}, Subscription Active: {user.subscriptionactive}");
+
+            // Check if connection string is valid
+            if (string.IsNullOrEmpty(_connectionString))
+            {
+                ErrorMessage = "Database connection string not found.";
+                Console.WriteLine(ErrorMessage); // Print to console
+                return Page();
+            }
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
@@ -83,10 +99,10 @@ namespace Main_Project.Pages.OtpVerification
                     string insertUserQuery = @"
                 INSERT INTO User_data (username, email, phone, password, isactive, price, datetime, 
                                        duration, paymentmethod, role, logintime, profilepic, dob, 
-                                       subscriptionactive, date, emailsent, subid)
+                                       subscriptionactive, date, emailsent, subid, autorenew)
                 VALUES (@fullname, @Email, @Phone, @Password, @isactive, @Price, @Datetime, @Duration, 
                         @Paymentmethod, @Role, @Logintime, @Profilepic, @Dob, @Subscriptionactive, 
-                        @Date, @Emailsent, @subid)";
+                        @Date, @Emailsent, @subid, @autorenew)";
 
                     using (SqlCommand cmd = new SqlCommand(insertUserQuery, con, transaction))
                     {
@@ -107,6 +123,7 @@ namespace Main_Project.Pages.OtpVerification
                         cmd.Parameters.AddWithValue("@Date", DateTime.Now);
                         cmd.Parameters.AddWithValue("@Emailsent", user.emailsent);
                         cmd.Parameters.AddWithValue("@subid", user.subid);
+                        cmd.Parameters.AddWithValue("@autorenew", user.autorenew);
 
                         Console.WriteLine("Executing Insert User Query with parameters:");
                         foreach (SqlParameter parameter in cmd.Parameters)
@@ -189,7 +206,5 @@ namespace Main_Project.Pages.OtpVerification
                 }
             }
         }
-
-
     }
 }
