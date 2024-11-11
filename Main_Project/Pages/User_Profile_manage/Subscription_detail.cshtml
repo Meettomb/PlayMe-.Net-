@@ -5,6 +5,13 @@
     ViewData["title"] = "Subscription Details";
 }
 
+<body>
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert popup_message" id="tempMessage">
+            <span class="mdi mdi-check-circle"></span> @TempData["Message"]
+        </div>
+    }
 
     <h1 class="your_subscription_details">Your Subscription Details</h1>
     <div class="subscription_container">
@@ -24,11 +31,52 @@
                         <p class="SubscriptionDetail"><i class="mdi mdi-information-variant"></i> @detail</p>
                     }
                 }
-
             }
             else
             {
                 <p>No subscription details available.</p>
             }
         </div>
+
+
+
     </div>
+
+    @if (Model.autorenew)
+    {
+
+        <p class="cansel_plane_openpopup" id="cansel_plane_openpopup">Caancel your Plane or Disable Auto renew your plane</p>
+
+        <div class="cansel_plane_popup" id="cansel_plane_popup">
+            <div class="conformation_button_div">
+                <form method="post">
+                    <div>
+                        <input type="hidden" name="name" value="@Model.id" />
+                    </div>
+                    <p>Are you Sure you want Cansel your plane or disable auto renew</p>
+                    <button class="conform_cansel_button">Conform</button>
+                </form>
+                <button id="close_popup">Close</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>Auto renew Off</p>
+    }
+
+
+    <script>
+        const openpopup = document.getElementById("cansel_plane_openpopup");
+        const cansel_plane_popup = document.getElementById("cansel_plane_popup");
+        const close_popup = document.getElementById("close_popup");
+
+        openpopup.addEventListener("click", function (event) {
+            cansel_plane_popup.style.display = "block";
+        })
+        close_popup.addEventListener("click", function () {
+            cansel_plane_popup.style.display = "none";
+        })
+
+    </script>
+</body>

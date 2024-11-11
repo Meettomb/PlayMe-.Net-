@@ -6,6 +6,20 @@
 }
 
 
+@if (TempData["Message"] != null)
+{
+    <div class="alert popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["Message"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger popup_message" id="tempMessage">
+        <span class="mdi mdi-check-circle"></span> @TempData["ErrorMessage"]
+    </div>
+}
+
+
 <h2 class="select_subscription">Select Subscription for</h2>
 <div class="select_scbscription_container">
     <div class="planes">

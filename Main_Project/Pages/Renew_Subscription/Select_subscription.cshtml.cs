@@ -127,7 +127,7 @@ namespace Main_Project.Pages.Renew_Subscription
 
         public async Task<IActionResult> OnPost()
         {
-            // Simulate date and time for the subscription
+            /*// Simulate date and time for the subscription
             User.datetime3 = Request.Form["datetime3"]; // Ensure this is set correctly in JS
             User.price3 = Request.Form["price3"];
             User.duration3 = Request.Form["duration3"];
@@ -140,7 +140,7 @@ namespace Main_Project.Pages.Renew_Subscription
             {
                 User.subid = null; // or handle the error as needed
             }
-
+*/
             // Retrieve the current user's email from session
             string sessionEmail = HttpContext.Session.GetString("email");
 
@@ -148,22 +148,56 @@ namespace Main_Project.Pages.Renew_Subscription
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
+                    // Check if auto-renew is enabled for the user
+                    string checkAutoRenewQuery = "SELECT autorenew FROM User_data WHERE email = @Email";
+                    using (SqlCommand checkAutoRenewCmd = new SqlCommand(checkAutoRenewQuery, con))
+                    {
+                        checkAutoRenewCmd.Parameters.AddWithValue("@Email", sessionEmail);
+                        con.Open();
+                        var autoRenewStatus = await checkAutoRenewCmd.ExecuteScalarAsync();
+                        con.Close();
+
+                        if (autoRenewStatus != null && Convert.ToBoolean(autoRenewStatus) == true)
+                        {
+                            // Set TempData message and return to the page if auto-renew is enabled
+                            TempData["Message"] = "Your subscription is set to auto-renew. Please disable auto-renew to proceed.";
+                            return RedirectToPage("/User_Profile_manage/Subscription_detail");
+                        }
+                    }
+
+                    // Continue with the rest of the code if auto-renew is not enabled
+
+                    // Simulate date and time for the subscription
+                    User.datetime3 = Request.Form["datetime3"]; // Ensure this is set correctly in JS
+                    User.price3 = Request.Form["price3"];
+                    User.duration3 = Request.Form["duration3"];
+                    User.paymentmethod = Request.Form["paymentMethod"];
+                    if (int.TryParse(Request.Form["subid"], out int subidValue))
+                    {
+                        User.subid = subidValue;
+                    }
+                    else
+                    {
+                        User.subid = null; // or handle the error as needed
+                    }
+
                     // Define the query to update the User_data table
                     string updateUserDataQuery = @"
-            UPDATE User_data 
-            SET price = @Price, 
-                datetime = @DateTime, 
-                duration = @Duration, 
-                paymentmethod = @PaymentMethod,
-                subid = @subid,
-                subscriptionactive = @SubscriptionActive,
-                emailsent = @Emailsent
-            WHERE email = @Email";
+                UPDATE User_data 
+                SET price = @Price, 
+                    datetime = @DateTime, 
+                    duration = @Duration, 
+                    paymentmethod = @PaymentMethod,
+                    subid = @subid,
+                    subscriptionactive = @SubscriptionActive,
+                    emailsent = @Emailsent,
+                    autorenew = @AutoRenew
+                WHERE email = @Email";
 
                     // Define the query to insert data into the Revenue table
                     string insertRevenueQuery = @"
-            INSERT INTO Revenue (email, price1, datetime1, duration, paymentmethod, date, subscriptionactive)
-            VALUES (@Email, @Price, @DateTime, @Duration, @PaymentMethod, @Date, @SubscriptionActive)";
+                INSERT INTO Revenue (email, price1, datetime1, duration, paymentmethod, date, subscriptionactive)
+                VALUES (@Email, @Price, @DateTime, @Duration, @PaymentMethod, @Date, @SubscriptionActive)";
 
                     // Send renewal notification email
                     var emailBody = new StringBuilder();
@@ -191,10 +225,12 @@ namespace Main_Project.Pages.Renew_Subscription
                         cmd.Parameters.AddWithValue("@PaymentMethod", User.paymentmethod);
                         cmd.Parameters.AddWithValue("@subid", User.subid);
                         cmd.Parameters.AddWithValue("@SubscriptionActive", true); // Assuming active after renewal
-                        cmd.Parameters.AddWithValue("@Emailsent", false); 
+                        cmd.Parameters.AddWithValue("@Emailsent", false);
+                        cmd.Parameters.AddWithValue("@AutoRenew", true);
 
                         con.Open();
                         await cmd.ExecuteNonQueryAsync();
+                        con.Close();
                     }
 
                     // Insert into Revenue table
@@ -208,14 +244,14 @@ namespace Main_Project.Pages.Renew_Subscription
                         cmd.Parameters.AddWithValue("@Date", DateTime.Now); // Current date for the new transaction
                         cmd.Parameters.AddWithValue("@SubscriptionActive", true);
 
+                        con.Open();
                         await cmd.ExecuteNonQueryAsync();
+                        con.Close();
                     }
 
-                    con.Close();
+                    // Redirect to a success page after both operations succeed
+                    return RedirectToPage("/Renew_Subscription/Success");
                 }
-
-                // Redirect to a success page after both operations succeed
-                return RedirectToPage("/Renew_Subscription/Success");
             }
 
             // If something goes wrong, stay on the page
