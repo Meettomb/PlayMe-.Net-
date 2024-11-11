@@ -106,15 +106,14 @@ namespace Main_Project
 
                                             // Update User_data table with new subscription details
                                             string updateQuery = @"UPDATE User_data SET 
-                                                                    subscriptionactive = 1, 
-                                                                    datetime = @CurrentDate, 
-                                                                    subid = @SubId, 
-                                                                    duration = @Duration, 
-                                                                    price = @Price 
-                                                                    WHERE email = @Email";
+                                        subscriptionactive = 1, 
+                                        datetime = @CurrentDate, 
+                                        subid = @SubId, 
+                                        duration = @Duration, 
+                                        price = @Price 
+                                        WHERE email = @Email";
                                             using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
                                             {
-                                                // Format the datetime in the desired format
                                                 string formattedDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 
                                                 updateCmd.Parameters.AddWithValue("@CurrentDate", formattedDateTime);
@@ -125,12 +124,50 @@ namespace Main_Project
                                                 await updateCmd.ExecuteNonQueryAsync();
                                             }
 
+
+                                            // Query to retrieve the last payment method from the Revenue table for the user
+                                            string lastPaymentMethodQuery = "SELECT TOP 1 paymentmethod FROM Revenue WHERE email = @Email ORDER BY date DESC";
+                                            string lastPaymentMethod = "p"; // Default to "Previsa" if no previous method is found
+
+                                            using (SqlCommand lastPaymentMethodCmd = new SqlCommand(lastPaymentMethodQuery, con))
+                                            {
+                                                lastPaymentMethodCmd.Parameters.AddWithValue("@Email", userEmail);
+                                                using (SqlDataReader paymentReader = await lastPaymentMethodCmd.ExecuteReaderAsync())
+                                                {
+                                                    if (await paymentReader.ReadAsync())
+                                                    {
+                                                        lastPaymentMethod = paymentReader["paymentmethod"].ToString();
+                                                    }
+                                                }
+                                            }
+
+                                            // Insert into Revenue table
+                                            string insertRevenueQuery = @"INSERT INTO Revenue 
+                                              (email, price1, datetime1, duration, paymentmethod, date, subscriptionactive) 
+                                              VALUES (@Email, @Price, @CurrentDate, @Duration, @PaymentMethod, @Date, @SubscriptionActive)";
+                                            using (SqlCommand insertRevenueCmd = new SqlCommand(insertRevenueQuery, con))
+                                            {
+                                                string formattedDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+
+                                                insertRevenueCmd.Parameters.AddWithValue("@Email", userEmail);
+                                                insertRevenueCmd.Parameters.AddWithValue("@Price", newPrice);
+                                                insertRevenueCmd.Parameters.AddWithValue("@CurrentDate", formattedDateTime);
+                                                insertRevenueCmd.Parameters.AddWithValue("@Duration", newDuration);
+                                                insertRevenueCmd.Parameters.AddWithValue("@PaymentMethod", lastPaymentMethod); // Set payment method to "Previsa"
+                                                insertRevenueCmd.Parameters.AddWithValue("@Date", DateTime.Now.Date);
+                                                insertRevenueCmd.Parameters.AddWithValue("@SubscriptionActive", true); // Set subscription active status
+
+                                                await insertRevenueCmd.ExecuteNonQueryAsync();
+                                            }
+
                                             // Send renewal confirmation email
                                             await SendSubscriptionRenewedEmail(userEmail);
                                         }
                                     }
                                 }
                             }
+
+
                             else
                             {
                                 // If autorenew is not enabled, expire the subscription
