@@ -416,7 +416,7 @@ namespace Main_Project.Pages
         public async Task<IActionResult> OnPostSaveMovieTypeAsync(string movietype, string movieid)
         {
             int? userId = HttpContext.Session.GetInt32("Id");
-            Console.WriteLine($"UserId from session: {userId}");
+            //Console.WriteLine($"UserId from session: {userId}");
 
             if (userId == null)
             {
@@ -447,13 +447,13 @@ namespace Main_Project.Pages
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Exception: " + ex.Message);
+                    //Console.WriteLine("Exception: " + ex.Message);
                     // Handle the exception (logging, etc.) and redirect to an error page
                     return RedirectToPage("/Error"); // Change this to your error handling logic
                 }
             }
 
-            Console.WriteLine("Invalid data");
+            //Console.WriteLine("Invalid data");
             return RedirectToPage("/Error"); // Redirect on invalid data
         }
 

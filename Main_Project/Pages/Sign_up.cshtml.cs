@@ -108,6 +108,7 @@ namespace Netflix.Pages
             User.subscriptionactive = true;
             User.emailsent = false;
             User.date = DateOnly.FromDateTime(DateTime.Now);
+            User.autorenew = true;
 
             using (SqlConnection con = new SqlConnection(_connectionString))
             {

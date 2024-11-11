@@ -17,18 +17,23 @@ body {
     color: var(--main-font-color);
     font-family: var(--main-font);
 }
-
-.main {
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 13px 0;
-    position: fixed;
-    top: 0;
-    z-index: 999;
+.wh_pb{
+    margin-top: -8px;
 }
+.wh_nb {
+    margin-top: -8px;
+}
+    .main {
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 13px 0;
+        position: fixed;
+        top: 0;
+        z-index: 999;
+    }
 
 .header_leftside {
     width: 50%;
@@ -1690,6 +1695,7 @@ progress {
     .slider-button {
         height: 130px;
         width: 20px;
+        visibility: hidden;
     }
 
     .footer_logo img {
@@ -1753,6 +1759,12 @@ progress {
         width: 130px;
         margin: 0;
     }
+   .wh_nb{
+       top: 62px;
+   }
+   .wh_pb{
+       top: 62px;
+   }
 
     .slider-container {
         height: 300px;
@@ -1929,16 +1941,23 @@ progress {
         margin: 10px 10px;
         margin: 2px 2px;
     }
+    .wh_nb {
+        top: 45px;
+    }
 
+    .wh_pb {
+        top: 45px;
+    }
         .movie_poster1 img {
             width: 100%;
             height: 80px;
         }
 
     .slider-button {
-        height: 85px;
+/*        height: 85px;
         width: 20px;
-        margin: 0;
+        margin: 0;*/
+        visibility: hidden;
     }
 
     .xnavdiv {

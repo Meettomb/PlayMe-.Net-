@@ -31,6 +31,7 @@ namespace Netflix.Models
         public bool? emailsent { get; set; }
         public int? subid { get; set; }
         public string? auth_token { get; set; }
+        public bool? autorenew { get; set; }
 
     }
     public class Revenue

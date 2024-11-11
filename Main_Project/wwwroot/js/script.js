@@ -252,7 +252,12 @@ let isPlaying = false,
     touchPastDurationWidth = 0,
     touchStartTime = 0;
 
-currentVol.style.width = volumeVal * 100 + "%";
+// Set initial volume width if the element exists
+if (currentVol) {
+    currentVol.style.width = volumeVal * 100 + "%";
+} else {
+    console.warn("currentVol element not found in the DOM");
+}
 
 // Video Event Listeners
 video.addEventListener("loadedmetadata", canPlayInit);
