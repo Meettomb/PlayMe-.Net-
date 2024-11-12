@@ -95,7 +95,7 @@ namespace Main_Project.Pages.Question_answer
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Question_answer_Index");
         }
     }
 }

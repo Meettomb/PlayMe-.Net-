@@ -30,15 +30,26 @@
         </div>
 
         <!-- Popup box for profile picture update -->
-        <div class="popup-overlay" id="popup-overlay">
-            <div class="popup-box my_costom_box">
+        <div class="select_profile_pic_popup" style="display: none;" id="popup-overlay">
+            <div class="my_costom_box">
                 <span class="close-btn" id="close-btn">&times;</span>
                 <form method="post" enctype="multipart/form-data" asp-page-handler="UpdateProfilePic">
-                    <div class="">
-                        <input type="file" name="profilepic" id="profilepic" accept="image/*" onchange="previewImage(event)">
-                    </div>
-                    <img id="preview-img" src="#" alt="Selected Image" style="display: none;" />
-                    <button type="submit" class="submitbtn">Submit</button>
+                
+                    @foreach (var group in Model.GroupedProfilePics)
+                    {
+                        <h3>@group.Key</h3> <!-- Display the group name -->
+
+                        <div class="profile-pics-group">
+                            @foreach (var pic in group.Value)
+                            {
+                                <div class="profile-pic-item">
+                                    <img src="/profile_pic/@pic.Pics" alt="Profile Picture" onclick="setImageName('@pic.Pics')" />
+                                </div>
+                            }
+                        </div>
+                    }
+                    <input type="hidden" id="imageName" name="profilepic" value="@Model.ProfilePic" />
+                    <button type="submit" class="submitbtn">Save</button>
                 </form>
             </div>
         </div>
@@ -84,6 +95,15 @@
         </div>
     </div>
 </div>
+
+
+<!-- JavaScript to handle the click event and set the image name -->
+<script>
+    function setImageName(imageName) {
+        // Set the image name in the input field
+        document.getElementById('imageName').value = imageName;
+    }
+</script>
 
 <script>
     var editButton = document.getElementById('edit-profile-pic');

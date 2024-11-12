@@ -102,7 +102,7 @@ namespace Main_Project.Pages.Question_answer
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Question_answer_Index");
         }
 
         private bool QuestionExists(int id)

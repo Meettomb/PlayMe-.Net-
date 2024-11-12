@@ -1,0 +1,48 @@
+﻿@page
+@model Main_Project.Pages.Profile_Pic_Manage.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Profile_pic</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" class="forms-sample" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Profile_pic.Id" />
+
+            <div class="form-group">
+                <label asp-for="Profile_pic.Pics" class="control-label"></label>
+                <input type="file" asp-for="Uploade" class="form-control" accept="image/*" />
+                <input type="hidden" asp-for="Profile_pic.Pics" />
+                <span asp-validation-for="Profile_pic.Pics" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Profile_pic.Groups" class="control-label"></label>
+                <input asp-for="Profile_pic.Groups" class="form-control" />
+                <span asp-validation-for="Profile_pic.Groups" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Pic_Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

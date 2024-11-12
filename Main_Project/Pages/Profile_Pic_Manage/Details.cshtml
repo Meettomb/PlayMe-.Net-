@@ -1,0 +1,32 @@
+﻿@page
+@model Main_Project.Pages.Profile_Pic_Manage.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Profile_pic</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Profile_pic.Pics)
+        </dt>
+        <dd class="col-sm-10">
+            <img src="/profile_pic/@Html.DisplayFor(model => model.Profile_pic.Pics)" />
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Profile_pic.Groups)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Profile_pic.Groups)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Profile_pic.Id">Edit</a> |
+    <a asp-page="./Pic_Index">Back to List</a>
+</div>

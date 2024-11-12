@@ -24,7 +24,10 @@
     <link rel="shortcut icon" href="/image/web_logo-HD.png" />
 
     <link href="MultiSelect.css" rel="stylesheet" type="text/css">
-  
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
 </head>
 <body>
 
@@ -121,6 +124,8 @@
                 <li class="nav-item nav-category">
                     <span class="nav-link">Navigation</span>
                 </li>
+
+
                 <li class="nav-item menu-items">
                     <a class="nav-link" href="/Deshbord">
                         <span class="menu-icon">
@@ -130,60 +135,54 @@
                     </a>
                 </li>
 
-
                 <li class="nav-item menu-items">
-                    <a class="nav-link" data-toggle="collapse" href="#ui-basic6" aria-expanded="false" aria-controls="ui-basic">
+                    <a class="nav-link" data-toggle="collapse" href="#user-management" aria-expanded="false" aria-controls="user-management">
                         <span class="menu-icon">
                             <i class="mdi mdi-account"></i>
                         </span>
-                        <span class="menu-title">User managment</span>
+                        <span class="menu-title">User Management</span>
                         <i class="menu-arrow"></i>
                     </a>
-                    <div class="collapse" id="ui-basic6">
+                    <div class="collapse" id="user-management">
                         <ul class="nav flex-column sub-menu">
-
-                            <li class="nav-item"> <a class="nav-link" href="/Admin/Login_data">User data</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="/Admin/Deleted_user">Deleted User</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Admin/Login_data">User Data</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Admin/Deleted_user">Deleted User</a></li>
                         </ul>
                     </div>
                 </li>
 
-                
                 <li class="nav-item menu-items">
-                    <a class="nav-link" data-toggle="collapse" href="#ui-basic4" aria-expanded="false" aria-controls="ui-basic">
+                    <a class="nav-link" data-toggle="collapse" href="#movies-management" aria-expanded="false" aria-controls="movies-management">
                         <span class="menu-icon">
                             <i class="mdi mdi-movie"></i>
                         </span>
-                        <span class="menu-title">Movies managment</span>
+                        <span class="menu-title">Movies Management</span>
                         <i class="menu-arrow"></i>
                     </a>
-                    <div class="collapse" id="ui-basic4">
+                    <div class="collapse" id="movies-management">
                         <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"> <a class="nav-link" href="/Movies/Add_Movies_Category">Add Movies Category</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="/Movies/Create">Add Movies</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="/Movies/Index">All Movie Data</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Movies/Add_Movies_Category">Add Movies Category</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Movies/Create">Add Movies</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Movies/Index">All Movie Data</a></li>
                         </ul>
                     </div>
                 </li>
 
                 <li class="nav-item menu-items">
-                    <a class="nav-link" data-toggle="collapse" href="#ui-basic3" aria-expanded="false" aria-controls="ui-basic">
+                    <a class="nav-link" data-toggle="collapse" href="#questions-answers" aria-expanded="false" aria-controls="questions-answers">
                         <span class="menu-icon">
                             <i class="mdi mdi-message"></i>
                         </span>
-                        <span class="menu-title">Quastion's Answer</span>
+                        <span class="menu-title">Questions & Answers</span>
                         <i class="menu-arrow"></i>
                     </a>
-
-                    <div class="collapse" id="ui-basic3">
+                    <div class="collapse" id="questions-answers">
                         <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"> <a class="nav-link" href="/Question_answer/Create">Add Question Answer</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="/Question_answer/Index">All Question answer</a></li>
-
+                            <li class="nav-item"><a class="nav-link" href="/Question_answer/Question_answer_Create">Add Question Answer</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Question_answer/Question_answer_Index">All Question Answer</a></li>
                         </ul>
                     </div>
                 </li>
-
 
                 <li class="nav-item menu-items">
                     <a class="nav-link" href="/Feedbacks/Show_all_feedback">
@@ -195,23 +194,39 @@
                 </li>
 
                 <li class="nav-item menu-items">
-                    <a class="nav-link" data-toggle="collapse" href="#ui-basic5" aria-expanded="false" aria-controls="ui-basic">
+                    <a class="nav-link" data-toggle="collapse" href="#subscription-management" aria-expanded="false" aria-controls="subscription-management">
                         <span class="menu-icon">
                             <i class="mdi mdi-crown"></i>
                         </span>
                         <span class="menu-title">Subscription</span>
                         <i class="menu-arrow"></i>
                     </a>
-                    <div class="collapse" id="ui-basic5">
+                    <div class="collapse" id="subscription-management">
                         <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"> <a class="nav-link" href="/Subscription/Add_subscription">Add Subscription</a></li>
-                            <li class="nav-item"> <a class="nav-link" href="/Subscription/View_subscription">All Subscription</a></li>
-
+                            <li class="nav-item"><a class="nav-link" href="/Subscription/Add_subscription">Add Subscription</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Subscription/View_subscription">All Subscriptions</a></li>
                         </ul>
                     </div>
                 </li>
 
-               
+
+                <li class="nav-item menu-items">
+                    <a class="nav-link" data-toggle="collapse" href="#profile-pic-management" aria-expanded="false" aria-controls="profile-pic-management">
+                        <span class="menu-icon">
+                            <i class="fa-regular fa-id-card"></i>
+                        </span>
+                        <span class="menu-title">Profile Pic</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="profile-pic-management">
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item"><a class="nav-link" href="/Profile_Pic_Manage/Pic_Insert">Add Profile pic</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/Profile_Pic_Manage/Pic_Index">All Profile pic</a></li>
+                        </ul>
+                    </div>
+                </li>
+
+                
 
 
 

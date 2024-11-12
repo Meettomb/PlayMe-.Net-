@@ -4,32 +4,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Main_Project.Models;
-using Microsoft.Data.SqlClient;
 using Netflix.Models;
+using Microsoft.Data.SqlClient;
 
 namespace Main_Project.Pages.Question_answer
 {
-    public class IndexModel : PageModel
+    public class Question_answer_CreateModel : PageModel
     {
         private readonly Main_Project.Models.NetflixDataContext _context;
 
-        public List<user_regi> userlist = new List<user_regi>();
-        public string UserName { get; set; }
-        public string email { get; set; }
-        public string profilepic { get; set; }
-
         private readonly string _connectionString;
-        public IndexModel(Main_Project.Models.NetflixDataContext context, IConfiguration configuration)
+        public Question_answer_CreateModel(Main_Project.Models.NetflixDataContext context, IConfiguration configuration)
         {
             _context = context;
             _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
-
-        public IList<Question> Question { get;set; } = default!;
-
-        public async Task OnGetAsync()
+        
+        public List<user_regi> userlist = new List<user_regi>();
+        public string UserName { get; set; }
+        public string email { get; set; }
+        public string profilepic { get; set; }
+        public IActionResult OnGet()
         {
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
@@ -56,7 +53,24 @@ namespace Main_Project.Pages.Question_answer
                 }
             }
 
-            Question = await _context.Question.ToListAsync();
+            return Page();
+        }
+
+        [BindProperty]
+        public Question Question { get; set; } = default!;
+
+        // For more information, see https://aka.ms/RazorPagesCRUD.
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            _context.Question.Add(Question);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("/Question_answer/Question_answer_Create");
         }
     }
 }
