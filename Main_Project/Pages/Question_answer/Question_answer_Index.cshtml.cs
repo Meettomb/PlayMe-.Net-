@@ -6,15 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Main_Project.Models;
-using Netflix.Models;
 using Microsoft.Data.SqlClient;
+using Netflix.Models;
 
 namespace Main_Project.Pages.Question_answer
 {
-    public class DeleteModel : PageModel
+    public class Question_answer_IndexModel : PageModel
     {
         private readonly Main_Project.Models.NetflixDataContext _context;
-
 
         public List<user_regi> userlist = new List<user_regi>();
         public string UserName { get; set; }
@@ -22,35 +21,16 @@ namespace Main_Project.Pages.Question_answer
         public string profilepic { get; set; }
 
         private readonly string _connectionString;
-        public DeleteModel(Main_Project.Models.NetflixDataContext context, IConfiguration configuration)
+        public Question_answer_IndexModel(Main_Project.Models.NetflixDataContext context, IConfiguration configuration)
         {
             _context = context;
             _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
-      
 
-        [BindProperty]
-        public Question Question { get; set; } = default!;
+        public IList<Question> Question { get;set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task OnGetAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var question = await _context.Question.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (question == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                Question = question;
-            }
-
-
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
@@ -76,26 +56,8 @@ namespace Main_Project.Pages.Question_answer
                 }
             }
 
-
-            return Page();
+            Question = await _context.Question.ToListAsync();
         }
-
-        public async Task<IActionResult> OnPostAsync(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var question = await _context.Question.FindAsync(id);
-            if (question != null)
-            {
-                Question = question;
-                _context.Question.Remove(Question);
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToPage("./Question_answer_Index");
-        }
+    
     }
 }

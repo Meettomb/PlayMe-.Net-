@@ -2,6 +2,7 @@ using Main_Project.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
+using Netflix.Models;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace Main_Project.Pages.User_Profile_manage
 
         public string ErrorMessage { get; set; }
 
-
+        public Dictionary<string, List<Profile_pic>> GroupedProfilePics { get; private set; }
         public void OnGet()
         {
             // Retrieve the email from session
@@ -53,45 +54,63 @@ namespace Main_Project.Pages.User_Profile_manage
                                 UserName = reader["username"].ToString();
                                 Dob = reader["dob"].ToString();
                                 Gender = reader["gender"].ToString();
-                                ProfilePic = reader["profilepic"].ToString();
+                                ProfilePic = reader["profilepic"]?.ToString(); // Handle potential null
                                 Email = sessionEmail; // Set email from session
                                 UserRole = reader["role"].ToString();
                             }
                         }
-                        con.Close();
                     }
                 }
             }
+
+            // Retrieve and store grouped profile pics
+            GroupedProfilePics = GetProfilePicsGroupedByGroup();
         }
 
-        public async Task<IActionResult> OnPostUpdateProfilePicAsync()
+        public Dictionary<string, List<Profile_pic>> GetProfilePicsGroupedByGroup()
         {
-            var file = Request.Form.Files["profilepic"];
-            string profilePic = null;
+            var groupedProfilePics = new Dictionary<string, List<Profile_pic>>();
+            string query = "SELECT * FROM Profile_pic";
 
-            if (file != null && file.Length > 0)
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                var uploads = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/profile_pic");
-                if (!Directory.Exists(uploads))
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    Directory.CreateDirectory(uploads);
-                }
-                profilePic = Path.GetFileName(file.FileName);
-                var fullPath = Path.Combine(uploads, profilePic);
-                using (var stream = new FileStream(fullPath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
+                    while (reader.Read())
+                    {
+                        var profilePic = new Profile_pic
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Pics = reader.IsDBNull(reader.GetOrdinal("Pics")) ? null : reader.GetString(reader.GetOrdinal("Pics")),
+                            Groups = reader.GetString(reader.GetOrdinal("Groups"))
+                        };
+
+                        // Group by the "Groups" field
+                        if (!groupedProfilePics.ContainsKey(profilePic.Groups))
+                        {
+                            groupedProfilePics[profilePic.Groups] = new List<Profile_pic>();
+                        }
+                        groupedProfilePics[profilePic.Groups].Add(profilePic);
+                    }
                 }
             }
 
-            if (profilePic != null)
-            {
+            return groupedProfilePics;
+        }
+
+
+        public async Task<IActionResult> OnPostUpdateProfilePicAsync()
+        {
+            string profilepic = Request.Form["profilepic"];
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     string updateQuery = "UPDATE User_data SET profilepic = @ProfilePic WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(updateQuery, con))
                     {
-                        cmd.Parameters.AddWithValue("@ProfilePic", profilePic);
+                        cmd.Parameters.AddWithValue("@ProfilePic", profilepic);
                         cmd.Parameters.AddWithValue("@Email", HttpContext.Session.GetString("email"));
 
                         con.Open();
@@ -101,7 +120,7 @@ namespace Main_Project.Pages.User_Profile_manage
                 }
 
                 TempData["message"] = "Profile picture updated successfully.";
-            }
+            
             // Reload the updated data
             OnGet();
 

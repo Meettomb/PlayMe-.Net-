@@ -5,53 +5,58 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Main_Project.Models;
-using Microsoft.Data.SqlClient;
 using Netflix.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
-namespace Main_Project.Pages.Question_answer
+namespace Main_Project.Pages.Profile_Pic_Manage
 {
-    public class EditModel : PageModel
+    public class Pic_InsertModel : PageModel
     {
-        private readonly Main_Project.Models.NetflixDataContext _context;
 
+        private readonly NetflixDataContext _context;
+        private readonly IWebHostEnvironment _environment;
+        private readonly string _connectionString;
         public List<user_regi> userlist = new List<user_regi>();
         public string UserName { get; set; }
         public string email { get; set; }
         public string profilepic { get; set; }
 
-        private readonly string _connectionString;
-        public EditModel(Main_Project.Models.NetflixDataContext context, IConfiguration configuration)
+
+
+        [BindProperty]
+        public Profile_pic Profile_pic { get; set; } = default!;
+        public Pic_InsertModel(NetflixDataContext context, IConfiguration configuration, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
             _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
 
+
+
         [BindProperty]
-        public Question Question { get; set; } = default!;
+        public IFormFile Upload { get; set; } // Property name matches input field's asp-for
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
+            int? userId = HttpContext.Session.GetInt32("Id");
+            string role = HttpContext.Session.GetString("UserRole");
+            if (!userId.HasValue | role != "admin")
             {
-                return NotFound();
+                return Redirect("/");
             }
-
-            var question =  await _context.Question.FirstOrDefaultAsync(m => m.Id == id);
-            if (question == null)
-            {
-                return NotFound();
-            }
-
-
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
-                    string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
+                    string query = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Email", sessionEmail);
@@ -70,13 +75,10 @@ namespace Main_Project.Pages.Question_answer
                 }
             }
 
-
-            Question = question;
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -84,30 +86,30 @@ namespace Main_Project.Pages.Question_answer
                 return Page();
             }
 
-            _context.Attach(Question).State = EntityState.Modified;
-
-            try
+            if (Upload != null)
             {
+                var filePath = Path.Combine(_environment.WebRootPath, "profile_pic", Upload.FileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath) ?? string.Empty); // Ensure directory exists
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Upload.CopyToAsync(fileStream);
+                }
+
+                // Set the filename to the model property
+                Profile_pic.Pics = Upload.FileName;
+
+                // Save to database
+                _context.Profile_pic.Add(Profile_pic);
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!QuestionExists(Question.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                ModelState.AddModelError("Upload", "Please upload a profile picture.");
+                return Page();
             }
 
-            return RedirectToPage("./Question_answer_Index");
-        }
-
-        private bool QuestionExists(int id)
-        {
-            return _context.Question.Any(e => e.Id == id);
+            return RedirectToPage("./Pic_Insert");
         }
     }
 }

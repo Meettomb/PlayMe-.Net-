@@ -9,28 +9,26 @@ using Main_Project.Models;
 using Netflix.Models;
 using Microsoft.Data.SqlClient;
 
-namespace Main_Project.Pages.Question_answer
+namespace Main_Project.Pages.Profile_Pic_Manage
 {
-    public class DeleteModel : PageModel
+    public class DetailsModel : PageModel
     {
-        private readonly Main_Project.Models.NetflixDataContext _context;
+        private readonly NetflixDataContext _context;
+        private readonly IWebHostEnvironment _environment;
+        private readonly string _connectionString;
 
+        public DetailsModel(NetflixDataContext context, IWebHostEnvironment environment, IConfiguration configuration)
+        {
+            _context = context;
+            _environment = environment;
+            _connectionString = configuration.GetConnectionString("NetflixDatabase");
+        }
 
-        public List<user_regi> userlist = new List<user_regi>();
         public string UserName { get; set; }
         public string email { get; set; }
         public string profilepic { get; set; }
 
-        private readonly string _connectionString;
-        public DeleteModel(Main_Project.Models.NetflixDataContext context, IConfiguration configuration)
-        {
-            _context = context;
-            _connectionString = configuration.GetConnectionString("NetflixDatabase");
-        }
-      
-
-        [BindProperty]
-        public Question Question { get; set; } = default!;
+        public Profile_pic Profile_pic { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -39,25 +37,29 @@ namespace Main_Project.Pages.Question_answer
                 return NotFound();
             }
 
-            var question = await _context.Question.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (question == null)
+            var profile_pic = await _context.Profile_pic.FirstOrDefaultAsync(m => m.Id == id);
+            if (profile_pic == null)
             {
                 return NotFound();
             }
             else
             {
-                Question = question;
+                Profile_pic = profile_pic;
             }
 
+            LoadUserDetails();
+            return Page();
+        }
 
+        private void LoadUserDetails()
+        {
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
-                    string query = "SELECT username, dob, gender, profilepic FROM User_data WHERE email = @Email";
+                    string query = "SELECT * FROM User_data WHERE email = @Email";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@Email", sessionEmail);
@@ -75,27 +77,6 @@ namespace Main_Project.Pages.Question_answer
                     }
                 }
             }
-
-
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostAsync(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var question = await _context.Question.FindAsync(id);
-            if (question != null)
-            {
-                Question = question;
-                _context.Question.Remove(Question);
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToPage("./Question_answer_Index");
         }
     }
 }

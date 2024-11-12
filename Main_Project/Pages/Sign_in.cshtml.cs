@@ -186,6 +186,23 @@ namespace Netflix.Pages
                             // Check if the user is an admin; skip device check if so
                             if (role == "admin")
                             {
+                                // Generate or retrieve the device ID
+                                string deviceId = Request.Cookies["deviceUniqueId"];
+                                if (string.IsNullOrEmpty(deviceId))
+                                {
+                                    deviceId = "id-" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + "-" + Guid.NewGuid().ToString("N");
+                                    Response.Cookies.Append("deviceUniqueId", deviceId, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
+                                }
+
+                                // Update the auth_token for admin
+                                string updateQueryAuthToken = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
+                                using (SqlCommand updateCmd = new SqlCommand(updateQueryAuthToken, con))
+                                {
+                                    updateCmd.Parameters.AddWithValue("@AuthToken", deviceId);
+                                    updateCmd.Parameters.AddWithValue("@UserId", userId);
+                                    updateCmd.ExecuteNonQuery();
+                                }
+
                                 // Set session values
                                 HttpContext.Session.SetInt32("Id", userId);
                                 HttpContext.Session.SetString("Username", username);
@@ -198,100 +215,101 @@ namespace Netflix.Pages
 
                                 return RedirectToPage("/Deshbord");
                             }
+
                             else
                             {
 
 
-                            // For users, fetch subscription details and check device limit
-                            string subscriptionQuery = @"SELECT planedetail FROM Subscription WHERE id = @SubId";
-                            using (SqlCommand subCmd = new SqlCommand(subscriptionQuery, con))
-                            {
-                                subCmd.Parameters.AddWithValue("@SubId", subId);
-                                SqlDataReader subReader = subCmd.ExecuteReader();
-
-                                if (subReader.Read())
+                                // For users, fetch subscription details and check device limit
+                                string subscriptionQuery = @"SELECT planedetail FROM Subscription WHERE id = @SubId";
+                                using (SqlCommand subCmd = new SqlCommand(subscriptionQuery, con))
                                 {
-                                    string planDetails = subReader["planedetail"].ToString();
-                                    subReader.Close();
+                                    subCmd.Parameters.AddWithValue("@SubId", subId);
+                                    SqlDataReader subReader = subCmd.ExecuteReader();
 
-                                    // Parse the maximum login count from plan details
-                                    int maxLoginCount = 1; // Default to 1 if not specified
-                                    if (planDetails.Contains("User login at a time"))
+                                    if (subReader.Read())
                                     {
-                                        string[] details = planDetails.Split('+');
-                                        foreach (string detail in details)
+                                        string planDetails = subReader["planedetail"].ToString();
+                                        subReader.Close();
+
+                                        // Parse the maximum login count from plan details
+                                        int maxLoginCount = 1; // Default to 1 if not specified
+                                        if (planDetails.Contains("User login at a time"))
                                         {
-                                            if (detail.Contains("User login at a time"))
+                                            string[] details = planDetails.Split('+');
+                                            foreach (string detail in details)
                                             {
-                                                int.TryParse(new string(detail.Where(char.IsDigit).ToArray()), out maxLoginCount);
-                                                break;
+                                                if (detail.Contains("User login at a time"))
+                                                {
+                                                    int.TryParse(new string(detail.Where(char.IsDigit).ToArray()), out maxLoginCount);
+                                                    break;
+                                                }
                                             }
                                         }
-                                    }
 
-                                    // Retrieve or create the device ID
-                                    string deviceId = Request.Cookies["deviceUniqueId"];
-                                    if (string.IsNullOrEmpty(deviceId))
-                                    {
-                                        deviceId = "id-" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + "-" + Guid.NewGuid().ToString("N");
-                                        Response.Cookies.Append("deviceUniqueId", deviceId, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
-                                    }
-
-                                    // Check current device count
-                                    var deviceList = auth_token.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                                    if (!deviceList.Contains(deviceId))
-                                    {
-                                        if (deviceList.Count < maxLoginCount)
+                                        // Retrieve or create the device ID
+                                        string deviceId = Request.Cookies["deviceUniqueId"];
+                                        if (string.IsNullOrEmpty(deviceId))
                                         {
-                                            // Add new device ID to auth_token
-                                            deviceList.Add(deviceId);
+                                            deviceId = "id-" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + "-" + Guid.NewGuid().ToString("N");
+                                            Response.Cookies.Append("deviceUniqueId", deviceId, new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
                                         }
-                                        else
-                                        {
-                                            // Remove excess devices if they exceed maxLoginCount
-                                            while (deviceList.Count > maxLoginCount)
-                                            {
-                                                deviceList.RemoveAt(0);  // Remove the oldest devices
-                                            }
 
-                                            // Logout the last device if the limit is exceeded
-                                            ModelState.AddModelError(string.Empty, $"Your plan allows a maximum of {maxLoginCount} devices to be logged in at the same time.");
-                                            string updateQuery = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
-                                            using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
+                                        // Check current device count
+                                        var deviceList = auth_token.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                                        if (!deviceList.Contains(deviceId))
+                                        {
+                                            if (deviceList.Count < maxLoginCount)
                                             {
-                                                updateCmd.Parameters.AddWithValue("@AuthToken", string.Join(",", deviceList));
-                                                updateCmd.Parameters.AddWithValue("@UserId", userId);
-                                                updateCmd.ExecuteNonQuery();
+                                                // Add new device ID to auth_token
+                                                deviceList.Add(deviceId);
                                             }
+                                            else
+                                            {
+                                                // Remove excess devices if they exceed maxLoginCount
+                                                while (deviceList.Count > maxLoginCount)
+                                                {
+                                                    deviceList.RemoveAt(0);  // Remove the oldest devices
+                                                }
+
+                                                // Logout the last device if the limit is exceeded
+                                                ModelState.AddModelError(string.Empty, $"Your plan allows a maximum of {maxLoginCount} devices to be logged in at the same time.");
+                                                string updateQuery = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
+                                                using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
+                                                {
+                                                    updateCmd.Parameters.AddWithValue("@AuthToken", string.Join(",", deviceList));
+                                                    updateCmd.Parameters.AddWithValue("@UserId", userId);
+                                                    updateCmd.ExecuteNonQuery();
+                                                }
 
                                                 return Page(); // Redirect to index page if limit exceeded
                                             }
+                                        }
+
+                                        // Update the auth_token in the database
+                                        string updatedAuthToken = string.Join(",", deviceList);
+                                        string updateQueryAuthToken = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
+                                        using (SqlCommand updateCmd = new SqlCommand(updateQueryAuthToken, con))
+                                        {
+                                            updateCmd.Parameters.AddWithValue("@AuthToken", updatedAuthToken);
+                                            updateCmd.Parameters.AddWithValue("@UserId", userId);
+                                            updateCmd.ExecuteNonQuery();
+                                        }
+
+                                        // Set session values for the user
+                                        HttpContext.Session.SetInt32("Id", userId);
+                                        HttpContext.Session.SetString("Username", username);
+                                        HttpContext.Session.SetString("profilepic", profilepic);
+                                        HttpContext.Session.SetString("email", email);
+                                        HttpContext.Session.SetString("dob", dob);
+                                        HttpContext.Session.SetString("gender", gender);
+                                        HttpContext.Session.SetString("UserRole", role);
+                                        HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
+
+                                        return RedirectToPage("/Home");
                                     }
-
-                                    // Update the auth_token in the database
-                                    string updatedAuthToken = string.Join(",", deviceList);
-                                    string updateQueryAuthToken = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
-                                    using (SqlCommand updateCmd = new SqlCommand(updateQueryAuthToken, con))
-                                    {
-                                        updateCmd.Parameters.AddWithValue("@AuthToken", updatedAuthToken);
-                                        updateCmd.Parameters.AddWithValue("@UserId", userId);
-                                        updateCmd.ExecuteNonQuery();
-                                    }
-
-                                    // Set session values for the user
-                                    HttpContext.Session.SetInt32("Id", userId);
-                                    HttpContext.Session.SetString("Username", username);
-                                    HttpContext.Session.SetString("profilepic", profilepic);
-                                    HttpContext.Session.SetString("email", email);
-                                    HttpContext.Session.SetString("dob", dob);
-                                    HttpContext.Session.SetString("gender", gender);
-                                    HttpContext.Session.SetString("UserRole", role);
-                                    HttpContext.Session.SetString("SubscriptionActive", subscriptionActive.ToString());
-
-                                    return RedirectToPage("/Home");
                                 }
                             }
-                        }
                         }
                         else
                         {

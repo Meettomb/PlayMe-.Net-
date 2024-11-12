@@ -22,6 +22,7 @@ public partial class NetflixDataContext : DbContext
     public virtual DbSet<Question> Question { get; set; }
 
     public virtual DbSet<WatchList> WatchLists { get; set; }
+    public virtual DbSet<Profile_pic> Profile_pic { get; set; }
 
 
     public object Movie_category_table { get; internal set; }
@@ -190,6 +191,24 @@ public partial class NetflixDataContext : DbContext
               .HasMaxLength(50)
               .IsUnicode(false)
               .HasColumnName("answer");
+
+        });
+        
+        modelBuilder.Entity<Profile_pic>(entity =>
+        {
+            entity.ToTable("Profile_pic");
+
+
+            entity.Property(e => e.Id).HasColumnName("id");
+
+            entity.Property(e => e.Pics)
+              .HasMaxLength(50)
+              .IsUnicode(false)
+              .HasColumnName("Pics");
+            entity.Property(e => e.Groups)
+              .HasMaxLength(50)
+              .IsUnicode(false)
+              .HasColumnName("Groups");
 
         });
 

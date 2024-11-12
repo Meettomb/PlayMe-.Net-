@@ -1,5 +1,6 @@
 ﻿using Main_Project.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 
@@ -150,4 +151,12 @@ namespace Netflix.Models
         public MoviesTable mid { get; set; }
     }
 
+    public class Profile_pic
+    {
+        public int Id { get; set; }
+
+        [BindNever]
+        public string? Pics { get; set; }
+        public string Groups {  get; set; }
+    }
 }
