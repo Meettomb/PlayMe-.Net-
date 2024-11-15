@@ -626,7 +626,7 @@ body.no-scroll {
 .manage_profile_main_div {
     width: 100%;
     height: auto;
-    margin-top: 100px;
+    margin-top: 120px;
     display: flex;
     justify-content: center
 }
@@ -672,7 +672,7 @@ body.no-scroll {
         color: var(--main-font-color);
         background-color: var(--button-color);
         cursor: pointer;
-        margin: 50px 10px 30px 10px;
+        margin: 10px 10px 100px 10px;
     }
     .my_costom_box form h3 {
         margin: 0 10px;
@@ -1262,7 +1262,7 @@ body.no-scroll {
 
 
 .popup_message {
-    width: 40%;
+   width: auto;
     z-index: 500;
     text-align: left;
     position: absolute;
@@ -1446,7 +1446,7 @@ progress {
 
 .loading-animation {
     background-image: linear-gradient(to left bottom, #222, black);
-    animation: 0.1s backani infinite ease-in-out;
+    animation: 0.7s backani infinite ease-in-out;
 }
 
 @keyframes backani {
@@ -1482,7 +1482,6 @@ progress {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
     z-index: 5;
     margin-top: 2%;
     height: auto;
@@ -1494,7 +1493,6 @@ progress {
         width: 98%;
         height: auto;
         display: flex;
-        justify-content: center;
         gap: 10px;
         flex-wrap: wrap;
     }
@@ -1570,6 +1568,8 @@ progress {
         cursor: pointer;
         color: red;
         text-decoration: underline;
+        text-align: center;
+        padding: 0 10px;
     }
 
 .cansel_plane_popup {
@@ -1628,13 +1628,39 @@ progress {
     font-size: 50px;
     color: gold;
 }
+
+
+.Connected_Devices_h2{
+    margin-top: 100px;
+    text-align: center;
+}
+.connected_devices_container{
+    margin-top: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: center;   
+}
+.devices_list{
+    background-color: black;
+}
+.subscription-message{
+    width: 100%;
+    height: 99dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.subscription-message p{
+    text-align: center;
+    font-size: 30px;
+}
 /*------------------------------------------------------------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------------------------------------------------------------*/
 /*---------------------------------------------------------------RESPONCIV------------------------------------------------------*/
 /*------------------------------------------------------------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------------------------------------------------------------*/
-@media (min-width: 720px) and (max-width :1200px) {
-    .logo {
+    @media (min-width: 720px) and (max-width :1200px) {
+        .logo {
         width: 140px;
     }
 
@@ -2124,6 +2150,9 @@ progress {
     .update_email input {
         margin-left: -70px;
         width: 260px;
+    }
+    .mdi-close{
+        top: -8px;
     }
 }
 

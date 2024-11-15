@@ -1,7 +1,7 @@
 ﻿@page
 @model Main_Project.Pages.Renew_Subscription.Select_subscriptionModel
 @{
-    Layout = "_Setting";
+    Layout = "_Single_movie_player";
     ViewData["Title"] = "Renew Your Subscription";
 }
 
@@ -20,147 +20,157 @@
 }
 
 
-<h2 class="select_subscription">Select Subscription for</h2>
-<div class="select_scbscription_container">
-    <div class="planes">
-        @foreach (var sub in Model.subscription.Select((value, index) => new { value, index }))
+@if ("Premium" == "Premium")
+{
+    <div class="subscription-message">
+        <p>Your plan is up-to-date.</p>
+    </div>
+}
+else
+{
+    <h2 class="select_subscription">Select Subscription for</h2>
 
-        {
-            <div class="monthly" id="form-@sub.index" onclick="sendToForm3('@sub.index')">
-                <div>
-                    <input type="text" class="price1" id="price1-@sub.index" name="price" value="₹ @sub.value.price" readonly><br>
-                    <input type="text" id="duration1-@sub.index" name="duration" value="@sub.value.planeduration days" readonly><br>
-                    
-                    
-                    <input type="hidden" id="sid-@sub.index" name="sid" value="@sub.value.id" readonly>
+    <div class="select_scbscription_container">
 
-                    <input type="hidden" id="price-@sub.index" name="price" value="@sub.value.price" readonly>
-                    <input type="hidden" id="datetime-@sub.index" name="datetime" readonly>
-                    <input type="hidden" id="monthly-@sub.index" name="monthly" value="@sub.value.planeduration" readonly>
+        <div class="planes">
+            @foreach (var sub in Model.subscription.Select((value, index) => new { value, index }))
 
-                    <div class="plane_details">
-                        @foreach (var detail in sub.value.planedetail.Split('+'))
+            {
+                <div class="monthly" id="form-@sub.index" onclick="sendToForm3('@sub.index')">
+                    <div>
+                        <input type="text" class="price1" id="price1-@sub.index" name="price" value="₹ @sub.value.price" readonly><br>
+                        <input type="text" id="duration1-@sub.index" name="duration" value="@sub.value.planeduration days" readonly><br>
 
-                        {
-                            <p><i class="mdi mdi-information-variant"></i> @detail</p>
-                        }
+
+                        <input type="hidden" id="sid-@sub.index" name="sid" value="@sub.value.id" readonly>
+
+                        <input type="hidden" id="price-@sub.index" name="price" value="@sub.value.price" readonly>
+                        <input type="hidden" id="datetime-@sub.index" name="datetime" readonly>
+                        <input type="hidden" id="monthly-@sub.index" name="monthly" value="@sub.value.planeduration" readonly>
+
+                        <div class="plane_details">
+                            @foreach (var detail in sub.value.planedetail.Split('+'))
+
+                            {
+                                <p><i class="mdi mdi-information-variant"></i> @detail</p>
+                            }
+                        </div>
                     </div>
                 </div>
+            }
+        </div>
+
+        <form method="post" id="subscriptionForm">
+            <div id="form3">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" value="@Model.email" readonly /><br />
+                <span class="error" id="emailError"></span><br />
+
+                <label for="price3">Price:</label>
+                <input type="text" id="price3" name="price3" readonly /><br />
+                <span class="error" id="priceError"></span><br />
+
+                <input type="hidden" id="datetime3" name="datetime3" readonly /><br />
+                <input type="hidden" id="duration3" name="duration3" readonly /><br />
+
+                <input type="hidden" id="subid" name="subid" readonly>
+
+                <label for="paymentMethod">Payment Method:</label>
+                <select id="paymentMethod" class="paymentMethod" name="paymentMethod" onchange="togglePaymentFields()" required>
+                    <option value="">Select</option>
+                    <option value="Card">Card</option>
+                    <option value="UPI">UPI</option>
+                </select>
+                <span class="error" id="paymentMethodError"></span><br />
+
+                <div id="cardFields" style="display:none;">
+                    <label for="cardholdername">Card Holder Name:</label>
+                    <input type="text" id="cardholdername" name="cardholdername"><br />
+                    <span class="error" id="cardholdernameError"></span><br />
+
+                    <label for="cardnumber">Card Number:</label>
+                    <input type="text" id="cardnumber" maxlength="16" name="cardnumber"><br />
+                    <span class="error" id="cardnumberError"></span><br />
+
+                    <label for="cvv">CVV Number:</label>
+                    <input type="text" id="cvv" name="cvv" maxlength="3"><br />
+                    <span class="error" id="cvvError"></span><br />
+                </div>
+
+                <div id="upiFields" style="display:none;">
+                    <label for="upiID">UPI ID:</label>
+                    <input type="text" id="upiID" name="upiID"><br />
+                    <span class="error" id="upiIDError"></span><br />
+                </div>
+
+                <div class="signin_btn">
+                    <button type="submit" name="submit">Renew Plan</button>
+                </div>
             </div>
-        }
+        </form>
+
+        <script>
+            document.getElementById('subscriptionForm').onsubmit = function (event) {
+                let isValid = true;
+
+                // Clear previous error messages
+                document.querySelectorAll('.error').forEach(function (error) {
+                    error.textContent = '';
+                });
+
+                // Validate payment method
+                const paymentMethod = document.getElementById('paymentMethod').value;
+                if (paymentMethod === '') {
+                    document.getElementById('paymentMethodError').textContent = 'Please select a payment method.';
+                    isValid = false;
+                }
+
+                // Validate card fields if Card is selected
+                if (paymentMethod === 'Card') {
+                    const cardholdername = document.getElementById('cardholdername').value.trim();
+                    const cardnumber = document.getElementById('cardnumber').value.trim();
+                    const cvv = document.getElementById('cvv').value.trim();
+
+                    if (cardholdername === '') {
+                        document.getElementById('cardholdernameError').textContent = 'Cardholder name is required.';
+                        isValid = false;
+                    }
+                    if (cardnumber === '') {
+                        document.getElementById('cardnumberError').textContent = 'Card number is required.';
+                        isValid = false;
+                    }
+                    if (cvv === '') {
+                        document.getElementById('cvvError').textContent = 'CVV is required.';
+                        isValid = false;
+                    }
+                }
+
+                // Validate UPI fields if UPI is selected
+                if (paymentMethod === 'UPI') {
+                    const upiID = document.getElementById('upiID').value.trim();
+                    if (upiID === '') {
+                        document.getElementById('upiIDError').textContent = 'UPI ID is required.';
+                        isValid = false;
+                    }
+                }
+
+                // Prevent form submission if validation fails
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            };
+
+            function togglePaymentFields() {
+                const paymentMethod = document.getElementById('paymentMethod').value;
+                document.getElementById('cardFields').style.display = paymentMethod === 'Card' ? 'block' : 'none';
+                document.getElementById('upiFields').style.display = paymentMethod === 'UPI' ? 'block' : 'none';
+            }
+        </script>
+
+
     </div>
 
-    <form method="post" id="subscriptionForm">
-    <div id="form3">
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email" value="@Model.email" readonly /><br />
-        <span class="error" id="emailError"></span><br />
-
-        <label for="price3">Price:</label>
-        <input type="text" id="price3" name="price3" readonly /><br />
-        <span class="error" id="priceError"></span><br />
-
-        <input type="hidden" id="datetime3" name="datetime3" readonly /><br />
-        <input type="hidden" id="duration3" name="duration3" readonly /><br />
-
-        <input type="hidden" id="subid" name="subid" readonly>
-
-        <label for="paymentMethod">Payment Method:</label>
-        <select id="paymentMethod" class="paymentMethod" name="paymentMethod" onchange="togglePaymentFields()" required>
-            <option value="">Select</option>
-            <option value="Card">Card</option>
-            <option value="UPI">UPI</option>
-        </select>
-        <span class="error" id="paymentMethodError"></span><br />
-
-        <div id="cardFields" style="display:none;">
-            <label for="cardholdername">Card Holder Name:</label>
-            <input type="text" id="cardholdername" name="cardholdername"><br />
-            <span class="error" id="cardholdernameError"></span><br />
-
-            <label for="cardnumber">Card Number:</label>
-            <input type="text" id="cardnumber" maxlength="16" name="cardnumber"><br />
-            <span class="error" id="cardnumberError"></span><br />
-
-            <label for="cvv">CVV Number:</label>
-            <input type="text" id="cvv" name="cvv" maxlength="3"><br />
-            <span class="error" id="cvvError"></span><br />
-        </div>
-
-        <div id="upiFields" style="display:none;">
-            <label for="upiID">UPI ID:</label>
-            <input type="text" id="upiID" name="upiID"><br />
-            <span class="error" id="upiIDError"></span><br />
-        </div>
-
-        <div class="signin_btn">
-            <button type="submit" name="submit">Renew Plan</button>
-        </div>
-    </div>
-</form>
-
-<script>
-    document.getElementById('subscriptionForm').onsubmit = function (event) {
-        let isValid = true;
-
-        // Clear previous error messages
-        document.querySelectorAll('.error').forEach(function (error) {
-            error.textContent = '';
-        });
-
-        // Validate payment method
-        const paymentMethod = document.getElementById('paymentMethod').value;
-        if (paymentMethod === '') {
-            document.getElementById('paymentMethodError').textContent = 'Please select a payment method.';
-            isValid = false;
-        }
-
-        // Validate card fields if Card is selected
-        if (paymentMethod === 'Card') {
-            const cardholdername = document.getElementById('cardholdername').value.trim();
-            const cardnumber = document.getElementById('cardnumber').value.trim();
-            const cvv = document.getElementById('cvv').value.trim();
-
-            if (cardholdername === '') {
-                document.getElementById('cardholdernameError').textContent = 'Cardholder name is required.';
-                isValid = false;
-            }
-            if (cardnumber === '') {
-                document.getElementById('cardnumberError').textContent = 'Card number is required.';
-                isValid = false;
-            }
-            if (cvv === '') {
-                document.getElementById('cvvError').textContent = 'CVV is required.';
-                isValid = false;
-            }
-        }
-
-        // Validate UPI fields if UPI is selected
-        if (paymentMethod === 'UPI') {
-            const upiID = document.getElementById('upiID').value.trim();
-            if (upiID === '') {
-                document.getElementById('upiIDError').textContent = 'UPI ID is required.';
-                isValid = false;
-            }
-        }
-
-        // Prevent form submission if validation fails
-        if (!isValid) {
-            event.preventDefault();
-        }
-    };
-
-    function togglePaymentFields() {
-        const paymentMethod = document.getElementById('paymentMethod').value;
-        document.getElementById('cardFields').style.display = paymentMethod === 'Card' ? 'block' : 'none';
-        document.getElementById('upiFields').style.display = paymentMethod === 'UPI' ? 'block' : 'none';
-    }
-</script>
-
-
-</div>
-
-
+}
 
 
 

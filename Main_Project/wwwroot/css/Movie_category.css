@@ -1,22 +1,25 @@
 ﻿.movie_div {
     margin-top: 60px;
 }
-.notfounde404 img{
+
+.notfounde404 img {
     width: 100%;
-    height: 99.5vh; 
+    height: 99.5vh;
 }
-.notfounde404 button{
+
+.notfounde404 button {
     position: absolute;
-    top:80%;
-    left:63%;
-    border-radius:50px;
+    top: 80%;
+    left: 63%;
+    border-radius: 50px;
     padding: 20px 50px;
     background-color: dodgerblue;
-    color:white;
+    color: white;
     font-weight: 800;
-    border:none;
-    cursor:pointer;
+    border: none;
+    cursor: pointer;
 }
+
 .popup_message {
     width: 40%;
     z-index: 1000;
@@ -27,4 +30,92 @@
     background-color: black;
     padding: 15px;
     color: white;
+}
+
+@media (min-width: 829px) and (max-width :1200px) {
+    .cetegory_page_main_div {
+        width: 100%;
+        margin-top: 100px;
+    }
+
+    .movie_div {
+        width: 100%;
+        margin: 0 15px;
+    }
+
+    .movie_poster5 {
+        width: 19%;
+    }
+
+        .movie_poster5 img {
+            width: 100%;
+            height: 120px;
+        }
+}
+@media (min-width: 629px) and (max-width :829px) {
+    .cetegory_page_main_div {
+        width: 100%;
+        margin-top: 100px;
+    }
+
+    .movie_div {
+        width: 100%;
+        margin: 0 20px;
+        margin-right: -40px;
+    }
+
+    .movie_poster5 {
+        width: 30%;
+    }
+
+        .movie_poster5 img {
+            width: 100%;
+            height: 120px;
+        }
+}
+
+@media (min-width: 509px) and (max-width :629px) {
+    .cetegory_page_main_div {
+        width: 100%;
+        margin-top: 100px;
+    }
+
+    .movie_div {
+        width: 100%;
+        margin: 0 0px 0 0px;
+        margin-right: 0px;
+    }
+
+    .movie_poster5 {
+        max-width: 32%;
+        min-width: 32%;
+    }
+
+        .movie_poster5 img {
+            width: 100%;
+            height: 110px;
+        }
+}
+
+@media (min-width: 59px) and (max-width :509px) {
+    .cetegory_page_main_div {
+        width: 100%;
+        margin-top: 100px;
+    }
+
+    .movie_div {
+        width: 100%;
+        margin: 0 0px 0 0px;
+        margin-right: 0px;
+    }
+
+    .movie_poster5 {
+        max-width: 48%;
+        min-width: 32%;
+    }
+
+        .movie_poster5 img {
+            width: 100%;
+            height: 100px;
+        }
 }

@@ -19,7 +19,7 @@ function getOrCreateDeviceId() {
     let deviceId = getCookie("deviceUniqueId");
     if (!deviceId) {
         deviceId = 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        setPersistentCookie("deviceUniqueId", deviceId, 365); // Set cookie to expire in 1 year
+        setPersistentCookie("deviceUniqueId", deviceId, 30); // Set cookie to expire in 30 Days
     }
     //console.log("Device ID:", deviceId);
     return deviceId;

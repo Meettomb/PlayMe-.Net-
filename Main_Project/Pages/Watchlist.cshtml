@@ -1,7 +1,7 @@
 ﻿@page
 @model Main_Project.Pages.WatchlistModel
 @{
-    Layout = "_Header";
+    Layout = "_Single_movie_player";
     ViewData["Title"] = "Watch list";
 }
 <head>
@@ -66,7 +66,7 @@ else
 }
 
 
-<main class="main2">
+@* <main class="main2">
     <section class="movie_div">
         <div class="card_div">
             @foreach (var data in Model.AllMovies) // Change to use the new AllMovies property
@@ -88,7 +88,7 @@ else
     </section>
 </main>
 
-
+ *@
 
 <!--Messge hide show-->
 <script>

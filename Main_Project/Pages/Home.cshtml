@@ -36,7 +36,6 @@
 
         {
             <div class="slide data">
-
                 <a href="/Single_movie?movieId=@item.Movieid" class="openPopup" data-movie-id="@item.Movieid">
                     <img class="big_poster" src="/poster/@item.Movieposter2" alt="Movie Poster" loading="lazy">
                 </a>
@@ -264,9 +263,9 @@ else
     document.addEventListener('DOMContentLoaded', function () {
         function initializeSlider(slider) {
             const sliderId = slider.id;
-            @* console.log(`Initializing slider with ID: ${sliderId}`); *@
+    @* console.log(`Initializing slider with ID: ${sliderId}`); *@
 
-            const prevButton = slider.querySelector('.slider-button.prev');
+                const prevButton = slider.querySelector('.slider-button.prev');
             const nextButton = slider.querySelector('.slider-button.next');
             const sliderWrapper = slider.querySelector('.slider-wrapper');
 
@@ -280,13 +279,13 @@ else
             const totalMovies = slider.querySelectorAll('.movie_poster1').length;
             const moviesToShow = Math.floor(sliderWrapper.parentElement.offsetWidth / (posterWidth + 20)); // 20 is the margin on each side
 
-            @* console.log(`Total movies: ${totalMovies}, Movies to show: ${moviesToShow}`); *@
+    @* console.log(`Total movies: ${totalMovies}, Movies to show: ${moviesToShow}`); *@
 
-            function updateSlider() {
-                const offset = -currentIndex * (posterWidth + 20); // 20 is the margin on each side
-                sliderWrapper.style.transform = `translateX(${offset}px)`;
-                updateButtonVisibility(); // Update button visibility on each slide
-            }
+                function updateSlider() {
+                    const offset = -currentIndex * (posterWidth + 20); // 20 is the margin on each side
+                    sliderWrapper.style.transform = `translateX(${offset}px)`;
+                    updateButtonVisibility(); // Update button visibility on each slide
+                }
 
             function updateButtonVisibility() {
                 prevButton.style.display = currentIndex > 0 ? 'block' : 'none';
@@ -294,8 +293,8 @@ else
             }
 
             prevButton.addEventListener('click', function () {
-                @* console.log(`Prev button clicked on slider ${sliderId}`); *@
-                if (currentIndex > 0) {
+    @* console.log(`Prev button clicked on slider ${sliderId}`); *@
+                    if (currentIndex > 0) {
                     currentIndex--;
                 } else {
                     currentIndex = totalMovies - moviesToShow; // Go to the last position if at the start
@@ -304,8 +303,8 @@ else
             });
 
             nextButton.addEventListener('click', function () {
-                @* console.log(`Next button clicked on slider ${sliderId}`); *@
-                if (currentIndex < totalMovies - moviesToShow) {
+    @* console.log(`Next button clicked on slider ${sliderId}`); *@
+                    if (currentIndex < totalMovies - moviesToShow) {
                     currentIndex++;
                 } else {
                     currentIndex = 0; // Reset to the start when reaching the end
@@ -327,8 +326,8 @@ else
 
             sliderWrapper.addEventListener('touchend', function () {
                 if (touchEndX < touchStartX - 50) {
-                    @* console.log('Swiped left'); *@
-                    if (currentIndex < totalMovies - moviesToShow) {
+    @* console.log('Swiped left'); *@
+                        if (currentIndex < totalMovies - moviesToShow) {
                         currentIndex++;
                     } else {
                         currentIndex = 0; // Reset to the start when reaching the end
@@ -337,8 +336,8 @@ else
                 }
 
                 if (touchEndX > touchStartX + 50) {
-                    @* console.log('Swiped right'); *@
-                    if (currentIndex > 0) {
+    @* console.log('Swiped right'); *@
+                        if (currentIndex > 0) {
                         currentIndex--;
                     } else {
                         currentIndex = totalMovies - moviesToShow; // Go to the last position if at the start
@@ -450,7 +449,7 @@ else
 
 <script>
 
-      document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
         const images = document.querySelectorAll('.movie_poster1 img');
 
         images.forEach(img => {
