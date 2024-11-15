@@ -37,8 +37,9 @@ namespace Main_Project.Pages.Renew_Subscription
         public string UserName { get; set; }
         public string profilepic { get; set; }
         public string email { get; set; }
+        public string subid { get; set; }
         public string UserRole { get; set; }
-
+        public string userPlanName { get; set; }
 
         public Select_subscriptionModel(IEmailService emailService, IOptions<EmailSettings> emailSettings, IConfiguration configuration)
         {
@@ -47,11 +48,16 @@ namespace Main_Project.Pages.Renew_Subscription
             _connectionString = configuration.GetConnectionString("NetflixDatabase");
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            int? userId = HttpContext.Session.GetInt32("Id");
+            if (!userId.HasValue)
+            {
+                return Redirect("/");
+            }
             string sessionEmail = HttpContext.Session.GetString("email");
 
-            // Fetch the user's username and profile picture from the database using their email
+            // Fetch the user's username, profile picture, and subid from the database using their email
             if (!string.IsNullOrEmpty(sessionEmail))
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
@@ -70,7 +76,27 @@ namespace Main_Project.Pages.Renew_Subscription
                                 email = sessionEmail; // Set email from session
 
                                 UserRole = reader["role"].ToString();
+                                subid = reader["subid"].ToString();
                             }
+                        }
+                    }
+                }
+            }
+
+            // Fetch the plan name for the user's current subscription
+            string userPlanName = string.Empty;
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                string selectQuery = "SELECT planename FROM subscription WHERE id = @Subid";
+                using (SqlCommand cmd = new SqlCommand(selectQuery, con))
+                {
+                    cmd.Parameters.AddWithValue("@Subid", subid);
+                    con.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            userPlanName = reader["planename"].ToString();
                         }
                     }
                 }
@@ -98,10 +124,10 @@ namespace Main_Project.Pages.Renew_Subscription
                 }
             }
 
-            // Fetch subscriptions
+            // Fetch and filter subscriptions based on the user's current plan
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string selectquery = "SELECT * FROM subscription";
+                string selectquery = "SELECT * FROM subscription"; // Fetch all subscriptions
                 using (SqlCommand cmd = new SqlCommand(selectquery, connection))
                 {
                     connection.Open();
@@ -109,39 +135,60 @@ namespace Main_Project.Pages.Renew_Subscription
                     {
                         while (reader.Read())
                         {
-                            subscription sub = new subscription
+                            string planName = reader.GetString(4); // planename is in the 5th column (index 4)
+
+                            // Logic to filter subscriptions based on the user's current plan
+                            if (userPlanName == "Regular" && planName != "Regular")
                             {
-                                id = reader.GetInt32(0),
-                                price = reader.GetInt32(1),
-                                planeduration = reader.GetInt32(2),
-                                planedetail = reader.GetString(3)
-                            };
-                            subscription.Add(sub);
+                                subscription sub = new subscription
+                                {
+                                    id = reader.GetInt32(0),
+                                    price = reader.GetInt32(1),
+                                    planeduration = reader.GetInt32(2),
+                                    planedetail = reader.GetString(3), // planedetail is in the 4th column (index 3)
+                                    planename = planName // Using the correct planename
+                                };
+                                subscription.Add(sub);
+                            }
+                            else if (userPlanName == "Gold" && planName != "Regular" && planName != "Gold")
+                            {
+                                subscription sub = new subscription
+                                {
+                                    id = reader.GetInt32(0),
+                                    price = reader.GetInt32(1),
+                                    planeduration = reader.GetInt32(2),
+                                    planedetail = reader.GetString(3),
+                                    planename = planName
+                                };
+                                subscription.Add(sub);
+                            }
+                            else if (userPlanName == "Premium" && planName != "Regular" && planName != "Gold" && planName != "Premium")
+                            {
+                                subscription sub = new subscription
+                                {
+                                    id = reader.GetInt32(0),
+                                    price = reader.GetInt32(1),
+                                    planeduration = reader.GetInt32(2),
+                                    planedetail = reader.GetString(3),
+                                    planename = planName
+                                };
+                                subscription.Add(sub);
+                            }
                         }
                     }
                 }
             }
+
+
+            return Page();
         }
+
 
 
 
         public async Task<IActionResult> OnPost()
         {
-            /*// Simulate date and time for the subscription
-            User.datetime3 = Request.Form["datetime3"]; // Ensure this is set correctly in JS
-            User.price3 = Request.Form["price3"];
-            User.duration3 = Request.Form["duration3"];
-            User.paymentmethod = Request.Form["paymentMethod"];
-            if (int.TryParse(Request.Form["subid"], out int subidValue))
-            {
-                User.subid = subidValue;
-            }
-            else
-            {
-                User.subid = null; // or handle the error as needed
-            }
-*/
-            // Retrieve the current user's email from session
+
             string sessionEmail = HttpContext.Session.GetString("email");
 
             if (!string.IsNullOrEmpty(sessionEmail))
@@ -149,55 +196,65 @@ namespace Main_Project.Pages.Renew_Subscription
                 using (SqlConnection con = new SqlConnection(_connectionString))
                 {
                     // Check if auto-renew is enabled for the user
-                    string checkAutoRenewQuery = "SELECT autorenew FROM User_data WHERE email = @Email";
+                    string checkAutoRenewQuery = "SELECT autorenew, subid FROM User_data WHERE email = @Email";
                     using (SqlCommand checkAutoRenewCmd = new SqlCommand(checkAutoRenewQuery, con))
                     {
                         checkAutoRenewCmd.Parameters.AddWithValue("@Email", sessionEmail);
                         con.Open();
-                        var autoRenewStatus = await checkAutoRenewCmd.ExecuteScalarAsync();
-                        con.Close();
-
-                        if (autoRenewStatus != null && Convert.ToBoolean(autoRenewStatus) == true)
+                        using (var reader = await checkAutoRenewCmd.ExecuteReaderAsync())
                         {
-                            // Set TempData message and return to the page if auto-renew is enabled
-                            TempData["Message"] = "Your subscription is set to auto-renew. Please disable auto-renew to proceed.";
-                            return RedirectToPage("/User_Profile_manage/Subscription_detail");
+                            if (await reader.ReadAsync())
+                            {
+                                bool autoRenewStatus = Convert.ToBoolean(reader["autorenew"]);
+                                int currentSubId = Convert.ToInt32(reader["subid"]);
+
+                                if (autoRenewStatus)
+                                {
+                                    TempData["Message"] = "Your subscription is set to auto-renew. Please disable auto-renew to proceed.";
+                                    return RedirectToPage("/User_Profile_manage/Subscription_detail");
+                                }
+
+                                if (int.TryParse(Request.Form["subid"], out int selectedSubId) && selectedSubId == currentSubId)
+                                {
+                                    TempData["Message"] = "You are already subscribed to this plan. Please select a different plan to upgrade.";
+                                    return RedirectToPage("/User_Profile_manage/Subscription_detail");
+                                }
+                            }
                         }
+                        con.Close();
                     }
 
-                    // Continue with the rest of the code if auto-renew is not enabled
-
-                    // Simulate date and time for the subscription
-                    User.datetime3 = Request.Form["datetime3"]; // Ensure this is set correctly in JS
+                    // Continue with the rest of the code if auto-renew is not enabled and selected plan is different
+                    User.datetime3 = Request.Form["datetime3"];
                     User.price3 = Request.Form["price3"];
                     User.duration3 = Request.Form["duration3"];
                     User.paymentmethod = Request.Form["paymentMethod"];
+
                     if (int.TryParse(Request.Form["subid"], out int subidValue))
                     {
                         User.subid = subidValue;
                     }
                     else
                     {
-                        User.subid = null; // or handle the error as needed
+                        User.subid = null; // handle as needed
                     }
 
-                    // Define the query to update the User_data table
+                    // Define the query to update User_data table
                     string updateUserDataQuery = @"
-                UPDATE User_data 
-                SET price = @Price, 
-                    datetime = @DateTime, 
-                    duration = @Duration, 
-                    paymentmethod = @PaymentMethod,
-                    subid = @subid,
-                    subscriptionactive = @SubscriptionActive,
-                    emailsent = @Emailsent,
-                    autorenew = @AutoRenew
-                WHERE email = @Email";
+            UPDATE User_data 
+            SET price = @Price, 
+                datetime = @DateTime, 
+                duration = @Duration, 
+                paymentmethod = @PaymentMethod,
+                subid = @subid,
+                subscriptionactive = @SubscriptionActive,
+                emailsent = @Emailsent,
+                autorenew = @AutoRenew
+            WHERE email = @Email";
 
-                    // Define the query to insert data into the Revenue table
                     string insertRevenueQuery = @"
-                INSERT INTO Revenue (email, price1, datetime1, duration, paymentmethod, date, subscriptionactive)
-                VALUES (@Email, @Price, @DateTime, @Duration, @PaymentMethod, @Date, @SubscriptionActive)";
+            INSERT INTO Revenue (email, price1, datetime1, duration, paymentmethod, date, subscriptionactive)
+            VALUES (@Email, @Price, @DateTime, @Duration, @PaymentMethod, @Date, @SubscriptionActive)";
 
                     // Send renewal notification email
                     var emailBody = new StringBuilder();
@@ -212,19 +269,17 @@ namespace Main_Project.Pages.Renew_Subscription
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error sending renewal email: {ex.Message}");
-                        // You may want to handle this exception in a user-friendly way
                     }
 
                     using (SqlCommand cmd = new SqlCommand(updateUserDataQuery, con))
                     {
-                        // Update User_data table
                         cmd.Parameters.AddWithValue("@Email", sessionEmail);
                         cmd.Parameters.AddWithValue("@Price", User.price3);
-                        cmd.Parameters.AddWithValue("@DateTime", User.datetime3); // Ensure datetime is formatted correctly
+                        cmd.Parameters.AddWithValue("@DateTime", User.datetime3);
                         cmd.Parameters.AddWithValue("@Duration", User.duration3);
                         cmd.Parameters.AddWithValue("@PaymentMethod", User.paymentmethod);
                         cmd.Parameters.AddWithValue("@subid", User.subid);
-                        cmd.Parameters.AddWithValue("@SubscriptionActive", true); // Assuming active after renewal
+                        cmd.Parameters.AddWithValue("@SubscriptionActive", true);
                         cmd.Parameters.AddWithValue("@Emailsent", false);
                         cmd.Parameters.AddWithValue("@AutoRenew", true);
 
@@ -233,7 +288,6 @@ namespace Main_Project.Pages.Renew_Subscription
                         con.Close();
                     }
 
-                    // Insert into Revenue table
                     using (SqlCommand cmd = new SqlCommand(insertRevenueQuery, con))
                     {
                         cmd.Parameters.AddWithValue("@Email", sessionEmail);
@@ -241,7 +295,7 @@ namespace Main_Project.Pages.Renew_Subscription
                         cmd.Parameters.AddWithValue("@DateTime", User.datetime3);
                         cmd.Parameters.AddWithValue("@Duration", User.duration3);
                         cmd.Parameters.AddWithValue("@PaymentMethod", User.paymentmethod);
-                        cmd.Parameters.AddWithValue("@Date", DateTime.Now); // Current date for the new transaction
+                        cmd.Parameters.AddWithValue("@Date", DateTime.Now);
                         cmd.Parameters.AddWithValue("@SubscriptionActive", true);
 
                         con.Open();
@@ -249,7 +303,6 @@ namespace Main_Project.Pages.Renew_Subscription
                         con.Close();
                     }
 
-                    // Redirect to a success page after both operations succeed
                     return RedirectToPage("/Renew_Subscription/Success");
                 }
             }

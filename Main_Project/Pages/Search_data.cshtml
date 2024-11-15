@@ -1,32 +1,31 @@
 ﻿@page
 @model Main_Project.Pages.Search_dataModel
 @{
-    Layout = "_Header";
+    Layout = "_Single_movie_player";
     ViewData["Title"] = "Search Results";
 }
 
 <head>
     <link href="/css/Movie_category.css" rel="stylesheet" />
 </head>
-<main>
+<main class="cetegory_page_main_div">
     <section class="movie_div">
-        <div class="card_div">
-            @if (Model.Movies == null || !Model.Movies.Any())
+        @if (Model.Movies == null || !Model.Movies.Any())
+        {
+            <p>No movies found for your search.</p>
+        }
+        else
+        {
+            @foreach (var item in Model.Movies)
             {
-                <p>No movies found for your search.</p>
+                <div class="movie_poster5">
+                    <a href="/Single_movie?movieId=@item.Movieid" class="openPopup" data-movie-id="@item.Movieid">
+                        <img src="/poster/@item.Movieposter2" alt="Movie Poster" loading="lazy">
+                        <span>@item.Moviename</span>
+                    </a>
+                </div>
             }
-            else
-            {
-                @foreach (var item in Model.Movies)
-                {
-                    <div class="movie_poster data">
-                        <a href="/Single_movie?movieId=@item.Movieid" class="openPopup" data-movie-id="@item.Movieid">
-                            <img src="/poster/@item.Movieposter" alt="Movie Poster" loading="lazy">
-                            <span>@item.Moviename</span>
-                        </a>
-                    </div>
-                }
-            }
+        }
         </div>
     </section>
 </main>

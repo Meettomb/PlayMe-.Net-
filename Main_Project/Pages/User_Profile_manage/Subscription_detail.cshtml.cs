@@ -113,7 +113,7 @@ namespace Main_Project.Pages.User_Profile_manage
                     con.Close();
                 }
             }
-            return Page();
+            return RedirectToPage("/User_Profile_manage/Subscription_detail");
         }
 
     }

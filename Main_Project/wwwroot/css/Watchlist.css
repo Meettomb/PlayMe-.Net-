@@ -208,4 +208,7 @@ h1 span{
     .movie_poster img {
         height: 100px;
     }
+    .mdi-close{
+        top: -215px;
+    }
 }
