@@ -33,6 +33,9 @@ namespace Main_Project.Pages
         public string SearchKeyword { get; set; }
         public string Message { get; set; }
         public IList<MoviesTable> MoviesTable { get; set; } = new List<MoviesTable>();
+        public List<MoviesTable> Movies { get; set; }
+        public List<MoviesTable> TvShows { get; set; }
+
         public List<Search_history> SearchHistory { get; set; } = new List<Search_history>();
         public List<Movie_category_table> MovieCategories { get; set; } = new List<Movie_category_table>();
         public List<Watch_history> WatchHistories { get; set; }
@@ -217,32 +220,53 @@ namespace Main_Project.Pages
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
                 string query = @"
-                SELECT TOP 10 m.movieid, m.moviename, m.movieposter2, m.movietype, COUNT(*) as watch_count
-                FROM Watch_history w
-                JOIN Movies_table m ON w.movieid = m.movieid
-                GROUP BY m.movieid, m.moviename, m.movieposter2, m.movietype
-                ORDER BY watch_count DESC";
+        SELECT TOP 10 m.movieid, m.moviename, m.movieposter2, m.category, COUNT(*) as watch_count
+        FROM Watch_history w
+        JOIN Movies_table m ON w.movieid = m.movieid
+        WHERE m.category = 'Movie'
+        GROUP BY m.movieid, m.moviename, m.movieposter2, m.category
+
+        UNION ALL
+
+        SELECT TOP 10 m.movieid, m.moviename, m.movieposter2, m.category, COUNT(*) as watch_count
+        FROM Watch_history w
+        JOIN Movies_table m ON w.movieid = m.movieid
+        WHERE m.category = 'TV Shows'
+        GROUP BY m.movieid, m.moviename, m.movieposter2, m.category
+
+        ORDER BY watch_count DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     con.Open();
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
-                        Topwatchmovies = new List<MoviesTable>();
+                        Movies = new List<MoviesTable>();
+                        TvShows = new List<MoviesTable>();
                         while (dr.Read())
                         {
-                            var watchHistoryItem = new MoviesTable
+                            var item = new MoviesTable
                             {
                                 Movieid = dr.GetInt32(0),
                                 Moviename = dr.GetString(1),
                                 Movieposter2 = dr.GetString(2),
-                                Movietype = dr.GetString(3)
+                                Category = dr.GetString(3)  // Make sure you are reading 'category' and not 'movietype'
                             };
-                            Topwatchmovies.Add(watchHistoryItem);
+
+                            if (item.Category == "Movie") // Check against 'category' now
+                            {
+                                Movies.Add(item);
+                            }
+                            else if (item.Category == "TV Shows")
+                            {
+                                TvShows.Add(item);
+                            }
                         }
                     }
                 }
             }
+
+
 
 
 

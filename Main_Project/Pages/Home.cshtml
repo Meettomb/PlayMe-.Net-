@@ -126,21 +126,19 @@ else
     </div>
 }
 
-@if (Model.Topwatchmovies.Count() >= 1)
+@if (Model.Movies != null && Model.Movies.Count > 0)
 {
     <h3 class="suggestionh2">Top 10 Most Watched Movies</h3>
     <div class="main1">
         <div class="section2">
-            <div class="slider" id="slider2">
+            <div class="slider" id="movieSlider">
                 <div class="slider-wrapper">
-                    @foreach (var movie in Model.Topwatchmovies)
+                    @foreach (var movie in Model.Movies)
                     {
-                        <div class="movie_poster1 data"
-                             onmouseenter="playTrailer(this)"
-                             onmouseleave="stopTrailer(this)">
+                        <div class="movie_poster1 data" onmouseenter="playTrailer(this)" onmouseleave="stopTrailer(this)">
                             <form method="post" action="/Home?handler=SaveMovieType" id="form-@movie.Movieid">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" name="movietype" value="@movie.Movietype" />
+                                <input type="hidden" name="movietype" value="@movie.Category" />
                                 <input type="hidden" name="movieid" value="@movie.Movieid" />
                                 <a href="#" class="openPopup" onclick="document.getElementById('form-@movie.Movieid').submit(); return false;">
                                     <img src="/poster/@movie.Movieposter2" alt="@movie.Moviename" loading="lazy">
@@ -156,6 +154,44 @@ else
         </div>
     </div>
 }
+else
+{
+    <p>No movies found.</p>
+}
+
+@if (Model.TvShows != null && Model.TvShows.Count > 0)
+{
+    <h3 class="suggestionh2">Top 10 Most Watched TV Shows</h3>
+    <div class="main1">
+        <div class="section2">
+            <div class="slider" id="tvShowSlider">
+                <div class="slider-wrapper">
+                    @foreach (var show in Model.TvShows)
+                    {
+                        <div class="movie_poster1 data" onmouseenter="playTrailer(this)" onmouseleave="stopTrailer(this)">
+                            <form method="post" action="/Home?handler=SaveMovieType" id="form-@show.Movieid">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="movietype" value="@show.Category" />
+                                <input type="hidden" name="movieid" value="@show.Movieid" />
+                                <a href="#" class="openPopup" onclick="document.getElementById('form-@show.Movieid').submit(); return false;">
+                                    <img src="/poster/@show.Movieposter2" alt="@show.Moviename" loading="lazy">
+                                    <span style="display: none;">@show.Moviename</span>
+                                </a>
+                            </form>
+                        </div>
+                    }
+                </div>
+                <button class="slider-button prev">&#10094;</button>
+                <button class="slider-button next">&#10095;</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>No TV shows found.</p>
+}
+
 
 
 @if (ViewData["MovieTypeGroups"] != null)
