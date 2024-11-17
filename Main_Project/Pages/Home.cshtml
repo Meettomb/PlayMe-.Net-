@@ -59,26 +59,29 @@
                         var movie = Model.MoviesTable?.FirstOrDefault(m => m.Movieid == history.movieid);
                         if (movie != null)
                         {
+                            // Split the Movie field by commas to get the list of files
+                            var movieFiles = movie.Movie?.Split(',').ToList();
+                            string filename = history.filename; // Get the first file name
+
+                            // Check if there are multiple files for the movie
+                            bool hasMultipleFiles = movieFiles != null && movieFiles.Count() > 1;
+
                             <div class="movie_poster1 data">
                                 <input type="hidden" name="movietype" value="@movie.Movietype" />
                                 <input type="hidden" name="movieid" value="@movie.Movieid" />
-                                <a href="/Single_movie_player?Movieid=@movie.Movieid&watchtime=@history.watchtime" class="openPopup close" data-movieid="@movie.Movieid">
+                                
+                                <a href="/Single_movie_player?Movieid=@movie.Movieid@(hasMultipleFiles ? "&filename=" + filename : "")&watchtime=@history.watchtime" class="openPopup close" data-movieid="@movie.Movieid">
                                     <img src="/poster/@movie.Movieposter2" alt="@movie.Moviename" loading="lazy">
                                     <span style="display: none;">@movie.Moviename</span>
                                     <progress value="@history.watchtime" max="@history.toteltime"></progress>
-
-
                                     <form method="post" asp-page-handler="RemoveFromList">
-                                        <input type="hidden" name="movieid" value="@history.movieid" /> <!-- Ensure is valid -->
+                                        <input type="hidden" name="movieid" value="@history.movieid" />
                                         <button type="submit" id="remove_movie" class="mdi mdi-close"></button>
                                     </form>
                                 </a>
-
-
                             </div>
                         }
                     }
-
                 </div>
                 <button class="slider-button prev wh_pb">&#10094;</button>
                 <button class="slider-button next wh_nb">&#10095;</button>
@@ -88,6 +91,7 @@
 }
 else
 {
+    <p>No watch history available.</p>
 }
 
 

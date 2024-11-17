@@ -164,14 +164,18 @@
             <input type="hidden" id="watchtime" name="watchtime" readonly><br><br>
             <input type="hidden" id="toteltime" name="toteltime" readonly><br><br>
             <input type="hidden" id="moviecomplet" name="moviecomplet"> <!-- Hidden field for movie completion status -->
+
+            <input type="hidden" id="currentMovieName" name="filename" class="data" readonly value="@Model.MovieFiles" />
+
             <button type="submit">Save Watch History</button>
+
         </form>
-
-
+        @* <p id="currentFileName" class="data">@Model.MovieFiles.First().Replace("_", "").Replace(".", "").Replace("-", "").Replace("mp4", "").Replace("MP4", "")</p> *@
 
         @if (Model.MovieFiles.Count() > 1) // Check if there are more than one video files
         {
             <p id="currentFileName" class="data">@Model.MovieFiles.First().Replace("_", "").Replace(".", "").Replace("-", "").Replace("mp4", "").Replace("MP4", "")</p>
+        
         }
 
 
@@ -196,7 +200,6 @@
                         @if (Model.MovieFiles.Count() > 1) // Check if there are more than one video files
                         {
                             @* <p class="show_all_episode_text" onclick="toggleEpisodes()">Show all Episodes</p> *@
-
                             <div id="thumbnailContainer" style="display: none;">
                                 <!-- Initially hidden -->
                                 <!-- Thumbnails for each video file -->
@@ -287,15 +290,26 @@ else
 
 
 <script>
+    // Extract URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    const watchTime = urlParams.get('watchtime');
+    const watchTime = urlParams.get('watchtime');  // Get watchtime from URL
+    const filename = urlParams.get('filename');  // Get filename from URL
 
     // Get video element
     const videoPlayer = document.getElementById('moviePlayer');
+    const videoSource = document.getElementById('videoSourceMP4');  // Get source element
 
     // If watchTime is available, set the video currentTime
     if (watchTime) {
         videoPlayer.currentTime = parseFloat(watchTime);
+    }
+
+    // If filename is available, set the video source
+    if (filename) {
+        // Construct the file path and update the video source
+        videoSource.src = '/video/' + filename;
+        videoPlayer.load();  // Load the video with the new filename
+        videoPlayer.play();  // Start playing the video
     }
 </script>
 
@@ -463,20 +477,17 @@ else
 </script>
 
 
-
-<!--Fech Episode Tumbnail-->
+ 
+@* <!--Fech Episode Tumbnail--> *@
 <script>
     // Function to set a random time for the thumbnail
     function setRandomThumbnailTime(videoElement, timePoints) {
-        // Choose a random time from the provided list of times
         const randomIndex = Math.floor(Math.random() * timePoints.length);
         const chosenTime = parseFloat(timePoints[randomIndex]);
 
-        // Set the current time to the chosen time if the duration is greater than the chosen time
         if (videoElement.duration > chosenTime) {
             videoElement.currentTime = chosenTime;
         } else {
-            // If the video is shorter, set it to the middle
             videoElement.currentTime = videoElement.duration / 2;
         }
         videoElement.pause();
@@ -488,8 +499,23 @@ else
     var movieFiles = document.getElementById('movieFiles').value.split(',');
     var currentFileNameDisplay = document.getElementById('currentFileName');
 
+    // **New Input Field for Movie Name**
+    var currentMovieNameInput = document.getElementById('currentMovieName');
+
     // Keep track of the current movie index
     var currentMovieIndex = 0;
+
+    // Function to get the filename from the URL query parameters
+    function getFilenameFromURL() {
+        var urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('filename');
+    }
+
+    // Check if the filename is passed in the URL, otherwise default to the first movie file
+    var filenameFromURL = getFilenameFromURL();
+    if (filenameFromURL && movieFiles.includes(filenameFromURL)) {
+        currentMovieIndex = movieFiles.indexOf(filenameFromURL);
+    }
 
     // Event listener for when the video ends
     moviePlayer.addEventListener('ended', function () {
@@ -517,11 +543,23 @@ else
         updateCurrentFileName(fileName);
     }
 
-    // Function to update currently playing file name display
+    // Function to update the displayed file name in both elements
     function updateCurrentFileName(fileName) {
-        currentFileNameDisplay.textContent = fileName.replace("_", "").replace(".", "").replace("-", "").replace("mp4", "").replace("MP4", "");
-    }
-</script>
+        // Update the <p> element
+        currentFileNameDisplay.textContent = fileName
+            .replace(/_/g, "")
+            .replace(/\./g, "")
+            .replace(/-/g, "")
+            .replace(/mp4/gi, "");
 
+        // Update the input field
+        currentMovieNameInput.value = fileName;
+    }
+
+    // Initialize the current file name on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        updateCurrentFileName(movieFiles[currentMovieIndex]);
+    });
+</script>
 
 <!--Slider-->

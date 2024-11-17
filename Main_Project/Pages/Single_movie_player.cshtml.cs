@@ -205,7 +205,7 @@ namespace Main_Project.Pages
                 list[n] = value;
             }
         }
-        public async Task<IActionResult> OnPostSaveAsync(int userid, int movieid, string watchtime, string toteltime, string moviecomplet)
+        public async Task<IActionResult> OnPostSaveAsync(int userid, int movieid, string watchtime, string toteltime, string moviecomplet, string filename)
         {
             // Parse watchtime and toteltime
             double parsedWatchtime = double.TryParse(watchtime, out parsedWatchtime) ? parsedWatchtime : 0;
@@ -234,13 +234,13 @@ namespace Main_Project.Pages
             IF EXISTS (SELECT 1 FROM Watch_history WHERE userid = @userid AND movieid = @movieid)
             BEGIN
                 UPDATE Watch_history 
-                SET watchtime = @watchtime, toteltime = @toteltime, lastwatchtime = @lastwatchtime, moviecomplet = @moviecomplet
+                SET watchtime = @watchtime, toteltime = @toteltime, lastwatchtime = @lastwatchtime, moviecomplet = @moviecomplet, filename = @filename
                 WHERE userid = @userid AND movieid = @movieid
             END
             ELSE
             BEGIN
-                INSERT INTO Watch_history (userid, movieid, watchtime, toteltime, lastwatchtime, moviecomplet)
-                VALUES (@userid, @movieid, @watchtime, @toteltime, @lastwatchtime, @moviecomplet)
+                INSERT INTO Watch_history (userid, movieid, watchtime, toteltime, lastwatchtime, moviecomplet, filename)
+                VALUES (@userid, @movieid, @watchtime, @toteltime, @lastwatchtime, @moviecomplet, @filename)
             END";
                 }
 
@@ -255,6 +255,7 @@ namespace Main_Project.Pages
                         cmd.Parameters.Add(new SqlParameter("@toteltime", SqlDbType.VarChar) { Value = toteltime });
                         cmd.Parameters.Add(new SqlParameter("@lastwatchtime", SqlDbType.DateTime) { Value = DateTime.Now });
                         cmd.Parameters.Add(new SqlParameter("@moviecomplet", SqlDbType.Bit) { Value = movieCompleted });
+                        cmd.Parameters.Add(new SqlParameter("@filename", SqlDbType.VarChar) { Value = (object)filename ?? DBNull.Value });
                     }
 
                     await cmd.ExecuteNonQueryAsync();
