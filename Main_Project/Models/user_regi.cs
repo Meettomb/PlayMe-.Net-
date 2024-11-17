@@ -117,6 +117,7 @@ namespace Netflix.Models
         public string toteltime { get; set; }
         public DateOnly lastwatchtime { get; set; }
         public bool moviecomplet { get; set; }
+        public string? filename { get; set; }
 
         // Navigation property
         public MoviesTable Movie { get; set; }

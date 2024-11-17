@@ -207,7 +207,8 @@ namespace Main_Project.Pages
                                     watchtime = dr.GetString(3),
                                     toteltime = dr.GetString(4),
                                     lastwatchtime = DateOnly.FromDateTime(dr.GetDateTime(5)), // Convert DateTime to DateOnly
-                                    moviecomplet = dr.GetBoolean(6)
+                                    moviecomplet = dr.GetBoolean(6),
+                                    filename = dr.GetString(7)
                                 };
                                 WatchHistories.Add(watchHistoryItem);
                             }

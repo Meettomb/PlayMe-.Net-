@@ -1,0 +1,35 @@
+﻿@page
+@model Main_Project.Pages.User_Profile_manage.All_connected_devicesModel
+@{
+    Layout = "_Single_movie_player";
+    ViewData["title"] = "All connected devices";
+}
+
+
+
+<h2 class="Connected_Devices_h2">Connected Devices</h2>
+<div class="connected_devices_container">
+    <div class="devices_list">
+
+        @if (Model.ConnectedDevices.Count > 0)
+        {
+            <ol>
+                @foreach (var device in Model.ConnectedDevices)
+                {
+                    <li>
+                        @device
+                        <form method="post" asp-page-handler="DeleteDevice">
+                            <input type="hidden" name="deviceId" value="@device" />
+                            <button type="submit">Delete</button>
+                        </form>
+                    </li>
+                }
+            </ol>
+        }
+        else
+        {
+            <p>No connected devices found.</p>
+        }
+
+    </div>
+</div>
