@@ -23,7 +23,11 @@
 
 </head>
 <body>
-
+    <div class="container">
+        <div class="loader"></div>
+        <div class="loader"></div>
+        <div class="loader"></div>
+    </div>
 
 
     <div class="main" id="header">
@@ -157,7 +161,20 @@
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
+
+    <script>
+        window.onload = () => {
+            const loaderContainer = document.querySelector('.container');
+            const content = document.querySelector('.main');
+
+            // Hide loader and show content
+            loaderContainer.style.display = 'none'; // Hide loader
+            content.style.display = 'block'; // Show content
+            document.body.style.overflow = 'auto'; // Enable scrolling
+        };
+
+
+    </script>
 
 </body>
 </html>

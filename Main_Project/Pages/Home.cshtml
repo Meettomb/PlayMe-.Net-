@@ -262,6 +262,22 @@ else
 </main>
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const posters = document.querySelectorAll(".movie_poster1");
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("animate");
+            }
+        });
+    }, { threshold: 0.5 }); // Trigger animation when 50% of the element is visible
+
+    posters.forEach(poster => observer.observe(poster));
+});
+
+</script>
 
 @* Store Data in localStorage Using JavaScript *@
 

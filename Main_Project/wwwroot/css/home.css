@@ -8,7 +8,128 @@
     scroll-behavior: smooth;
 }
 
-/* Allow selection on inputs and textareas */
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--main-color); /* Optional background for loaders */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+/* From Uiverse.io by Nawsome */
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 10;
+    width: 160px;
+    height: 100px;
+    margin-left: -80px;
+    margin-top: -50px;
+    border-radius: 5px;
+    background: #1e3f57;
+    animation: dot1_ 3s cubic-bezier(0.55,0.3,0.24,0.99) infinite;
+}
+
+.loader:nth-child(2) {
+  z-index: 11;
+  width: 150px;
+  height: 90px;
+  margin-top: -45px;
+  margin-left: -75px;
+  border-radius: 3px;
+  background: #3c517d;
+  animation-name: dot2_;
+}
+
+.loader:nth-child(3) {
+  z-index: 12;
+  width: 40px;
+  height: 20px;
+  margin-top: 50px;
+  margin-left: -20px;
+  border-radius: 0 0 5px 5px;
+  background: #6bb2cd;
+  animation-name: dot3_;
+}
+
+@keyframes dot1_ {
+  3%,97% {
+    width: 160px;
+    height: 100px;
+    margin-top: -50px;
+    margin-left: -80px;
+  }
+
+  30%,36% {
+    width: 80px;
+    height: 120px;
+    margin-top: -60px;
+    margin-left: -40px;
+  }
+
+  63%,69% {
+    width: 40px;
+    height: 80px;
+    margin-top: -40px;
+    margin-left: -20px;
+  }
+}
+
+@keyframes dot2_ {
+  3%,97% {
+    height: 90px;
+    width: 150px;
+    margin-left: -75px;
+    margin-top: -45px;
+  }
+
+  30%,36% {
+    width: 70px;
+    height: 96px;
+    margin-left: -35px;
+    margin-top: -48px;
+  }
+
+  63%,69% {
+    width: 32px;
+    height: 60px;
+    margin-left: -16px;
+    margin-top: -30px;
+  }
+}
+
+@keyframes dot3_ {
+  3%,97% {
+    height: 20px;
+    width: 40px;
+    margin-left: -20px;
+    margin-top: 50px;
+  }
+
+  30%,36% {
+    width: 8px;
+    height: 8px;
+    margin-left: -5px;
+    margin-top: 49px;
+    border-radius: 8px;
+  }
+
+  63%,69% {
+    width: 16px;
+    height: 4px;
+    margin-left: -8px;
+    margin-top: -37px;
+    border-radius: 10px;
+  }
+}
+
+
+
 input, textarea {
     user-select: text;
 }
@@ -82,7 +203,7 @@ header {
     .searchBox img {
         width: 35px;
         height: 30px;
-        cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+        cursor: pointer; 
         position: absolute;
         right: 10px;
     }
@@ -135,7 +256,7 @@ header {
     background-color: white;
     max-height: 200px;
     overflow-y: auto;
-    position: absolute; /* or relative depending on your layout */
+    position: absolute; 
     z-index: 1000;
 }
 
@@ -145,7 +266,7 @@ header {
     }
 
         .search-history div:hover {
-            background-color: #f0f0f0; /* Highlight on hover */
+            background-color: #f0f0f0; 
         }
 
 
@@ -279,7 +400,6 @@ main {
     main section {
         width: 98%;
         height: auto;
-        /* background-color: brown; */
     }
 
 .card_div {
@@ -312,13 +432,11 @@ main {
     }
 
 #header {
-    /* Original header styles */
     background-color: transparent;
     transition: background-color 0.3s ease;
 }
 
     #header.scrolled {
-        /* Styles for the header when scrolled */
         background-color: var(--header-color);
     }
 
@@ -359,9 +477,7 @@ main {
     position: fixed;
     z-index: 0;
     margin: 500px 0 0 0;
-    /*
-            overflow-x: hidden;
-            */
+   
 }
 
 .sidenave-part1 {
@@ -541,10 +657,8 @@ main {
 
 
 
-/* Styling for dropdown and popup */
 
 
-/* Popup overlay and box styles */
 .popup-overlay {
     display: none;
     position: fixed;
@@ -575,7 +689,6 @@ main {
         bottom: 0;
     }
 
-/* Prevent background scrolling when popup is open */
 body.no-scroll {
     overflow: hidden;
 }
@@ -638,7 +751,7 @@ body.no-scroll {
     text-decoration: underline;
 }
 
-/* Style for the popup box and overlay */
+
 .select_profile_pic_popup {
     width: 100%;
     display: flex;
@@ -690,7 +803,6 @@ body.no-scroll {
     width: 120px;
     height: 120px;
 }
-/* Style for the close button */
 .close-btn {
     float: right;
     cursor: pointer;
@@ -698,7 +810,6 @@ body.no-scroll {
     font-size: 18px;
 }
 
-/* Style for the file input and buttons */
 .file-input-container {
     display: flex;
     align-items: center;
@@ -943,10 +1054,6 @@ body.no-scroll {
 }
 
 
-
-
-/* feedback css */
-
 .feedback_container {
     margin-top: 90px;
     width: 100%;
@@ -1081,7 +1188,6 @@ body.no-scroll {
     border: none;
     outline: none;
     width: 100px;
-/*    background-color: red;*/
 }
 
 
@@ -1110,7 +1216,7 @@ body.no-scroll {
     border-radius: 10px;
     background-color: #252525;
     z-index: 1;
-    overflow: hidden; /* Ensures the pseudo-element doesn't affect content */
+    overflow: hidden;
 }
 .paymentMethod select{
     
@@ -1171,14 +1277,6 @@ body.no-scroll {
 
 }
 
-
-
-
-
-/* Terrms of use */
-
-
-
 .Term_header {
     color: wheat;
     padding: 1rem;
@@ -1235,7 +1333,6 @@ body.no-scroll {
 }
 
 
-/* Privacy Policy */
 .privacy_body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
@@ -1368,15 +1465,25 @@ body.no-scroll {
     will-change: transform;
 }
 
+
 .movie_poster1 {
-    min-width: 280px; /* Adjust as needed */
-    margin: 10px 10px; /* Adjust spacing as needed */
+    min-width: 280px;
+    margin: 10px 10px;
+    transform: translateY(30px); 
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out; 
+    opacity: 0; 
 }
 
-    .movie_poster1 img {
-        width: 100%;
-        height: 160px;
+    .movie_poster1.animate {
+        transform: translateY(0);
+        opacity: 1; 
     }
+
+
+.movie_poster1 img {
+    width: 100%;
+    height: 160px;
+}
 
 .slider-button {
     position: absolute;
@@ -1394,11 +1501,11 @@ body.no-scroll {
 }
 
 .main1 .section2:hover .slider-button {
-    display: block; /* Show the button on hover */
+    display: block; 
 }
 
 .slider.active .slider-button {
-    display: block; /* Show the button when the slider is active */
+    display: block; 
 }
 
 
@@ -1416,7 +1523,6 @@ progress {
     position: relative;
     top: -10%;
 }
-/* Initially hide the .mdi-close button */
 .mdi-close {
     position: absolute;
     top: 0;
@@ -1429,10 +1535,8 @@ progress {
     font-size: 18px;
     z-index: 1000;
     cursor: pointer;
-    display: none; /* Hidden by default */
+    display: none; 
 }
-
-/* When the user hovers over the .close element, display the .mdi-close */
 .close:hover .mdi-close {
     display: block;
 }
@@ -1447,7 +1551,7 @@ progress {
 
 .loading-animation {
     background-image: linear-gradient(to left bottom, #222, black);
-    animation: 0.7s backani infinite ease-in-out;
+    animation: 3s backani infinite ease-out;
 }
 
 @keyframes backani {
@@ -1475,7 +1579,7 @@ progress {
 .movie_poster1 img.loaded {
     animation: none;
     background-image: none;
-    opacity: 1; /* Make the image visible */
+    opacity: 1; 
 }
 
 
@@ -1687,8 +1791,8 @@ progress {
 
     .movie_poster1 {
         max-width: 280px;
-        min-width: 240px; /* Adjust as needed */
-        margin: 10px 10px; /* Adjust spacing as needed */
+        min-width: 240px; 
+        margin: 10px 10px; 
     }
 
         .movie_poster1 img {
@@ -1821,8 +1925,8 @@ progress {
 
     .movie_poster1 {
         max-width: 280px;
-        min-width: 240px; /* Adjust as needed */
-        margin: 10px 10px; /* Adjust spacing as needed */
+        min-width: 240px;
+        margin: 10px 10px;
     }
 
         .movie_poster1 img {
@@ -2018,8 +2122,8 @@ progress {
 
     .movie_poster1 {
         max-width: 280px;
-        min-width: 200px; /* Adjust as needed */
-        margin: 10px 10px; /* Adjust spacing as needed */
+        min-width: 200px;
+        margin: 10px 10px; 
     }
 
         .movie_poster1 img {
@@ -2108,9 +2212,12 @@ progress {
 @media (min-width: 200px) and (max-width :504px) {
     .movie_poster1 {
         max-width: 280px;
-        min-width: 150px; /* Adjust as needed */
+        min-width: 150px;
         margin: 10px 10px;
         margin: 2px 2px;
+        transition: none;
+        transform: none;
+        opacity: 1;
     }
     .wh_nb {
         top: 45px;
@@ -2125,9 +2232,6 @@ progress {
         }
 
     .slider-button {
-/*        height: 85px;
-        width: 20px;
-        margin: 0;*/
         visibility: hidden;
     }
 
@@ -2162,6 +2266,13 @@ progress {
         margin-left: -70px;
         width: 200px;
     }
+    .slider-container {
+        height: 200px;
+    }
+
+        .slider-container img {
+            height: 200px;
+        }
 }
 
 
@@ -2170,5 +2281,12 @@ progress {
         position: relative;
         top: -30px;
         left: 180px;
+    }
+    .slider-container {
+        height: 250px;
+    }
+
+    .slider-container img{
+        height: 250px;
     }
 }
