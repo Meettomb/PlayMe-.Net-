@@ -13,6 +13,11 @@ html,body{
     height: 730px;
 
 }
+.movie_poster1 {
+    transition: none;
+    transform: none;
+    opacity: 1;
+}
 .singlepage_movie_poster {
     width: 100%;
     height: 730px;
@@ -96,9 +101,6 @@ h2 {
     margin-left: 20px;
     padding-bottom: 10px;
 }
-
-
-
 
 .main1, .main2 {
     width: 100%;

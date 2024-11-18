@@ -18,6 +18,11 @@
     width: calc(2% - 8px); /* 5 items per row with gap adjustment */
     height: auto;
     z-index: 1;
+   
+    transition: none;
+    transform: none;
+    opacity: 1;
+
 }
 
     .movie_poster1 a {
