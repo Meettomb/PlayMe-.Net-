@@ -40,6 +40,7 @@ namespace Main_Project.Pages.Renew_Subscription
         public string subid { get; set; }
         public string UserRole { get; set; }
         public string userPlanName { get; set; }
+        public bool subscriptionactive { get; set; }
 
         public Select_subscriptionModel(IEmailService emailService, IOptions<EmailSettings> emailSettings, IConfiguration configuration)
         {
@@ -77,6 +78,8 @@ namespace Main_Project.Pages.Renew_Subscription
 
                                 UserRole = reader["role"].ToString();
                                 subid = reader["subid"].ToString();
+                                subscriptionactive = Convert.ToBoolean(reader["subscriptionactive"]);
+
                             }
                         }
                     }
@@ -137,32 +140,47 @@ namespace Main_Project.Pages.Renew_Subscription
                         {
                             string planName = reader.GetString(4); // planename is in the 5th column (index 4)
 
-                            // Logic to filter subscriptions based on the user's current plan
-                            if (userPlanName == "Regular" && planName != "Regular")
+                            if (subscriptionactive)
                             {
-                                subscription sub = new subscription
+                                // Logic to filter subscriptions based on the user's current plan
+                                if (userPlanName == "Regular" && planName != "Regular")
                                 {
-                                    id = reader.GetInt32(0),
-                                    price = reader.GetInt32(1),
-                                    planeduration = reader.GetInt32(2),
-                                    planedetail = reader.GetString(3), // planedetail is in the 4th column (index 3)
-                                    planename = planName // Using the correct planename
-                                };
-                                subscription.Add(sub);
-                            }
-                            else if (userPlanName == "Gold" && planName != "Regular" && planName != "Gold")
-                            {
-                                subscription sub = new subscription
+                                    subscription sub = new subscription
+                                    {
+                                        id = reader.GetInt32(0),
+                                        price = reader.GetInt32(1),
+                                        planeduration = reader.GetInt32(2),
+                                        planedetail = reader.GetString(3), // planedetail is in the 4th column (index 3)
+                                        planename = planName // Using the correct planename
+                                    };
+                                    subscription.Add(sub);
+                                }
+                                else if (userPlanName == "Gold" && planName != "Regular" && planName != "Gold")
                                 {
-                                    id = reader.GetInt32(0),
-                                    price = reader.GetInt32(1),
-                                    planeduration = reader.GetInt32(2),
-                                    planedetail = reader.GetString(3),
-                                    planename = planName
-                                };
-                                subscription.Add(sub);
+                                    subscription sub = new subscription
+                                    {
+                                        id = reader.GetInt32(0),
+                                        price = reader.GetInt32(1),
+                                        planeduration = reader.GetInt32(2),
+                                        planedetail = reader.GetString(3),
+                                        planename = planName
+                                    };
+                                    subscription.Add(sub);
+                                }
+                                else if (userPlanName == "Premium" && planName != "Regular" && planName != "Gold" && planName != "Premium")
+                                {
+                                    subscription sub = new subscription
+                                    {
+                                        id = reader.GetInt32(0),
+                                        price = reader.GetInt32(1),
+                                        planeduration = reader.GetInt32(2),
+                                        planedetail = reader.GetString(3),
+                                        planename = planName
+                                    };
+                                    subscription.Add(sub);
+                                }
                             }
-                            else if (userPlanName == "Premium" && planName != "Regular" && planName != "Gold" && planName != "Premium")
+                            else
                             {
                                 subscription sub = new subscription
                                 {
@@ -214,11 +232,11 @@ namespace Main_Project.Pages.Renew_Subscription
                                     return RedirectToPage("/User_Profile_manage/Subscription_detail");
                                 }
 
-                                if (int.TryParse(Request.Form["subid"], out int selectedSubId) && selectedSubId == currentSubId)
+                                /*if (int.TryParse(Request.Form["subid"], out int selectedSubId) && selectedSubId == currentSubId)
                                 {
                                     TempData["Message"] = "You are already subscribed to this plan. Please select a different plan to upgrade.";
                                     return RedirectToPage("/User_Profile_manage/Subscription_detail");
-                                }
+                                }*/
                             }
                         }
                         con.Close();

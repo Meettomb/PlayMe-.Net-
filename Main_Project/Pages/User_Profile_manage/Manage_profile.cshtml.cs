@@ -28,6 +28,8 @@ namespace Main_Project.Pages.User_Profile_manage
         public string UserRole { get; set; }
         public string Dob { get; set; }
         public string Gender { get; set; }
+        public int? UserId { get; set; }
+        public string id { get; set; }
 
         public string ErrorMessage { get; set; }
 
@@ -36,7 +38,7 @@ namespace Main_Project.Pages.User_Profile_manage
         {
             // Retrieve the email from session
             string sessionEmail = HttpContext.Session.GetString("email");
-
+            UserId = HttpContext.Session.GetInt32("Id");
             // If session email is not null, fetch user data from the database
             if (!string.IsNullOrEmpty(sessionEmail))
             {
@@ -53,6 +55,7 @@ namespace Main_Project.Pages.User_Profile_manage
                             {
                                 UserName = reader["username"].ToString();
                                 Dob = reader["dob"].ToString();
+                                id = reader["id"].ToString();
                                 Gender = reader["gender"].ToString();
                                 ProfilePic = reader["profilepic"]?.ToString(); // Handle potential null
                                 Email = sessionEmail; // Set email from session
@@ -100,6 +103,52 @@ namespace Main_Project.Pages.User_Profile_manage
 
             return groupedProfilePics;
         }
+
+        public async Task<IActionResult> OnPostDeleteaccountAsync()
+        {
+            int? UserId = HttpContext.Session.GetInt32("Id");
+            if (UserId == null)
+            {
+                return RedirectToPage("/Index");
+            }
+
+            string email = HttpContext.Session.GetString("email"); // Get email from session
+            if (string.IsNullOrEmpty(email))
+            {
+                return RedirectToPage("/Index");
+            }
+
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+
+                // Update the isactive status in the database
+                string updateQuery = "UPDATE User_data SET isactive = 0 WHERE id = @UserId";
+                using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
+                {
+                    updateCmd.Parameters.AddWithValue("@UserId", UserId);
+                    await updateCmd.ExecuteNonQueryAsync();
+                }
+
+                // Delete data from Watch_list where email matches
+                string deleteQuery = "DELETE FROM Watch_list WHERE userid = @UserId";
+                using (SqlCommand deleteCmd = new SqlCommand(deleteQuery, con))
+                {
+                    deleteCmd.Parameters.AddWithValue("@UserId", UserId);
+                    await deleteCmd.ExecuteNonQueryAsync();
+                }
+
+                con.Close();
+            }
+
+            // Clear session and cookies
+            HttpContext.Session.Clear();
+            Response.Cookies.Delete("deviceUniqueId"); // Delete any specific cookies you are using
+
+            // Redirect to the Index page
+            return RedirectToPage("/Index");
+        }
+
 
 
         public async Task<IActionResult> OnPostUpdateProfilePicAsync()

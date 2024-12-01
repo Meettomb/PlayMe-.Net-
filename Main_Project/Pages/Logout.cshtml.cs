@@ -16,36 +16,34 @@ namespace Main_Project.Pages
 
         public IActionResult OnGetLogout()
         {
-            int userId = HttpContext.Session.GetInt32("Id") ?? 0; // Fetch the user ID from session
+            int userId = HttpContext.Session.GetInt32("Id") ?? 0;
+            Console.WriteLine($"User ID: {userId}");
 
             if (userId > 0)
             {
                 string connectionString = _configuration.GetConnectionString("NetflixDatabase");
-
-                // Get the device ID from the cookie
                 string deviceId = Request.Cookies["deviceUniqueId"];
+                Console.WriteLine($"Device ID: {deviceId}");
 
                 if (!string.IsNullOrEmpty(deviceId))
                 {
                     using (SqlConnection con = new SqlConnection(connectionString))
                     {
                         con.Open();
-
-                        // Retrieve current auth_token value from the database
                         string selectQuery = "SELECT auth_token FROM User_data WHERE id = @UserId";
                         using (SqlCommand selectCmd = new SqlCommand(selectQuery, con))
                         {
                             selectCmd.Parameters.AddWithValue("@UserId", userId);
                             string authToken = selectCmd.ExecuteScalar()?.ToString() ?? string.Empty;
 
-                            // Remove the specific device ID from auth_token
+                            Console.WriteLine($"Auth Token Before Update: {authToken}");
+
                             if (authToken.Contains(deviceId))
                             {
                                 var updatedAuthToken = string.Join(",", authToken
                                     .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                                     .Where(token => token != deviceId));
 
-                                // Update the auth_token in the database
                                 string updateQuery = "UPDATE User_data SET auth_token = @AuthToken WHERE id = @UserId";
                                 using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
                                 {
@@ -53,17 +51,20 @@ namespace Main_Project.Pages
                                     updateCmd.Parameters.AddWithValue("@UserId", userId);
                                     updateCmd.ExecuteNonQuery();
                                 }
+
+                                Console.WriteLine($"Auth Token After Update: {updatedAuthToken}");
                             }
                         }
                     }
                 }
             }
 
-            // Clear session data and delete the device ID cookie
             HttpContext.Session.Clear();
             Response.Cookies.Delete("deviceUniqueId");
+            Console.WriteLine("Session cleared and cookie deleted.");
 
-            return RedirectToPage("/Index"); // Redirect to the desired page after logout
+            return Redirect("/Index");
         }
+
     }
 }
