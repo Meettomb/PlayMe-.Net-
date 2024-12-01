@@ -22,6 +22,27 @@
     </div>
 }
 
+
+<p class="delete_account_openpopup">
+    <span id="delete_account_openpopup">Delete your Account</span>
+</p>
+
+<div class="cansel_plane_popup" id="cansel_plane_popup" style="position: fixed;">
+    <div class="conformation_button_div">
+        <div class="conformation_form_div">
+            <form method="post" asp-page-handler="Deleteaccount">
+                <div>
+                    <input type="hidden" name="name" value="@Model.id" />
+                </div>
+                <p class="mdi mdi-alert-outline"></p>
+                <p>Are you Sure you want Cansel your plane or disable auto renew</p>
+                <button class="conform_cansel_button">Conform</button>
+            </form>
+            <button id="close_popup">Close</button>
+        </div>
+    </div>
+</div>
+
 <div class="manage_profile_main_div">
     <div class="manage_profile">
         <div class="manage_profile_pic">
@@ -96,6 +117,21 @@
     </div>
 </div>
 
+
+
+<script>
+    const openpopup = document.getElementById("delete_account_openpopup");
+    const cansel_plane_popup = document.getElementById("cansel_plane_popup");
+    const close_popup = document.getElementById("close_popup");
+
+    openpopup.addEventListener("click", function (event) {
+        cansel_plane_popup.style.display = "block";
+    })
+    close_popup.addEventListener("click", function () {
+        cansel_plane_popup.style.display = "none";
+    })
+
+</script>
 
 <!-- JavaScript to handle the click event and set the image name -->
 <script>

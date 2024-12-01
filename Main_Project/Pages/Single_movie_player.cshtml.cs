@@ -47,6 +47,7 @@ namespace Main_Project.Pages
         public string id { get; set; }
         public string UserRole { get; set; }
         public string watchTime { get; set; }
+        public string subscriptionactive { get; set; }
         public List<Search_history> SearchHistory { get; set; } = new List<Search_history>();
         public IList<Movie_category_table> MovieCategories { get; set; } = new List<Movie_category_table>();
         public async Task<IActionResult> OnGetAsync(int movieId)
