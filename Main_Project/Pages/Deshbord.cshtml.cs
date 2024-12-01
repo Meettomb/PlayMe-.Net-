@@ -17,8 +17,9 @@ namespace Main_Project.Pages
         public List<Revenue> Revenue = new List<Revenue>();
         public List<Feedback_table> feedbacklist = new List<Feedback_table>();
         public List<UserGrowthData> UserGrowth { get; set; } = new List<UserGrowthData>();
+        public string UserGrowthJson { get; private set; }
         public List<UserGrowthPercentage> UserGrowthPercentages { get; set; } = new List<UserGrowthPercentage>();
-        public string UserGrowthJson => JsonConvert.SerializeObject(UserGrowth);
+        //public string UserGrowthJson => JsonConvert.SerializeObject(UserGrowth);
 
         public string UserName { get; set; }
         public string email { get; set; }
@@ -241,34 +242,47 @@ namespace Main_Project.Pages
                     }
                 }
 
-
-                // Fetch user Groth
                 string userGrowthQuery = @"
-                SELECT 
-                    YEAR(date) AS Year, 
-                    MONTH(date) AS Month,
-                    COUNT(*) AS UserCount 
-                FROM User_data 
-                WHERE date >= DATEADD(YEAR, -2, GETDATE()) 
-                GROUP BY YEAR(date), MONTH(date) 
-                ORDER BY Year, Month";
+        WITH AllMonths AS (
+            SELECT YEAR(GETDATE()) - 2 AS Year, 1 AS Month
+            UNION ALL
+            SELECT Year, Month + 1 FROM AllMonths WHERE Month < 12
+            UNION ALL
+            SELECT Year + 1, 1 FROM AllMonths WHERE Month = 12 AND Year < YEAR(GETDATE())
+        )
+        SELECT 
+            AM.Year, 
+            AM.Month, 
+            ISNULL(SUM(CASE WHEN YEAR(U.date) = AM.Year AND MONTH(U.date) = AM.Month THEN 1 ELSE 0 END), 0) AS UserCount
+        FROM AllMonths AM
+        LEFT JOIN User_data U
+            ON YEAR(U.date) = AM.Year AND MONTH(U.date) = AM.Month
+        GROUP BY AM.Year, AM.Month
+        ORDER BY AM.Year, AM.Month";
 
-                using (SqlCommand cmd = new SqlCommand(userGrowthQuery, con))
+                using (var connection = new SqlConnection(_connectionString))
                 {
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    connection.Open();
+                    using (var cmd = new SqlCommand(userGrowthQuery, connection))
                     {
-                        while (dr.Read())
+                        using (var dr = cmd.ExecuteReader())
                         {
-                            var growthData = new UserGrowthData
+                            while (dr.Read())
                             {
-                                Year = dr.GetInt32(0),
-                                Month = dr.GetInt32(1),
-                                UserCount = dr.GetInt32(2)
-                            };
-                            UserGrowth.Add(growthData);
+                                UserGrowth.Add(new UserGrowthData
+                                {
+                                    Year = dr.GetInt32(0),
+                                    Month = dr.GetInt32(1),
+                                    UserCount = dr.GetInt32(2)
+                                });
+                            }
                         }
                     }
                 }
+
+                // Serialize the data to JSON for use in the frontend
+                UserGrowthJson = JsonConvert.SerializeObject(UserGrowth);
+
 
 
                 // Fetch feedback data and user details

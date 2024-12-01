@@ -582,66 +582,52 @@
 
 
 <!-- User Growth chart -->
-
 <script>
     const userGrowthData = @Html.Raw(Model.UserGrowthJson);
 
-    // Print fetched data to the console
-    @* console.log("Fetched User Growth Data:", userGrowthData); *@
-
+    // Month labels
     const userGrowthLabels = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
-    ]; // Month names for x-axis
+    ];
 
-    // Prepare data for each year
+    // Initialize data structure for the past 3 years
     const dataByYear = {
-        2022: Array(12).fill(0), // Initialize for year 2022
-        2023: Array(12).fill(0), // Initialize for year 2023
-        2024: Array(12).fill(0), // Initialize for year 2024
+        2022: Array(12).fill(0),
+        2023: Array(12).fill(0),
+        2024: Array(12).fill(0),
     };
 
-    // Populate data arrays by month
+    // Populate data for the chart
     userGrowthData.forEach(data => {
-        const monthIndex = data.Month - 1; // Month is 1-based in the data
-        const year = data.Year;
-
-        if (dataByYear[year]) {
-            dataByYear[year][monthIndex] += data.UserCount;
+        const monthIndex = data.Month - 1; // Convert to 0-based index
+        if (dataByYear[data.Year]) {
+            dataByYear[data.Year][monthIndex] = data.UserCount;
         }
     });
 
-    // Define specific colors for each year with background shades
+    // Define chart colors
     const yearColors = {
-        2022: {
-            borderColor: 'rgba(75, 192, 192, 1)', // teal
-            backgroundColor: 'rgba(75, 192, 192, 0.2)' // light teal with transparency
-        },
-        2023: {
-            borderColor: 'rgba(255, 99, 132, 1)', // red
-            backgroundColor: 'rgba(255, 99, 132, 0.2)' // light red with transparency
-        },
-        2024: {
-            borderColor: 'rgba(54, 162, 235, 1)', // blue
-            backgroundColor: 'rgba(54, 162, 235, 0.2)' // light blue with transparency
-        }
+        2022: { borderColor: 'rgba(75, 192, 192, 1)', backgroundColor: 'rgba(75, 192, 192, 0.2)' },
+        2023: { borderColor: 'rgba(255, 99, 132, 1)', backgroundColor: 'rgba(255, 99, 132, 0.2)' },
+        2024: { borderColor: 'rgba(54, 162, 235, 1)', backgroundColor: 'rgba(54, 162, 235, 0.2)' },
     };
 
-    // Create datasets for chart
+    // Prepare datasets for the chart
     const datasets = [];
     for (const year in dataByYear) {
         datasets.push({
             label: `User Growth ${year}`,
             data: dataByYear[year],
-            borderColor: yearColors[year].borderColor, // Use defined border color
-            backgroundColor: yearColors[year].backgroundColor, // Use defined background color
+            borderColor: yearColors[year].borderColor,
+            backgroundColor: yearColors[year].backgroundColor,
             borderWidth: 2,
-            fill: true, // Enable background fill for each line
+            fill: true,
             pointRadius: 5,
         });
     }
 
-    // Create chart
+    // Create the chart
     const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
     const userGrowthChart = new Chart(userGrowthCtx, {
         type: 'line',
@@ -652,31 +638,16 @@
         options: {
             responsive: true,
             scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Months', // Label for x-axis
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Number of Users', // Label for y-axis
-                    }
-                }
+                x: { title: { display: true, text: 'Months' } },
+                y: { beginAtZero: true, title: { display: true, text: 'Number of Users' } }
             },
             plugins: {
                 tooltip: {
                     callbacks: {
-                        label: function (tooltipItem) {
-                            return `Users: ${tooltipItem.raw}`; // Display number of users in tooltip
-                        }
+                        label: tooltipItem => `Users: ${tooltipItem.raw}`
                     }
                 }
             }
         }
     });
 </script>
-
-
