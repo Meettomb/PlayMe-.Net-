@@ -106,6 +106,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+
 // Enable session middleware
 app.UseSession();
 app.UseSubscription_Middleware();
