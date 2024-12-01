@@ -36,10 +36,10 @@ namespace Main_Project.Pages.User_Profile_manage
         public Dictionary<string, List<Profile_pic>> GroupedProfilePics { get; private set; }
         public void OnGet()
         {
-            // Retrieve the email from session
+
             string sessionEmail = HttpContext.Session.GetString("email");
             UserId = HttpContext.Session.GetInt32("Id");
-            // If session email is not null, fetch user data from the database
+
             if (!string.IsNullOrEmpty(sessionEmail))
             {
                 using (SqlConnection con = new SqlConnection(_connectionString))
@@ -65,8 +65,7 @@ namespace Main_Project.Pages.User_Profile_manage
                     }
                 }
             }
-
-            // Retrieve and store grouped profile pics
+            
             GroupedProfilePics = GetProfilePicsGroupedByGroup();
         }
 
@@ -112,7 +111,7 @@ namespace Main_Project.Pages.User_Profile_manage
                 return RedirectToPage("/Index");
             }
 
-            string email = HttpContext.Session.GetString("email"); // Get email from session
+            string email = HttpContext.Session.GetString("email"); 
             if (string.IsNullOrEmpty(email))
             {
                 return RedirectToPage("/Index");
@@ -122,7 +121,6 @@ namespace Main_Project.Pages.User_Profile_manage
             {
                 con.Open();
 
-                // Update the isactive status in the database
                 string updateQuery = "UPDATE User_data SET isactive = 0 WHERE id = @UserId";
                 using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
                 {
@@ -130,7 +128,6 @@ namespace Main_Project.Pages.User_Profile_manage
                     await updateCmd.ExecuteNonQueryAsync();
                 }
 
-                // Delete data from Watch_list where email matches
                 string deleteQuery = "DELETE FROM Watch_list WHERE userid = @UserId";
                 using (SqlCommand deleteCmd = new SqlCommand(deleteQuery, con))
                 {
@@ -141,11 +138,9 @@ namespace Main_Project.Pages.User_Profile_manage
                 con.Close();
             }
 
-            // Clear session and cookies
             HttpContext.Session.Clear();
-            Response.Cookies.Delete("deviceUniqueId"); // Delete any specific cookies you are using
+            Response.Cookies.Delete("deviceUniqueId"); 
 
-            // Redirect to the Index page
             return RedirectToPage("/Index");
         }
 
