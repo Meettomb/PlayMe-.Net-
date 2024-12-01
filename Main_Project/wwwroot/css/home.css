@@ -163,14 +163,17 @@ body {
     display: inline-flex;
     align-items: center;
 }
+    .header_leftside .mdi-arrow-left{
+        margin: 0 0 0 30px;
+    }
 
-.header_rightside {
-    width: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    column-gap: 50px;
-}
+    .header_rightside {
+        width: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        column-gap: 50px;
+    }
 
 header {
     width: 98%;

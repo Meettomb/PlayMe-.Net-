@@ -29,7 +29,7 @@ namespace Main_Project.Pages.Movies
         public string profilepic { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            
+
 
             string sessionEmail = HttpContext.Session.GetString("email");
             // Fetch the user's username from the database using their email
@@ -74,22 +74,97 @@ namespace Main_Project.Pages.Movies
             return Page();
         }
 
+
         public async Task<IActionResult> OnPostAsync(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return NotFound("Movie ID is required.");
             }
 
-            var moviestable = await _context.MoviesTables.FindAsync(id);
-            if (moviestable != null)
+            string connectionString = _connectionString; // Ensure this is correctly set in your configuration.
+
+            try
             {
-                MoviesTable = moviestable;
-                _context.MoviesTables.Remove(MoviesTable);
-                await _context.SaveChangesAsync();
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Begin a transaction
+                    using (SqlTransaction transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            // Delete from Watch_history
+                            string deleteWatchHistoryQuery = "DELETE FROM Watch_history WHERE movieid = @MovieId";
+                            using (SqlCommand deleteWatchHistoryCommand = new SqlCommand(deleteWatchHistoryQuery, connection, transaction))
+                            {
+                                deleteWatchHistoryCommand.Parameters.AddWithValue("@MovieId", id.Value);
+                                int rowsDeleted = await deleteWatchHistoryCommand.ExecuteNonQueryAsync();
+                                Console.WriteLine($"Deleted {rowsDeleted} rows from Watch_history.");
+                            }
+
+                            // Delete from Watch_list
+                            string deleteWatchListQuery = "DELETE FROM Watch_list WHERE Movieid = @MovieId";
+                            using (SqlCommand deleteWatchListCommand = new SqlCommand(deleteWatchListQuery, connection, transaction))
+                            {
+                                deleteWatchListCommand.Parameters.AddWithValue("@MovieId", id.Value);
+                                int rowsDeleted = await deleteWatchListCommand.ExecuteNonQueryAsync();
+                                Console.WriteLine($"Deleted {rowsDeleted} rows from Watch_list.");
+                            }
+
+                            // Delete from Movie_like
+                            string deleteMovieLikeQuery = "DELETE FROM Movie_like WHERE movieid = @MovieId";
+                            using (SqlCommand deleteMovieLikeCommand = new SqlCommand(deleteMovieLikeQuery, connection, transaction))
+                            {
+                                deleteMovieLikeCommand.Parameters.AddWithValue("@MovieId", id.Value);
+                                int rowsDeleted = await deleteMovieLikeCommand.ExecuteNonQueryAsync();
+                                Console.WriteLine($"Deleted {rowsDeleted} rows from Movie_like.");
+                            }
+
+                            // Delete from Movie_dislike
+                            string deleteMovieDislikeQuery = "DELETE FROM Movie_dislike WHERE movieid = @MovieId";
+                            using (SqlCommand deleteMovieDislikeCommand = new SqlCommand(deleteMovieDislikeQuery, connection, transaction))
+                            {
+                                deleteMovieDislikeCommand.Parameters.AddWithValue("@MovieId", id.Value);
+                                int rowsDeleted = await deleteMovieDislikeCommand.ExecuteNonQueryAsync();
+                                Console.WriteLine($"Deleted {rowsDeleted} rows from Movie_dislike.");
+                            }
+
+                            // Delete from MoviesTables
+                            string deleteMoviesQuery = "DELETE FROM Movies_Table WHERE Movieid = @MovieId";
+                            using (SqlCommand deleteMoviesCommand = new SqlCommand(deleteMoviesQuery, connection, transaction))
+                            {
+                                deleteMoviesCommand.Parameters.AddWithValue("@MovieId", id.Value);
+                                int rowsDeleted = await deleteMoviesCommand.ExecuteNonQueryAsync();
+                                Console.WriteLine($"Deleted {rowsDeleted} rows from MoviesTables.");
+                            }
+
+                            // Commit the transaction
+                            transaction.Commit();
+                            Console.WriteLine("Transaction committed successfully.");
+                        }
+                        catch (Exception ex)
+                        {
+                            // Rollback transaction on error
+                            transaction.Rollback();
+                            Console.WriteLine($"Transaction rolled back. Error: {ex.Message}");
+                            return StatusCode(500, "An error occurred while deleting the movie and related data.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                Console.WriteLine($"General Error: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                return StatusCode(500, "An unexpected error occurred while processing your request.");
             }
 
+            // Redirect to the index page after successful deletion
             return RedirectToPage("./Index");
         }
+
+
     }
 }
