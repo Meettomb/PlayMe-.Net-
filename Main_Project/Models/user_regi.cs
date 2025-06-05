@@ -160,4 +160,10 @@ namespace Netflix.Models
         public string? Pics { get; set; }
         public string Groups {  get; set; }
     }
+
+    public class Profile { 
+        public int ProfileId { get; set; }
+
+    }
+
 }

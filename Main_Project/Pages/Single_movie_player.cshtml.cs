@@ -236,7 +236,7 @@ namespace Main_Project.Pages
             BEGIN
                 UPDATE Watch_history 
                 SET watchtime = @watchtime, toteltime = @toteltime, lastwatchtime = @lastwatchtime, moviecomplet = @moviecomplet, filename = @filename
-                WHERE userid = @userid AND movieid = @movieid
+                WHERE userid = @userid AND movieid = @movieid AND filename IS NOT NULL
             END
             ELSE
             BEGIN

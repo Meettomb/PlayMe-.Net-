@@ -366,14 +366,14 @@ else
                 document.getElementById('moviecomplet').value = '0'; // Set to '0' (false) otherwise
             }
 
-    @*  // Log data to the console for debugging
+     @* Log data to the console for debugging *@
                 console.log('Data prepared for submission:', {
                 userid: userid,
                 movieid: movieid,
                 watchtime: watchtime.toFixed(2),
                 toteltime: toteltime.toFixed(2),
                 moviecomplet: watchtime >= toteltime - 60 ? '1' : '0'
-                }); *@
+                });
 
                 // Automatically submit the form every 10 seconds
                 submitForm();
