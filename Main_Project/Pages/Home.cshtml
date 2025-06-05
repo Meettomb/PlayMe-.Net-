@@ -47,37 +47,38 @@
 </div>
 
 
-@if (Model.WatchHistories != null && Model.WatchHistories.Count() > 0)
+@if (Model.WatchHistoryList != null && Model.WatchHistoryList.Count > 0)
 {
-    <h3 class="wtachhidtory">Your Watch History</h3>
+    <h3 class="watchhistory">Your Watch History</h3>
     <div class="main3">
         <div class="section3">
             <div class="slider" id="slider2">
                 <div class="slider-wrapper">
-                    @foreach (var history in Model.WatchHistories)
+                    @foreach (var history in Model.WatchHistoryList)
                     {
                         var movie = Model.MoviesTable?.FirstOrDefault(m => m.Movieid == history.movieid);
                         if (movie != null)
                         {
-                            // Split the Movie field by commas to get the list of files
                             var movieFiles = movie.Movie?.Split(',').ToList();
-                            string filename = history.filename; // Get the first file name
-
-                            // Check if there are multiple files for the movie
-                            bool hasMultipleFiles = movieFiles != null && movieFiles.Count() > 1;
+                            string filename = history.filename;
+                            bool hasMultipleFiles = movieFiles != null && movieFiles.Count > 1;
 
                             <div class="movie_poster1 data">
                                 <input type="hidden" name="movietype" value="@movie.Movietype" />
                                 <input type="hidden" name="movieid" value="@movie.Movieid" />
-                                
-                                <a href="/Single_movie_player?Movieid=@movie.Movieid@(hasMultipleFiles ? "&filename=" + filename : "")&watchtime=@history.watchtime" class="openPopup close" data-movieid="@movie.Movieid">
-                                    <img src="/poster/@movie.Movieposter2" alt="@movie.Moviename" loading="lazy">
+
+                                <a href="/Single_movie_player?Movieid=@movie.Movieid@(hasMultipleFiles ? "&filename=" + filename : "")&watchtime=@history.watchtime"
+                                   class="openPopup close" data-movieid="@movie.Movieid">
+                                    <img src="/poster/@movie.Movieposter2" alt="@movie.Moviename" loading="lazy" />
                                     <span style="display: none;">@movie.Moviename</span>
                                     <progress value="@history.watchtime" max="@history.toteltime"></progress>
-                                    <form method="post" asp-page-handler="RemoveFromList">
-                                        <input type="hidden" name="movieid" value="@history.movieid" />
-                                        <button type="submit" id="remove_movie" class="mdi mdi-close"></button>
-                                    </form>
+
+                                   <form method="post" asp-page-handler="RemoveFromList">
+                                    <input type="hidden" name="userid" value="@Model.id" />
+                                    <input type="hidden" name="movieid" value="@history.movieid" />
+                                    <button type="submit" id="remove_movie" class="mdi mdi-close"></button>
+                                </form>
+
                                 </a>
                             </div>
                         }
@@ -91,8 +92,8 @@
 }
 else
 {
+    <h2>No Data Found</h2>
 }
-
 
 @if (Model.SuggestedMovies.Count() >= 1)
 {

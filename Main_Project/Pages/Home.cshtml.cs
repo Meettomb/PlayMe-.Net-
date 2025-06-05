@@ -14,10 +14,10 @@ namespace Main_Project.Pages
 {
     public class HomeModel : PageModel
     {
-        
+
         private readonly NetflixDataContext _context;
         private readonly string _connectionString;
-       
+
 
         public HomeModel(NetflixDataContext context, IConfiguration configuration)
         {
@@ -33,12 +33,14 @@ namespace Main_Project.Pages
         public string SearchKeyword { get; set; }
         public string Message { get; set; }
         public IList<MoviesTable> MoviesTable { get; set; } = new List<MoviesTable>();
+
         public List<MoviesTable> Movies { get; set; }
         public List<MoviesTable> TvShows { get; set; }
 
         public List<Search_history> SearchHistory { get; set; } = new List<Search_history>();
         public List<Movie_category_table> MovieCategories { get; set; } = new List<Movie_category_table>();
         public List<Watch_history> WatchHistories { get; set; }
+        public List<Watch_history> WatchHistoryList { get; set; } = new();
 
         // Declare SuggestedMovies property
         public List<MoviesTable> SuggestedMovies { get; set; } = new List<MoviesTable>();
@@ -48,14 +50,15 @@ namespace Main_Project.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
+
             // Check if the user is logged in by checking if the session has a valid user ID
             int? userId = HttpContext.Session.GetInt32("Id");
             if (!userId.HasValue)
             {
                 return Redirect("/");
             }
-                // Ensure user is logged in before fetching user activity
-                if (userId.HasValue)
+            // Ensure user is logged in before fetching user activity
+            if (userId.HasValue)
             {
                 // Fetch the movie types from the last 5 days
                 string typeQuery = @"
@@ -185,98 +188,9 @@ namespace Main_Project.Pages
             }
 
 
-            if (userId.HasValue)
-            {
-                using (SqlConnection con = new SqlConnection(_connectionString))
-                {
-                    string query = "SELECT * FROM Watch_history WHERE userid = @UserId AND moviecomplet = 0";
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@UserId", userId.Value);
-                        con.Open();
-                        using (SqlDataReader dr = cmd.ExecuteReader())
-                        {
-                            WatchHistories = new List<Watch_history>();
-                            while (dr.Read())
-                            {
-                                var watchHistoryItem = new Watch_history
-                                {
-                                    id = dr.GetInt32(0),
-                                    userid = dr.GetInt32(1),
-                                    movieid = dr.GetInt32(2),
-                                    watchtime = dr.GetString(3),
-                                    toteltime = dr.GetString(4),
-                                    lastwatchtime = DateOnly.FromDateTime(dr.GetDateTime(5)), // Convert DateTime to DateOnly
-                                    moviecomplet = dr.GetBoolean(6),
-                                    filename = dr.GetString(7)
-                                };
-                                WatchHistories.Add(watchHistoryItem);
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            using (SqlConnection con = new SqlConnection(_connectionString))
-            {
-                string query = @"
-        SELECT TOP 10 m.movieid, m.moviename, m.movieposter2, m.category, COUNT(*) as watch_count
-        FROM Watch_history w
-        JOIN Movies_table m ON w.movieid = m.movieid
-        WHERE m.category = 'Movie'
-        GROUP BY m.movieid, m.moviename, m.movieposter2, m.category
-
-        UNION ALL
-
-        SELECT TOP 10 m.movieid, m.moviename, m.movieposter2, m.category, COUNT(*) as watch_count
-        FROM Watch_history w
-        JOIN Movies_table m ON w.movieid = m.movieid
-        WHERE m.category = 'TV Shows'
-        GROUP BY m.movieid, m.moviename, m.movieposter2, m.category
-
-        ORDER BY watch_count DESC";
-
-                using (SqlCommand cmd = new SqlCommand(query, con))
-                {
-                    con.Open();
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        Movies = new List<MoviesTable>();
-                        TvShows = new List<MoviesTable>();
-                        while (dr.Read())
-                        {
-                            var item = new MoviesTable
-                            {
-                                Movieid = dr.GetInt32(0),
-                                Moviename = dr.GetString(1),
-                                Movieposter2 = dr.GetString(2),
-                                Category = dr.GetString(3)  // Make sure you are reading 'category' and not 'movietype'
-                            };
-
-                            if (item.Category == "Movie") // Check against 'category' now
-                            {
-                                Movies.Add(item);
-                            }
-                            else if (item.Category == "TV Shows")
-                            {
-                                TvShows.Add(item);
-                            }
-                        }
-                    }
-                }
-            }
-
-
-
-
-
-
-
 
             Dictionary<string, List<MoviesTable>> movieTypeGroups = new Dictionary<string, List<MoviesTable>>();
 
-            // Step 1: Fetch all movies with their types
             string moviesQuery = @"
                 SELECT Movieid, Moviename, Movieposter2, movietype, trailer, Content_advisory 
                 FROM Movies_table;";
@@ -433,8 +347,68 @@ namespace Main_Project.Pages
             ViewData["SearchHistory"] = SearchHistory;
 
             // Return the page for rendering
-            return Page();
+
+            if (userId == null)
+            {
+                return Redirect("/");
+            }
+            else
+            {
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                string query = @"
+    SELECT 
+        WH.id, WH.userid, WH.movieid, WH.watchtime, WH.toteltime, WH.lastwatchtime, WH.moviecomplet, WH.filename, 
+        M.Movieid, M.Moviename, M.Movieposter, M.Movieposter2, M.trailer, 
+        U.id, U.username, U.profilepic, U.email, U.role
+    FROM Watch_history WH
+    LEFT JOIN Movies_Table M ON WH.movieid = M.Movieid
+    LEFT JOIN User_data U ON WH.userid = U.id
+    WHERE WH.userid = @userId AND WH.moviecomplet = 0";
+
+
+                using SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@userId", id);
+                connection.Open();
+
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    var watchHistory = new Watch_history
+                    {
+                        id = reader.GetInt32(0),
+                        userid = reader.GetInt32(1),
+                        movieid = reader.GetInt32(2),
+                        watchtime = reader.GetString(3),
+                        toteltime = reader.GetString(4),
+                        lastwatchtime = DateOnly.FromDateTime(reader.GetDateTime(5)),
+                        moviecomplet = reader.GetBoolean(6),
+                        filename = reader.IsDBNull(7) ? null : reader.GetString(7)
+                    };
+
+                    var movie = new MoviesTable
+                    {
+                        Movieid = reader.GetInt32(8),
+                        Moviename = reader.IsDBNull(9) ? null : reader.GetString(9),
+                        Movieposter = reader.IsDBNull(10) ? null : reader.GetString(10),
+                        Movieposter2 = reader.IsDBNull(11) ? null : reader.GetString(11),
+                        Trailer = reader.IsDBNull(12) ? null : reader.GetString(12)
+                    };
+
+                    watchHistory.Movie = movie;
+
+                    WatchHistoryList.Add(watchHistory);
+
+                    if (!MoviesTable.Any(m => m.Movieid == movie.Movieid))
+                    {
+                        MoviesTable.Add(movie);
+                    }
+                }
+            }
+
+
+                return Page();
         }
+
 
 
         [ValidateAntiForgeryToken]
@@ -484,52 +458,44 @@ namespace Main_Project.Pages
 
 
 
-        // Validate the anti-forgery token
-        public async Task<IActionResult> OnPostRemoveFromList(int movieid) // Note the use of 'OnPost'
+        public async Task<IActionResult> OnPostRemoveFromList()
         {
-            // Get the user ID from the session
-            var userid = HttpContext.Session.GetInt32("Id"); // Assuming you store UserId in session
+            var userIdStr = Request.Form["userid"].ToString();
+            var movieIdStr = Request.Form["movieid"].ToString();
 
-            if (userid == null)
+            if (!int.TryParse(userIdStr, out int userId))
             {
-                // Handle the case when the user is not logged in or UserId is not found
-                return RedirectToPage("/Sign_in"); // Redirect to login page or show an error
+                return BadRequest("Invalid userid");
             }
 
-            // Use the Value property to get the actual integer
-            int userIdInt = userid.Value;
-
-            // Connection string (replace with your actual connection string)
+            if (!int.TryParse(movieIdStr, out int movieId))
+            {
+                return BadRequest("Invalid movieid");
+            }
 
             using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
-                // Prepare the SQL command to update the moviecompleted field
-                var query = "UPDATE Watch_history SET moviecomplet = @moviecompleted WHERE userid = @userid AND movieid = @movieid";
+                var query = "UPDATE Watch_history SET moviecomplet = @moviecomplet WHERE userid = @userid AND movieid = @movieid";
 
                 using (var command = new SqlCommand(query, connection))
                 {
-                    // Set parameter values
-                    command.Parameters.AddWithValue("@moviecompleted", true);
-                    command.Parameters.AddWithValue("@userid", userIdInt);
-                    command.Parameters.AddWithValue("@movieid", movieid);
+                    command.Parameters.AddWithValue("@moviecomplet", true);
+                    command.Parameters.AddWithValue("@userid", userId);
+                    command.Parameters.AddWithValue("@movieid", movieId);
 
-                    // Execute the command
                     int rowsAffected = await command.ExecuteNonQueryAsync();
 
                     if (rowsAffected == 0)
                     {
-                        // Handle the case where no rows were updated
                         return NotFound("Movie watch history not found.");
                     }
                 }
             }
 
-            // Return a success response, such as redirecting to the watch list page
-            return RedirectToPage("/Home"); // Redirect to the watch list or another page
+            return RedirectToPage("/Home");
         }
-
 
 
     }
