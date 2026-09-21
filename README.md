@@ -81,17 +81,6 @@
 2. Open **SSMS**, select your database, and check if data is being stored
 3. Test endpoints (if using API) with Postman or Swagger
 
-## **5. Deploy the ASP.NET Core Project**
-### **5.1 Publish Locally**
-1. Right-click on the **Project** in Solution Explorer
-2. Select **Publish** > **Folder**
-3. Choose a location and click **Publish**
 
-### **5.2 Deploy to IIS**
-1. Install IIS via Windows Features
-2. Add **ASP.NET Core Hosting Bundle** ([Download](https://dotnet.microsoft.com/en-us/download/dotnet))
-3. Deploy your project to IIS using **Web Deploy**
-
----
 ### ✅ **You have successfully set up ASP.NET Core with Visual Studio and SSMS!** 🎉
 
