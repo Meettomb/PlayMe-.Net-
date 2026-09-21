@@ -13,6 +13,13 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# ASP.NET Core configuration files containing secrets
+appsettings.json
+appsettings.*.json
+
+# Allow safe template configuration
+!appsettings.example.json
+
 # Mono auto generated files
 mono_crash.*
 

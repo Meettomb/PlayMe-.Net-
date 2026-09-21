@@ -51,7 +51,7 @@
         <input type="hidden" id="movieid_hidden" name="movieid" value="@Model.Movie.Movieid" />
 
 
-        <input type="hidden" id="movieFiles" value="@string.Join(",", Model.MovieFiles)" />
+        <input type="hidden" id="movieFiles"  value="@Model.MovieFiles.FirstOrDefault()"  />
 
 
         <div class="video-container data">
@@ -159,6 +159,7 @@
 
 
         <form id="watchTimeForm" method="post">
+  @Html.AntiForgeryToken()
             <input type="hidden" id="userid" name="userid" readonly>
             <input type="hidden" id="movieid" name="movieid" readonly>
             <input type="hidden" id="watchtime" name="watchtime" readonly><br><br>
@@ -390,19 +391,32 @@ else
         var formData = new FormData(form);
 
         // Send the data via AJAX
-        fetch('@Url.Page("/Single_movie_player", "Save")', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-    @* console.log("Watch history saved successfully!"); *@
-                        } else {
-    @*  console.error("Failed to save watch history."); *@
-                        }
-            })
-            .catch(error => console.error('Error:', error));
+  fetch('@Url.Page("/Single_movie_player", "Save")', {
+    method: 'POST',
+    body: formData
+})
+.then(async response => {
+    if (!response.ok) {
+        const text = await response.text();
+        throw new Error(
+            `HTTP ${response.status}: ${text}`
+        );
+    }
+
+    return response.json();
+})
+.then(data => {
+    console.log("Watch history response:", data);
+
+    if (data.success) {
+        console.log("Watch history saved successfully!");
+    } else {
+        console.error("Failed to save watch history.");
+    }
+})
+.catch(error => {
+    console.error("Watch history error:", error);
+});
     }
 
     // Event listeners to start/stop the timer based on video play/pause

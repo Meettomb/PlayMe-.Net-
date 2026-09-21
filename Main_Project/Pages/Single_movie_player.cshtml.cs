@@ -206,14 +206,21 @@ namespace Main_Project.Pages
                 list[n] = value;
             }
         }
-        public async Task<IActionResult> OnPostSaveAsync(int userid, int movieid, string watchtime, string toteltime, string moviecomplet, string filename)
+        public async Task<IActionResult> OnPostSaveAsync(
+    int userid,
+    int movieid,
+    string watchtime,
+    string toteltime,
+    string moviecomplet,
+    string filename)
         {
-            // Parse watchtime and toteltime
-            double parsedWatchtime = double.TryParse(watchtime, out parsedWatchtime) ? parsedWatchtime : 0;
-            double parsedToteltime = double.TryParse(toteltime, out parsedToteltime) ? parsedToteltime : 0;
+            double parsedWatchtime =
+                double.TryParse(watchtime, out var wt) ? wt : 0;
 
-            // Determine if the movie is completed (parse from "1" or "0")
-            bool movieCompleted = moviecomplet == "1";  // '1' for true, '0' for false
+            double parsedToteltime =
+                double.TryParse(toteltime, out var tt) ? tt : 0;
+
+            bool movieCompleted = moviecomplet == "1";
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -223,50 +230,113 @@ namespace Main_Project.Pages
 
                 if (movieCompleted)
                 {
-                    // If the movie is completed, delete the record from the watch history
                     query = @"
-            DELETE FROM Watch_history 
-            WHERE userid = @userid AND movieid = @movieid";
+                DELETE FROM Watch_history
+                WHERE userid = @userid
+                  AND movieid = @movieid";
                 }
                 else
                 {
-                    // If the movie is not completed, update or insert the watch history
                     query = @"
-            IF EXISTS (SELECT 1 FROM Watch_history WHERE userid = @userid AND movieid = @movieid)
-            BEGIN
-                UPDATE Watch_history 
-                SET watchtime = @watchtime, toteltime = @toteltime, lastwatchtime = @lastwatchtime, moviecomplet = @moviecomplet, filename = @filename
-                WHERE userid = @userid AND movieid = @movieid AND filename IS NOT NULL
-            END
-            ELSE
-            BEGIN
-                INSERT INTO Watch_history (userid, movieid, watchtime, toteltime, lastwatchtime, moviecomplet, filename)
-                VALUES (@userid, @movieid, @watchtime, @toteltime, @lastwatchtime, @moviecomplet, @filename)
-            END";
+                IF EXISTS (
+                    SELECT 1
+                    FROM Watch_history
+                    WHERE userid = @userid
+                      AND movieid = @movieid
+                )
+                BEGIN
+                    UPDATE Watch_history
+                    SET watchtime = @watchtime,
+                        toteltime = @toteltime,
+                        lastwatchtime = @lastwatchtime,
+                        moviecomplet = @moviecomplet,
+                        filename = @filename
+                    WHERE userid = @userid
+                      AND movieid = @movieid
+                END
+                ELSE
+                BEGIN
+                    INSERT INTO Watch_history
+                    (
+                        userid,
+                        movieid,
+                        watchtime,
+                        toteltime,
+                        lastwatchtime,
+                        moviecomplet,
+                        filename
+                    )
+                    VALUES
+                    (
+                        @userid,
+                        @movieid,
+                        @watchtime,
+                        @toteltime,
+                        @lastwatchtime,
+                        @moviecomplet,
+                        @filename
+                    )
+                END";
                 }
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    cmd.Parameters.Add(new SqlParameter("@userid", SqlDbType.Int) { Value = userid });
-                    cmd.Parameters.Add(new SqlParameter("@movieid", SqlDbType.Int) { Value = movieid });
+                    cmd.Parameters.Add(
+                        new SqlParameter("@userid", SqlDbType.Int)
+                        {
+                            Value = userid
+                        });
+
+                    cmd.Parameters.Add(
+                        new SqlParameter("@movieid", SqlDbType.Int)
+                        {
+                            Value = movieid
+                        });
 
                     if (!movieCompleted)
                     {
-                        cmd.Parameters.Add(new SqlParameter("@watchtime", SqlDbType.VarChar) { Value = watchtime });
-                        cmd.Parameters.Add(new SqlParameter("@toteltime", SqlDbType.VarChar) { Value = toteltime });
-                        cmd.Parameters.Add(new SqlParameter("@lastwatchtime", SqlDbType.DateTime) { Value = DateTime.Now });
-                        cmd.Parameters.Add(new SqlParameter("@moviecomplet", SqlDbType.Bit) { Value = movieCompleted });
-                        cmd.Parameters.Add(new SqlParameter("@filename", SqlDbType.VarChar) { Value = (object)filename ?? DBNull.Value });
+                        cmd.Parameters.Add(
+                            new SqlParameter("@watchtime", SqlDbType.VarChar)
+                            {
+                                Value = watchtime ?? "0"
+                            });
+
+                        cmd.Parameters.Add(
+                            new SqlParameter("@toteltime", SqlDbType.VarChar)
+                            {
+                                Value = toteltime ?? "0"
+                            });
+
+                        cmd.Parameters.Add(
+                            new SqlParameter("@lastwatchtime", SqlDbType.DateTime)
+                            {
+                                Value = DateTime.Now
+                            });
+
+                        cmd.Parameters.Add(
+                            new SqlParameter("@moviecomplet", SqlDbType.Bit)
+                            {
+                                Value = movieCompleted
+                            });
+
+                        cmd.Parameters.Add(
+                            new SqlParameter("@filename", SqlDbType.NVarChar, 255)
+                            {
+                                Value = string.IsNullOrEmpty(filename)
+                                    ? DBNull.Value
+                                    : filename
+                            });
                     }
 
-                    await cmd.ExecuteNonQueryAsync();
+                    int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                    Console.WriteLine(
+                        $"Watch history rows affected: {rowsAffected}");
                 }
             }
 
-            // Return a JSON response to the client
             return new JsonResult(new { success = true });
         }
-
 
 
 
